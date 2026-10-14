@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>亞東紀念醫院 手機版醫療照護系統</title>
+    <title>10/14亞東紀念醫院 手機版醫療照護系統(模擬)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&display=swap');
@@ -521,7 +521,7 @@
             </div>
         </div>
 
-        <!-- 8. 給藥作業頁面 (精準時間與頻率顯示) -->
+        <!-- 8. 給藥作業頁面 -->
         <div id="med-view" class="hidden w-full flex-1 flex flex-col justify-between pt-6 pb-2 overflow-hidden">
             <div class="text-xs font-bold text-slate-700 text-center py-1 bg-slate-100 rounded-md">給藥作業核對 (精準頻率時間・限時±30分)</div>
             <div class="flex-1 flex flex-col justify-between py-2 space-y-2 overflow-y-auto">
@@ -575,7 +575,7 @@
                     <button id="nurse1-btn" onclick="openNurseModal(1)" class="flex-1 bg-slate-100 hover:bg-slate-200 border border-slate-300 py-2 text-xs font-bold text-slate-700 rounded-xl shadow-sm transition">護理師一 核對</button>
                     <button id="nurse2-btn" onclick="openNurseModal(2)" class="flex-1 bg-slate-100 hover:bg-slate-200 border border-slate-300 py-2 text-xs font-bold text-slate-700 rounded-xl shadow-sm transition">護理師二 核對</button>
                 </div>
-                <button onclick="saveBloodRecord()" class="w-full bg-rose-500 hover:bg-rose-600 text-white font-bold py-2.5 rounded-xl shadow text-sm shrink-0">確認儲存輸血作業</button>
+                <button id="blood-save-btn" onclick="saveBloodRecord()" class="w-full bg-rose-500 hover:bg-rose-600 text-white font-bold py-2.5 rounded-xl shadow text-sm shrink-0">確認儲存輸血作業</button>
             </div>
             <div class="w-full px-2 mb-2 flex items-center shrink-0">
                 <button onclick="switchView('nfc-view')" class="w-10 h-10 bg-slate-800 hover:bg-slate-900 text-white rounded-full flex items-center justify-center text-sm">❮</button>
@@ -732,7 +732,7 @@
             "yeh": { password: "1127", name: "葉映誠", role: "nurse" }
         };
 
-        let nurseBedAssignments = JSON.parse(localStorage.getItem('femh_nurse_schedule_vFixedMeds')) || {
+        let nurseBedAssignments = JSON.parse(localStorage.getItem('femh_nurse_schedule_vBloodFixed')) || {
             "許Ｏ媃": [], "劉Ｏ綺": [], "游Ｏ妤": [], "張Ｏ綺": [], "張Ｏ蓉": [], "葉映誠": [], "劉家裕": []
         };
 
@@ -741,7 +741,6 @@
         let bloodVerifiedNurse2 = null;
         let bloodIsLocked = false;
 
-        // 全面修正藥物對照範本，確保對應您給定的精準時間
         const clinicalProfiles = [
             {
                 disease: "Acute Myocardial Infarction (AMI)",
@@ -861,9 +860,8 @@
             return data;
         }
 
-        // 重新初始化 LocalStorage，確保新舊版本快取相容，不遺失藥物
-        let patientsData = JSON.parse(localStorage.getItem('femh_45beds_vFixedMeds')) || generateDefaultPatients();
-        let globalSharedMemo = localStorage.getItem('femh_shared_memo_vFixedMeds') || "全病房交班注意事項：請落實三讀五對、洗手規範與生命徵象異常回報。";
+        let patientsData = JSON.parse(localStorage.getItem('femh_45beds_vBloodFixed')) || generateDefaultPatients();
+        let globalSharedMemo = localStorage.getItem('femh_shared_memo_vBloodFixed') || "全病房交班注意事項：請落實三讀五對、洗手規範與生命徵象異常回報。";
         
         let currentUser = null;
         let currentSelectedBed = "01-1"; 
@@ -912,9 +910,9 @@
         }
 
         function saveToLocalStorage() {
-            localStorage.setItem('femh_45beds_vFixedMeds', JSON.stringify(patientsData));
-            localStorage.setItem('femh_shared_memo_vFixedMeds', globalSharedMemo);
-            localStorage.setItem('femh_nurse_schedule_vFixedMeds', JSON.stringify(nurseBedAssignments));
+            localStorage.setItem('femh_45beds_vBloodFixed', JSON.stringify(patientsData));
+            localStorage.setItem('femh_shared_memo_vBloodFixed', globalSharedMemo);
+            localStorage.setItem('femh_nurse_schedule_vBloodFixed', JSON.stringify(nurseBedAssignments));
         }
 
         function handleLogin() {
@@ -1303,7 +1301,6 @@
             if (count === 0) container.innerHTML = '<div class="text-center text-teal-600 font-bold text-xs py-6">🎉 所有處置醫囑皆已執行完畢！</div>';
         }
 
-        // 精準無死角解析並呈現藥物
         function renderMedicationsList() {
             const p = patientsData[currentSelectedBed];
             const form = document.getElementById('med-form');
@@ -1313,7 +1310,6 @@
             const currTotalMin = currH * 60 + currM;
 
             if (!p.meds || p.meds.length === 0) {
-                // 自動防呆備份機制，避免 LocalStorage 快取為空
                 const profile = clinicalProfiles[0];
                 p.meds = JSON.parse(JSON.stringify(profile.meds));
                 saveToLocalStorage();
@@ -1833,21 +1829,51 @@
         }
         function closePhotoViewer() { document.getElementById('photo-viewer-modal').classList.add('hidden'); }
 
+        // 輸血頁面初始化：若該床位已儲存過輸血記錄，還原儲存與鎖定狀態
         function initBloodView() {
-            bloodVerifiedNurse1 = null;
-            bloodVerifiedNurse2 = null;
-            bloodIsLocked = false;
-            document.getElementById('blood-product-type').disabled = false;
-            
+            const p = patientsData[currentSelectedBed];
+            const bloodSelect = document.getElementById('blood-product-type');
             const btn1 = document.getElementById('nurse1-btn');
             const btn2 = document.getElementById('nurse2-btn');
-            btn1.innerText = '護理師一 核對';
-            btn1.disabled = false;
-            btn1.className = 'flex-1 bg-slate-100 hover:bg-slate-200 border border-slate-300 py-2 text-xs font-bold text-slate-700 rounded-xl shadow-sm transition';
-            
-            btn2.innerText = '護理師二 核對';
-            btn2.disabled = false;
-            btn2.className = 'flex-1 bg-slate-100 hover:bg-slate-200 border border-slate-300 py-2 text-xs font-bold text-slate-700 rounded-xl shadow-sm transition';
+            const saveBtn = document.getElementById('blood-save-btn');
+
+            if (p.bloodRecord) {
+                bloodVerifiedNurse1 = p.bloodRecord.nurse1;
+                bloodVerifiedNurse2 = p.bloodRecord.nurse2;
+                bloodIsLocked = true;
+                
+                bloodSelect.value = p.bloodRecord.productType;
+                bloodSelect.disabled = true;
+
+                btn1.innerText = `${p.bloodRecord.nurse1} (已核對)`;
+                btn1.disabled = true;
+                btn1.className = 'flex-1 bg-teal-50 text-teal-800 border border-teal-300 py-2 text-xs font-bold rounded-xl cursor-not-allowed';
+
+                btn2.innerText = `${p.bloodRecord.nurse2} (已核對)`;
+                btn2.disabled = true;
+                btn2.className = 'flex-1 bg-teal-50 text-teal-800 border border-teal-300 py-2 text-xs font-bold rounded-xl cursor-not-allowed';
+
+                saveBtn.innerText = '輸血作業已完成 (已鎖定)';
+                saveBtn.disabled = true;
+                saveBtn.className = 'w-full bg-slate-400 text-white font-bold py-2.5 rounded-xl shadow text-sm shrink-0 cursor-not-allowed';
+            } else {
+                bloodVerifiedNurse1 = null;
+                bloodVerifiedNurse2 = null;
+                bloodIsLocked = false;
+                bloodSelect.disabled = false;
+                
+                btn1.innerText = '護理師一 核對';
+                btn1.disabled = false;
+                btn1.className = 'flex-1 bg-slate-100 hover:bg-slate-200 border border-slate-300 py-2 text-xs font-bold text-slate-700 rounded-xl shadow-sm transition';
+                
+                btn2.innerText = '護理師二 核對';
+                btn2.disabled = false;
+                btn2.className = 'flex-1 bg-slate-100 hover:bg-slate-200 border border-slate-300 py-2 text-xs font-bold text-slate-700 rounded-xl shadow-sm transition';
+
+                saveBtn.innerText = '確認儲存輸血作業';
+                saveBtn.disabled = false;
+                saveBtn.className = 'w-full bg-rose-500 hover:bg-rose-600 text-white font-bold py-2.5 rounded-xl shadow text-sm shrink-0';
+            }
         }
 
         function openNurseModal(num) {
@@ -1888,6 +1914,7 @@
             }
         }
 
+        // 核心修復：寫入 patientsData[currentSelectedBed].bloodRecord 並持久化儲存至 localStorage
         function saveBloodRecord() {
             if (!bloodVerifiedNurse1 || !bloodVerifiedNurse2) {
                 alert('❌ 輸血作業必須由「兩位不同」的護理師完成雙重核對！');
@@ -1897,9 +1924,23 @@
                 alert('❌ 輸血安全防呆：兩位護理師不能為同一人！');
                 return;
             }
+
+            const p = patientsData[currentSelectedBed];
+            const selectedProduct = document.getElementById('blood-product-type').value;
+
+            p.bloodRecord = {
+                productType: selectedProduct,
+                nurse1: bloodVerifiedNurse1,
+                nurse2: bloodVerifiedNurse2,
+                timestamp: getActiveTime()
+            };
+
+            saveToLocalStorage();
+
             document.getElementById('blood-product-type').disabled = true;
             bloodIsLocked = true;
-            alert('✅ 輸血作業安全核對與血品種類鎖定成功！');
+
+            alert(`✅ 輸血作業儲存成功！\n- 血品：${selectedProduct}\n- 核對人員：${bloodVerifiedNurse1} & ${bloodVerifiedNurse2}\n- 儲存時間：${p.bloodRecord.timestamp}`);
             switchView('nfc-view');
         }
 
