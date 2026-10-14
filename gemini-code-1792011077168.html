@@ -31,7 +31,7 @@
                 </div>
             </div>
             <button onclick="handleBoardLogin()" class="w-full bg-[#706b63] hover:bg-[#5c574f] text-white font-bold py-2.5 rounded-xl transition text-sm shadow-xs">登入大白板</button>
-            <div id="board-login-err" class="hidden text-rose-700 text-xs font-bold">員編或密碼錯誤 (預設 nst / nst)</div>
+            <div id="board-login-err" class="hidden text-rose-700 text-xs font-bold pt-1">員編或密碼錯誤 (預設 nst / nst)</div>
         </div>
     </div>
 
@@ -139,7 +139,7 @@
         function loadBoardContent() {
             let patients = JSON.parse(localStorage.getItem('femh_45beds_vFixed10')) || {};
             let schedule = JSON.parse(localStorage.getItem('femh_nurse_schedule_vFixed10')) || {};
-            let sharedMemo = localStorage.getItem('femh_shared_memo_vFixed10'] || "";
+            let sharedMemo = localStorage.getItem('femh_shared_memo_vFixed10') || "";
 
             document.getElementById('board-memo-textarea').value = sharedMemo;
 
@@ -185,14 +185,12 @@
                 grid.appendChild(card);
             });
 
-            // 更新頂部統計數據
             document.getElementById('stat-total').innerText = `${totalBeds} 床`;
             document.getElementById('stat-patient').innerText = `${patientCount} 人`;
             document.getElementById('stat-empty').innerText = `${emptyCount} 床`;
             document.getElementById('stat-isolation').innerText = `${isolationCount} 床`;
             document.getElementById('stat-transfer').innerText = `${transferCount} 床`;
 
-            // 渲染護理師排班
             const nurseContainer = document.getElementById('board-nurse-list');
             nurseContainer.innerHTML = '';
             Object.keys(schedule).forEach(nurseName => {
