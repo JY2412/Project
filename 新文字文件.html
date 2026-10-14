@@ -1809,9 +1809,15 @@
                 saveToLocalStorage();
                 closePhotoModal();
                 loadNursingNotes();
-                alert('相片與部位紀錄上傳成功！');
+               alert('📸 相片與部位紀錄上傳成功！');
             };
-            reader.readAsDataURL(fileInput.files[0]);
+            reader.onerror = function() {
+                alert('📸 相片與部位紀錄上傳成功！');
+            };
+            reader.onerror = function() {
+                alert('❌ 相片讀取失敗，請重新嘗試拍攝或選擇圖片！');
+            };
+            reader.readAsDataURL(file);
         }
 
         function openPhotoViewer(imgSrc, partDesc) {
@@ -1821,17 +1827,53 @@
         }
         function closePhotoViewer() { document.getElementById('photo-viewer-modal').classList.add('hidden'); }
 
+        // 輸血作業：雙護理師不可為同一人，且確認後血品種類鎖定
+        function initBloodView() {
+            bloodVerifiedNurse1 = null;
+            bloodVerifiedNurse2 = null;
+            bloodIsLocked = false;
+            document.getElementById('blood-product-type').disabled = false;
+            
+            const btn1 = document.getElementById('nurse1-btn');
+            const btn2 = document.getElementById('nurse2-btn');
+            btn1.innerText = '護理師一 核對';
+            btn1.disabled = false;
+            btn1.className = 'flex-1 bg-slate-100 hover:bg-slate-200 border border-slate-300 py-2 text-xs font-bold text-slate-700 rounded-xl shadow-sm transition';
+            
+            btn2.innerText = '護理師二 核對';
+            btn2.disabled = false;
+            btn2.className = 'flex-1 bg-slate-100 hover:bg-slate-200 border border-slate-300 py-2 text-xs font-bold text-slate-700 rounded-xl shadow-sm transition';
+        }
+
         function openNurseModal(num) {
             currentActiveNurse = num;
             document.getElementById('modal-title').innerText = `護理師${num} 身分核對`;
+            document.getElementById('nurse-id-input').value = '';
+            document.getElementById('nurse-pw-input').value = '';
+            document.getElementById('modal-err').classList.add('hidden');
             document.getElementById('nurse-modal').classList.remove('hidden');
         }
         function closeNurseModal() { document.getElementById('nurse-modal').classList.add('hidden'); }
+
         function verifyNurseLogin() {
             const id = document.getElementById('nurse-id-input').value.trim();
             const pw = document.getElementById('nurse-pw-input').value.trim();
             if (userDatabase[id] && userDatabase[id].password === pw) {
                 const nName = userDatabase[id].name;
+                
+                // 檢查兩位護理師是否為同一人
+                if (currentActiveNurse === 2 && bloodVerifiedNurse1 === nName) {
+                    alert('⚠️ 輸血安全防呆警告：護理師二不能與護理師一為同一人！');
+                    return;
+                }
+                if (currentActiveNurse === 1 && bloodVerifiedNurse2 === nName) {
+                    alert('⚠️ 輸血安全防呆警告：護理師一不能與護理師二為同一人！');
+                    return;
+                }
+
+                if (currentActiveNurse === 1) bloodVerifiedNurse1 = nName;
+                if (currentActiveNurse === 2) bloodVerifiedNurse2 = nName;
+
                 closeNurseModal();
                 const btn = document.getElementById(`nurse${currentActiveNurse}-btn`);
                 btn.innerText = `${nName} (已核對)`;
@@ -1842,6 +1884,21 @@
             }
         }
 
+        function saveBloodRecord() {
+            if (!bloodVerifiedNurse1 || !bloodVerifiedNurse2) {
+                alert('❌ 輸血作業必須由「兩位不同」的護理師完成雙重核對！');
+                return;
+            }
+            if (bloodVerifiedNurse1 === bloodVerifiedNurse2) {
+                alert('❌ 輸血安全防呆：兩位護理師不能為同一人！');
+                return;
+            }
+            // 鎖定血品種類
+            document.getElementById('blood-product-type').disabled = true;
+            bloodIsLocked = true;
+            alert('✅ 輸血作業安全核對與血品種類鎖定成功！');
+            switchView('nfc-view');
+        }
         // 手機版完美的 HTML5 Canvas 觸控簽名與資料URL儲存修復
         let sigCanvas, sigCtx, isDrawing = false;
         function initSignatureCanvas() {
