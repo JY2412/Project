@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>亞東紀念醫院 11G病房護理站控制台 (書記/大螢幕端)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #FBF9F5; /* 無印暖米白色 */
+            color: #4A4643; /* 深灰褐內文 */
+        }
+        /* Muji Color Palette Standard */
+        .bg-muji-card { background-color: #FFFFFF; border: 1px solid #EFECE6; }
+        .bg-muji-sidebar { background-color: #F5F2EC; border-right: 1px solid #E8E3DA; }
+        .bg-muji-accent { background-color: #8C7A6B; color: #FFFFFF; }
+        .bg-muji-accent:hover { background-color: #786759; }
+        .bg-muji-light { background-color: #F0EDE6; }
+        .border-muji { border-color: #E8E3DA; }
+        
+        /* Dynamic Status Badges */
+        .badge-isolation-contact { background-color: #E6A282; color: #FFF; }
+        .badge-isolation-air { background-color: #88A0A8; color: #FFF; }
+        .badge-transfer { background-color: #D8B26E; color: #FFF; }
+
+        /* Custom Scrollbar for Muji Aesthetics */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #FBF9F5; }
+        ::-webkit-scrollbar-thumb { background: #D8D2C7; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #B8B0A2; }
+    </style>
+</head>
+<body class="h-screen overflow-hidden flex flex-col">
+
+    <!-- 頂部護理站抬頭導覽列 (Muji Minimal Header) -->
+    <header class="h-16 bg-white border-b border-muji px-6 flex items-center justify-between shrink-0 shadow-2xs">
+        <div class="flex items-center space-x-4">
+            <div class="flex items-center space-x-3">
+                <img src="https://www.femh.org.tw/images/template/logo_g.svg" alt="亞東醫院" class="h-8">
+                <div class="h-5 w-[1px] bg-slate-300"></div>
+                <span class="text-base font-bold text-[#5C554E] tracking-wide">11G 病房智慧管理Console (書記/大螢幕端)</span>
+            </div>
+            <span class="text-xs bg-[#F0EDE6] text-[#786759] font-medium px-2.5 py-1 rounded-md border border-muji">實時連動模式</span>
+        </div>
+
+        <!-- 即時時間與全院公告管理 -->
+        <div class="flex items-center space-x-6">
+            <div class="text-right">
+                <div id="pc-clock-time" class="text-sm font-bold text-[#4A4643]">--:--:--</div>
+                <div id="pc-clock-date" class="text-[11px] text-[#8C827A]">2026年--月--日</div>
+            </div>
+            <button onclick="openAnnounceModal()" class="px-3.5 py-1.5 bg-[#8C7A6B] hover:bg-[#786759] text-white text-xs font-medium rounded-lg transition shadow-2xs">
+                📢 發布全病房公告
+            </button>
+        </div>
+    </header>
+
+    <!-- 主體三欄式佈局 -->
+    <div class="flex-1 flex overflow-hidden">
+
+        <!-- 左側導覽與書記作業選單 (Left Sidebar) -->
+        <aside class="w-64 bg-muji-sidebar p-4 flex flex-col justify-between shrink-0">
+            <div class="space-y-4">
+                <div class="text-xs font-bold text-[#8C7A6B] tracking-wider px-2 uppercase">書記管理控制台</div>
+                <nav class="space-y-1">
+                    <button onclick="switchTab('matrix')" id="nav-matrix" class="w-full text-left px-3 py-2.5 rounded-lg text-xs font-bold bg-white text-[#4A4643] shadow-2xs border border-muji flex items-center justify-between">
+                        <span>🏥 全病房 45 床總覽</span>
+                        <span id="bed-count-badge" class="bg-[#8C7A6B] text-white text-[10px] px-1.5 py-0.5 rounded-full">45床</span>
+                    </button>
+                    <button onclick="switchTab('scheduling')" id="nav-scheduling" class="w-full text-left px-3 py-2.5 rounded-lg text-xs font-medium text-[#6B635B] hover:bg-white hover:text-[#4A4643] transition flex items-center justify-between">
+                        <span>👩‍⚕️ 護理排班與責任床位</span>
+                        <span class="text-[10px] text-[#A0958B]">7位護理師</span>
+                    </button>
+                    <button onclick="switchTab('vitals-monitor')" id="nav-vitals-monitor" class="w-full text-left px-3 py-2.5 rounded-lg text-xs font-medium text-[#6B635B] hover:bg-white hover:text-[#4A4643] transition flex items-center justify-between">
+                        <span>📊 全病房生命徵象監控</span>
+                        <span id="vitals-warning-badge" class="bg-rose-500 text-white text-[10px] px-1.5 py-0.5 rounded-full hidden">警報</span>
+                    </button>
+                </nav>
+
+                <div class="pt-4 border-t border-muji">
+                    <div class="text-xs font-bold text-[#8C7A6B] mb-2 px-2">交班廣播與公告紀錄</div>
+                    <div id="sidebar-memo-box" class="bg-white p-3 rounded-xl border border-muji text-xs text-[#5C554E] leading-relaxed max-h-40 overflow-y-auto">
+                        全病房交班注意事項：載入中...
+                    </div>
+                </div>
+            </div>
+
+            <!-- 手機模擬對接控制 -->
+            <div class="bg-white p-3 rounded-xl border border-muji space-y-2">
+                <div class="text-xs font-bold text-[#4A4643] flex items-center justify-between">
+                    <span>📱 雙向同步測試</span>
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                </div>
+                <p class="text-[11px] text-[#8C827A] leading-tight">開啟右側內嵌手機模擬器，驗證與實體手機 APP 即時同步。</p>
+                <button onclick="toggleMobileSimulator()" class="w-full py-1.5 bg-[#F0EDE6] hover:bg-[#E2DDD3] text-[#5C554E] text-xs font-bold rounded-lg transition border border-muji">
+                    切換手機模擬檢視視窗
+                </button>
+            </div>
+        </aside>
+
+        <!-- 中間核心工作區 (Center Dynamic Workspace) -->
+        <main class="flex-1 p-6 overflow-y-auto bg-[#FBF9F5]">
+
+            <!-- 1. 全病房床位矩陣看板 (Bed Matrix) -->
+            <section id="tab-content-matrix" class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-lg font-bold text-[#4A4643]">11F 病房動態矩陣看板</h2>
+                        <p class="text-xs text-[#8C827A]">點擊床位可檢視詳細醫囑、生理量測、輸血與簽署狀態</p>
+                    </div>
+                    <div class="flex items-center space-x-3 text-xs">
+                        <span class="flex items-center space-x-1"><span class="w-3 h-3 rounded bg-white border border-muji inline-block"></span><span>一般床位</span></span>
+                        <span class="flex items-center space-x-1"><span class="w-3 h-3 rounded badge-isolation-contact inline-block"></span><span>接觸隔離(接)</span></span>
+                        <span class="flex items-center space-x-1"><span class="w-3 h-3 rounded badge-isolation-air inline-block"></span><span>飛沫/空氣隔離(氣)</span></span>
+                        <span class="flex items-center space-x-1"><span class="w-3 h-3 rounded badge-transfer inline-block"></span><span>外單位轉入</span></span>
+                    </div>
+                </div>
+
+                <!-- 45床動態網格 (Gird 1 to 16 Rooms) -->
+                <div id="pc-bed-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3">
+                    <!-- Javascript 動態算繪床位卡片 -->
+                </div>
+            </section>
+
+            <!-- 2. 護理排班與責任床位面板 (Nurse Scheduling & Assignment) -->
+            <section id="tab-content-scheduling" class="hidden space-y-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-lg font-bold text-[#4A4643]">護理師排班與床位分配控制</h2>
+                        <p class="text-xs text-[#8C827A]">護理長/書記可於此調整排班，修改將同步更新至所有手機端</p>
+                    </div>
+                    <button onclick="saveNurseAssignmentsFromPC()" class="px-4 py-2 bg-[#8C7A6B] hover:bg-[#786759] text-white text-xs font-bold rounded-xl transition shadow-2xs">
+                        💾 儲存並發布排班變更
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                    <!-- 左側護理師清單與選取 -->
+                    <div class="bg-white p-5 rounded-2xl border border-muji space-y-4">
+                        <h3 class="text-sm font-bold text-[#4A4643] border-b border-muji pb-2">選擇編輯護理師</h3>
+                        <select id="pc-nurse-select" onchange="loadNurseBedsToPCEditor()" class="w-full p-2.5 rounded-xl border border-muji text-xs font-bold bg-[#FBF9F5] text-[#4A4643] outline-none">
+                            <option value="許Ｏ媃">許Ｏ媃 (主治/責任)</option>
+                            <option value="劉Ｏ綺">劉Ｏ綺</option>
+                            <option value="游Ｏ妤">游Ｏ妤</option>
+                            <option value="張Ｏ綺">張Ｏ綺</option>
+                            <option value="張Ｏ蓉">張Ｏ蓉</option>
+                            <option value="葉映誠">葉映誠</option>
+                            <option value="劉家裕">劉家裕 (管理員)</option>
+                        </select>
+
+                        <div class="space-y-2">
+                            <div class="flex justify-between items-center text-xs text-[#6B635B]">
+                                <span>勾選指派責任床位 (上限 7 床)：</span>
+                                <button onclick="quickClearNurseBedsPC()" class="text-rose-600 hover:underline text-[11px]">清空此人床位</button>
+                            </div>
+                            <div id="pc-scheduling-checkboxes" class="max-h-96 overflow-y-auto space-y-1.5 p-3 rounded-xl bg-[#FBF9F5] border border-muji text-xs">
+                                <!-- Checkboxes -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 右側 7 位護理師分配狀況預覽卡片 -->
+                    <div id="pc-nurse-assignment-cards" class="xl:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <!-- Cards -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. 全病房生命徵象監控看板 (Vitals & Orders) -->
+            <section id="tab-content-vitals-monitor" class="hidden space-y-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-lg font-bold text-[#4A4643]">全病房即時生理徵象與異常警告</h2>
+                        <p class="text-xs text-[#8C827A]">自動彙整手機端護理師上傳之 TPR、BP、Spo2 與 I/O 淨值</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl border border-muji overflow-hidden shadow-2xs">
+                    <table class="w-full text-xs text-left border-collapse">
+                        <thead>
+                            <tr class="bg-[#F5F2EC] text-[#5C554E] border-b border-muji font-bold">
+                                <th class="p-3">床號 / 姓名</th>
+                                <th class="p-3">責任護師</th>
+                                <th class="p-3">最新測量時間</th>
+                                <th class="p-3">體溫 (T)</th>
+                                <th class="p-3">脈搏 (P)</th>
+                                <th class="p-3">呼吸 (R)</th>
+                                <th class="p-3">血壓 (BP)</th>
+                                <th class="p-3">血氧 (SpO2)</th>
+                                <th class="p-3">疼痛 (Pain)</th>
+                                <th class="p-3">狀態</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pc-vitals-table-body" class="divide-y divide-muji">
+                            <!-- Rows generated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- 右側手機版 App 實時鏡像測試視窗 (Right Simulator Drawer) -->
+        <aside id="pc-mobile-simulator-drawer" class="w-[390px] bg-[#F5F2EC] border-l border-muji p-4 flex flex-col justify-between shrink-0 shadow-lg transition-all">
+            <div class="flex items-center justify-between pb-3 border-b border-muji">
+                <div class="flex items-center space-x-2">
+                    <span class="text-sm font-bold text-[#4A4643]">手機 APP 對接對照鏡像</span>
+                    <span class="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-bold">Live</span>
+                </div>
+                <button onclick="toggleMobileSimulator()" class="text-[#8C827A] hover:text-[#4A4643] text-sm font-bold">✕</button>
+            </div>
+
+            <!-- 手機外殼 Frame -->
+            <div class="my-auto w-[350px] h-[700px] bg-slate-900 rounded-[38px] p-3 shadow-2xl border-4 border-slate-700 relative flex flex-col mx-auto overflow-hidden">
+                <div class="w-32 h-4 bg-slate-800 absolute top-0 left-1/2 -translate-x-1/2 rounded-b-xl z-20 flex justify-center items-center">
+                    <div class="w-10 h-1 bg-slate-600 rounded-full"></div>
+                </div>
+                <!-- 內嵌使用者發布的手機版網址 -->
+                <iframe id="mobile-app-iframe" src="https://jy2412.github.io/Project/%E6%96%B0%E6%96%87%E5%AD%97%E6%96%87%E4%BB%B6.html" class="w-full h-full bg-white rounded-[28px] border-none pt-3"></iframe>
+            </div>
+
+            <div class="text-[11px] text-[#8C827A] text-center pt-2">
+                ※ 此視窗為您 GitHub Pages 發布的手機版實時鏡像
+            </div>
+        </aside>
+
+    </div>
+
+    <!-- 彈窗：單一床位詳細資訊與書記檢視 (Bed Detail Modal) -->
+    <div id="pc-bed-modal" class="hidden fixed inset-0 bg-black/30 backdrop-blur-2xs z-50 flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-2xl rounded-2xl border border-muji shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
+            <div class="bg-[#F5F2EC] px-6 py-4 border-b border-muji flex justify-between items-center">
+                <div>
+                    <h3 id="modal-bed-title" class="text-base font-bold text-[#4A4643]">01-1 床位詳細護理紀錄</h3>
+                    <p id="modal-bed-sub" class="text-xs text-[#8C827A]">病例號：-- | 生日：--</p>
+                </div>
+                <button onclick="closeBedModal()" class="text-[#8C827A] hover:text-[#4A4643] font-bold text-lg">✕</button>
+            </div>
+
+            <div class="p-6 space-y-4 overflow-y-auto flex-1 text-xs text-[#4A4643]">
+                <!-- 病人基本資訊卡片 -->
+                <div id="modal-patient-info-box" class="p-3 bg-[#FBF9F5] border border-muji rounded-xl space-y-1">
+                    <!-- Info -->
+                </div>
+
+                <!-- 護理紀錄與相片區域 -->
+                <div>
+                    <h4 class="font-bold text-[#8C7A6B] mb-2">最新護理紀錄 (手機端同步)</h4>
+                    <div id="modal-notes-container" class="space-y-2 max-h-40 overflow-y-auto">
+                        <!-- Notes -->
+                    </div>
+                </div>
+
+                <!-- 輸血與同意書簽署狀態 -->
+                <div class="grid grid-cols-2 gap-3 pt-2 border-t border-muji">
+                    <div class="p-3 bg-[#F5F2EC] rounded-xl border border-muji">
+                        <div class="font-bold text-[#4A4643] mb-1">🩸 輸血作業核對狀態</div>
+                        <div id="modal-blood-status" class="text-[11px] text-[#6B635B]">尚未核對</div>
+                    </div>
+                    <div class="p-3 bg-[#F5F2EC] rounded-xl border border-muji">
+                        <div class="font-bold text-[#4A4643] mb-1">✍️ 同意書電子簽署</div>
+                        <div id="modal-consent-status" class="text-[11px] text-[#6B635B]">未簽署</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-[#F5F2EC] px-6 py-3 border-t border-muji flex justify-end">
+                <button onclick="closeBedModal()" class="px-4 py-2 bg-[#8C7A6B] text-white font-bold rounded-xl text-xs">關閉視窗</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 彈窗：發布全病房公告 -->
+    <div id="pc-announce-modal" class="hidden fixed inset-0 bg-black/30 backdrop-blur-2xs z-50 flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-md rounded-2xl border border-muji p-5 space-y-4 shadow-xl">
+            <h3 class="text-sm font-bold text-[#4A4643] border-b border-muji pb-2">發布全病房跑馬燈公告 (廣播至手機版)</h3>
+            <textarea id="announce-textarea" placeholder="輸入公告內容..." class="w-full h-24 p-3 bg-[#FBF9F5] border border-muji rounded-xl text-xs outline-none resize-none"></textarea>
+            <div class="flex justify-end space-x-2">
+                <button onclick="closeAnnounceModal()" class="px-3 py-1.5 bg-[#F0EDE6] text-[#6B635B] text-xs rounded-lg font-bold">取消</button>
+                <button onclick="publishAnnouncement()" class="px-3 py-1.5 bg-[#8C7A6B] text-white text-xs rounded-lg font-bold">發布公告</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 核心數據邏輯與雙向連動腳本 -->
+    <script>
+        // 跨分頁/跨裝置 BroadcastChannel 廣播連動
+        const syncChannel = new BroadcastChannel('femh_ward_channel');
+
+        // 資料庫鍵名（完全對接您手機 APP 的格式）
+        const STORAGE_KEY_BEDS = 'femh_45beds_vFixed10';
+        const STORAGE_KEY_SCHEDULE = 'femh_nurse_schedule_vFixed10';
+        const STORAGE_KEY_MEMO = 'femh_shared_memo_vFixed10';
+
+        let patientsData = {};
+        let nurseBedAssignments = {};
+        let sharedMemo = "";
+
+        // 初始化讀取資料
+        function loadDataFromStorage() {
+            const rawBeds = localStorage.getItem(STORAGE_KEY_BEDS);
+            const rawSchedule = localStorage.getItem(STORAGE_KEY_SCHEDULE);
+            sharedMemo = localStorage.getItem(STORAGE_KEY_MEMO) || "全病房交班注意事項：請落實三讀五對、洗手規範。";
+
+            if (rawBeds) patientsData = JSON.parse(rawBeds);
+            if (rawSchedule) nurseBedAssignments = JSON.parse(rawSchedule);
+
+            document.getElementById('sidebar-memo-box').innerText = sharedMemo;
+            renderBedMatrix();
+            renderNurseAssignmentCards();
+            renderVitalsTable();
+        }
+
+        // 即時廣播監聽（當手機版儲存資料時，電腦端立刻自動刷洗更新）
+        syncChannel.onmessage = (event) => {
+            if (event.data && event.data.type === 'DATA_UPDATED') {
+                loadDataFromStorage();
+            }
+        };
+
+        window.addEventListener('storage', (e) => {
+            loadDataFromStorage();
+        });
+
+        // 定時器：時間更新
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('pc-clock-time').innerText = now.toTimeString().split(' ')[0];
+            document.getElementById('pc-clock-date').innerText = `${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日`;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // 切換主頁籤
+        function switchTab(tabName) {
+            ['matrix', 'scheduling', 'vitals-monitor'].forEach(t => {
+                document.getElementById(`tab-content-${t}`).classList.add('hidden');
+                const navBtn = document.getElementById(`nav-${t}`);
+                if (navBtn) {
+                    navBtn.className = "w-full text-left px-3 py-2.5 rounded-lg text-xs font-medium text-[#6B635B] hover:bg-white hover:text-[#4A4643] transition flex items-center justify-between";
+                }
+            });
+
+            document.getElementById(`tab-content-${tabName}`).classList.remove('hidden');
+            const activeNav = document.getElementById(`nav-${tabName}`);
+            if (activeNav) {
+                activeNav.className = "w-full text-left px-3 py-2.5 rounded-lg text-xs font-bold bg-white text-[#4A4643] shadow-2xs border border-muji flex items-center justify-between";
+            }
+
+            if (tabName === 'scheduling') loadNurseBedsToPCEditor();
+        }
+
+        // 渲染 45 床動態矩陣
+        function renderBedMatrix() {
+            const grid = document.getElementById('pc-bed-grid');
+            grid.innerHTML = '';
+            const sortedBeds = Object.keys(patientsData).sort();
+
+            sortedBeds.forEach(bedKey => {
+                const p = patientsData[bedKey];
+                const card = document.createElement('div');
+                
+                let borderStyle = "border-muji";
+                let badgeHtml = "";
+
+                if (p.isolation === '接') {
+                    badgeHtml += `<span class="px-1.5 py-0.5 text-[10px] rounded font-bold badge-isolation-contact">接</span>`;
+                } else if (p.isolation === '氣') {
+                    badgeHtml += `<span class="px-1.5 py-0.5 text-[10px] rounded font-bold badge-isolation-air">氣</span>`;
+                }
+
+                if (p.transferTag) {
+                    badgeHtml += `<span class="px-1.5 py-0.5 text-[10px] rounded font-bold badge-transfer">${p.transferTag}</span>`;
+                }
+
+                if (p.isEmpty) {
+                    card.className = "bg-[#F5F2EC]/60 border border-dashed border-muji rounded-2xl p-3.5 flex flex-col justify-between h-32 opacity-70";
+                    card.innerHTML = `
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-[#8C827A] text-xs">${bedKey}</span>
+                            <span class="text-[10px] bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded">空床待清</span>
+                        </div>
+                        <div class="text-center text-[#A0958B] text-xs">空床狀態</div>
+                        <div class="text-[10px] text-[#A0958B] text-right">--</div>
+                    `;
+                } else {
+                    card.className = "bg-white border " + borderStyle + " rounded-2xl p-3.5 flex flex-col justify-between h-36 shadow-2xs hover:border-[#8C7A6B] cursor-pointer transition";
+                    
+                    const latestVital = (p.vitals && p.vitals[0]) ? p.vitals[0] : null;
+                    const vitalSummary = latestVital ? `T:${latestVital.t} | BP:${latestVital.bp}` : '無最新V/S';
+
+                    card.innerHTML = `
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <div class="flex items-center space-x-1">
+                                    <span class="font-bold text-[#4A4643] text-sm">${bedKey}</span>
+                                    ${badgeHtml}
+                                </div>
+                                <span class="text-[10px] bg-[#F5F2EC] text-[#786759] font-bold px-2 py-0.5 rounded-md border border-muji">
+                                    ${p.assignedNurse || '未指派'}
+                                </span>
+                            </div>
+                            <div class="font-bold text-xs text-[#5C554E] truncate">${p.name.split(' ').slice(1).join(' ')}</div>
+                            <div class="text-[11px] text-[#8C827A] truncate mt-0.5">${p.extra || ''}</div>
+                        </div>
+                        <div class="pt-2 border-t border-muji flex justify-between items-center text-[11px]">
+                            <span class="text-[#786759] font-medium">${vitalSummary}</span>
+                            <span class="text-[#8C7A6B] font-bold">詳情 ❯</span>
+                        </div>
+                    `;
+                    card.onclick = () => openBedModal(bedKey);
+                }
+                grid.appendChild(card);
+            });
+        }
+
+        // 開啟單床 Modal 視窗
+        function openBedModal(bedKey) {
+            const p = patientsData[bedKey];
+            if (!p || p.isEmpty) return;
+
+            document.getElementById('modal-bed-title').innerText = `${p.name} 床位動態檢視`;
+            document.getElementById('modal-bed-sub').innerText = `${p.info}`;
+
+            const infoBox = document.getElementById('modal-patient-info-box');
+            infoBox.innerHTML = `
+                <div><span class="font-bold">診斷/過敏：</span>${p.extra}</div>
+                <div><span class="font-bold">責任護理師：</span>${p.assignedNurse || '無'}</div>
+            `;
+
+            const notesBox = document.getElementById('modal-notes-container');
+            notesBox.innerHTML = '';
+            if (p.notes && p.notes.length > 0) {
+                p.notes.forEach(n => {
+                    notesBox.innerHTML += `
+                        <div class="p-2.5 bg-white border border-muji rounded-xl">
+                            <div class="flex justify-between text-[#8C827A] mb-1">
+                                <span>時間：${n.time} (${n.creator})</span>
+                                <span class="font-bold ${n.status==='saved'?'text-emerald-700':'text-amber-700'}">${n.status==='saved'?'已儲存':'暫存'}</span>
+                            </div>
+                            <div>${n.content}</div>
+                        </div>
+                    `;
+                });
+            } else {
+                notesBox.innerHTML = '<div class="text-[#8C827A]">尚無護理紀錄</div>';
+            }
+
+            document.getElementById('modal-blood-status').innerText = p.bloodRecord ? `已於 ${p.bloodRecord.timestamp} 由 ${p.bloodRecord.nurse1} 與 ${p.bloodRecord.nurse2} 雙人完成雙重核對` : '尚未執行雙人輸血核對';
+            document.getElementById('modal-consent-status').innerText = (p.consents && Object.keys(p.consents).length > 0) ? `已完成：${Object.keys(p.consents).join(', ')}` : '尚未簽署任何電子同意書';
+
+            document.getElementById('pc-bed-modal').classList.remove('hidden');
+        }
+
+        function closeBedModal() { document.getElementById('pc-bed-modal').classList.add('hidden'); }
+
+        // 護理排班與分配預覽卡片
+        function renderNurseAssignmentCards() {
+            const container = document.getElementById('pc-nurse-assignment-cards');
+            container.innerHTML = '';
+
+            Object.keys(nurseBedAssignments).forEach(nurseName => {
+                const assignedBeds = nurseBedAssignments[nurseName] || [];
+                const card = document.createElement('div');
+                card.className = "p-4 bg-white border border-muji rounded-2xl shadow-2xs space-y-2";
+                card.innerHTML = `
+                    <div class="flex justify-between items-center border-b border-muji pb-2">
+                        <span class="font-bold text-xs text-[#4A4643]">👩‍⚕️ ${nurseName}</span>
+                        <span class="text-[10px] bg-[#F5F2EC] text-[#786759] font-bold px-2 py-0.5 rounded-full">${assignedBeds.length} / 7 床</span>
+                    </div>
+                    <div class="flex flex-wrap gap-1">
+                        ${assignedBeds.length > 0 
+                            ? assignedBeds.map(b => `<span class="bg-[#F0EDE6] text-[#5C554E] px-2 py-1 rounded text-[11px] font-bold">${b}</span>`).join('')
+                            : '<span class="text-[11px] text-[#A0958B]">未分配床位</span>'}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function loadNurseBedsToPCEditor() {
+            const nurseName = document.getElementById('pc-nurse-select').value;
+            const container = document.getElementById('pc-scheduling-checkboxes');
+            container.innerHTML = '';
+            const currentAssigned = nurseBedAssignments[nurseName] || [];
+
+            let takenBeds = new Set();
+            Object.keys(nurseBedAssignments).forEach(n => {
+                if (n !== nurseName) {
+                    nurseBedAssignments[n].forEach(b => takenBeds.add(b));
+                }
+            });
+
+            Object.keys(patientsData).sort().forEach(bedKey => {
+                if (takenBeds.has(bedKey)) return;
+                const isChecked = currentAssigned.includes(bedKey);
+                const label = document.createElement('label');
+                label.className = "flex items-center space-x-2 text-xs font-medium cursor-pointer text-[#5C554E]";
+                label.innerHTML = `
+                    <input type="checkbox" value="${bedKey}" ${isChecked ? 'checked' : ''} class="w-4 h-4 accent-[#8C7A6B] rounded pc-bed-chk-item">
+                    <span>${bedKey} (${patientsData[bedKey].name})</span>
+                `;
+                container.appendChild(label);
+            });
+        }
+
+        function quickClearNurseBedsPC() {
+            const nurseName = document.getElementById('pc-nurse-select').value;
+            nurseBedAssignments[nurseName] = [];
+            loadNurseBedsToPCEditor();
+        }
+
+        function saveNurseAssignmentsFromPC() {
+            const nurseName = document.getElementById('pc-nurse-select').value;
+            const checkedBoxes = document.querySelectorAll('.pc-bed-chk-item:checked');
+            if (checkedBoxes.length > 7) { alert('每位護理師最多指派 7 床！'); return; }
+
+            let newBeds = [];
+            checkedBoxes.forEach(chk => newBeds.push(chk.value));
+            nurseBedAssignments[nurseName] = newBeds;
+
+            // 更新至 LocalStorage 並廣播至手機版
+            localStorage.setItem(STORAGE_KEY_SCHEDULE, JSON.stringify(nurseBedAssignments));
+            syncChannel.postMessage({ type: 'DATA_UPDATED' });
+            
+            loadDataFromStorage();
+            alert(`已成功更新【${nurseName}】排班床位！並同步至手機版。`);
+        }
+
+        // 生命徵象表格監控
+        function renderVitalsTable() {
+            const tbody = document.getElementById('pc-vitals-table-body');
+            tbody.innerHTML = '';
+
+            Object.keys(patientsData).sort().forEach(bedKey => {
+                const p = patientsData[bedKey];
+                if (p.isEmpty) return;
+
+                const latest = (p.vitals && p.vitals[0]) ? p.vitals[0] : { time: '--', t: '--', p: '--', r: '--', bp: '--/--', spo2: '--', pain: '--' };
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-[#F5F2EC]/50 transition";
+
+                let isAbnormal = (parseFloat(latest.t) > 37.5) || (parseInt(latest.spo2) < 95);
+
+                tr.innerHTML = `
+                    <td class="p-3 font-bold text-[#4A4643]">${p.name}</td>
+                    <td class="p-3 text-[#6B635B]">${p.assignedNurse || '未指派'}</td>
+                    <td class="p-3 text-[#8C827A]">${latest.time}</td>
+                    <td class="p-3 ${parseFloat(latest.t)>37.5?'text-rose-600 font-bold':''}">${latest.t} ℃</td>
+                    <td class="p-3">${latest.p} 次/分</td>
+                    <td class="p-3">${latest.r} 次/分</td>
+                    <td class="p-3">${latest.bp} mmHg</td>
+                    <td class="p-3 ${parseInt(latest.spo2)<95?'text-rose-600 font-bold':''}">${latest.spo2} %</td>
+                    <td class="p-3">${latest.pain} 分</td>
+                    <td class="p-3">${isAbnormal ? '<span class="text-rose-600 font-bold">⚠️ 異常警告</span>' : '<span class="text-emerald-700">正常</span>'}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // 廣播跑馬燈公告 Modal
+        function openAnnounceModal() { document.getElementById('pc-announce-modal').classList.remove('hidden'); }
+        function closeAnnounceModal() { document.getElementById('pc-announce-modal').classList.add('hidden'); }
+        function publishAnnouncement() {
+            const val = document.getElementById('announce-textarea').value.trim();
+            if (!val) return;
+            localStorage.setItem(STORAGE_KEY_MEMO, val);
+            syncChannel.postMessage({ type: 'DATA_UPDATED' });
+            loadDataFromStorage();
+            closeAnnounceModal();
+            alert('公告已成功廣播至手機版跑馬燈！');
+        }
+
+        // 開啟/隱藏右側手機模擬器
+        function toggleMobileSimulator() {
+            const drawer = document.getElementById('pc-mobile-simulator-drawer');
+            drawer.classList.toggle('hidden');
+        }
+
+        // 頁面載入時執行
+        loadDataFromStorage();
+    </script>
+</body>
+</html>
