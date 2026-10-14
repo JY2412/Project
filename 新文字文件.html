@@ -185,7 +185,7 @@
             <div class="flex-1 flex flex-col justify-center space-y-2.5 px-2">
                 <button onclick="switchView('vitals-upload-view')" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 rounded-xl shadow-sm border text-xs">生命徵象</button>
                 <button onclick="switchView('io-upload-view')" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 rounded-xl shadow-sm border text-xs">I/O</button>
-                <button onclick="switchView('wh-upload-view')" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 rounded-xl shadow-sm border text-xs">上傳 身高 / 體重</button>
+                <button onclick="switchView('wh-upload-view')" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 rounded-xl shadow-sm border text-xs">身高/體重</button>
                 <button onclick="switchView('gcs-upload-view')" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 rounded-xl shadow-sm border text-xs">GCS</button>
                 <button onclick="switchView('mp-upload-view')" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 rounded-xl shadow-sm border text-xs">Muscle Power</button>
             </div>
@@ -682,7 +682,7 @@
                     </select>
                 </div>
                 <div class="flex justify-between items-center text-xs font-bold text-slate-700">
-                    <span>勾選負責床位：</span>
+                    <span>勾選負責床位 (已選走者不顯示)：</span>
                     <button onclick="quickSelectBeds(7)" class="text-teal-700 hover:underline text-[11px]">快速選取前7床</button>
                 </div>
                 <div id="schedule-beds-checkboxes" class="flex-1 overflow-y-auto space-y-1 pr-1 max-h-[200px] border border-slate-200 p-2 rounded-xl bg-slate-50"></div>
@@ -747,7 +747,7 @@
             "yeh": { password: "1127", name: "葉映誠", role: "nurse" }
         };
 
-        let nurseBedAssignments = JSON.parse(localStorage.getItem('femh_nurse_schedule_vFixed9')) || {
+        let nurseBedAssignments = JSON.parse(localStorage.getItem('femh_nurse_schedule_vFixed10')) || {
             "許Ｏ媃": [], "劉Ｏ綺": [], "游Ｏ妤": [], "張Ｏ綺": [], "張Ｏ蓉": [], "葉映誠": [], "劉家裕": []
         };
 
@@ -875,8 +875,8 @@
             return data;
         }
 
-        let patientsData = JSON.parse(localStorage.getItem('femh_45beds_vFixed9')) || generateDefaultPatients();
-        let globalSharedMemo = localStorage.getItem('femh_shared_memo_vFixed9') || "全病房交班注意事項：請落實三讀五對、洗手規範與生命徵象異常回報。";
+        let patientsData = JSON.parse(localStorage.getItem('femh_45beds_vFixed10')) || generateDefaultPatients();
+        let globalSharedMemo = localStorage.getItem('femh_shared_memo_vFixed10') || "全病房交班注意事項：請落實三讀五對、洗手規範與生命徵象異常回報。";
         
         let currentUser = null;
         let currentSelectedBed = "01-1"; 
@@ -919,9 +919,9 @@
         }
 
         function saveToLocalStorage() {
-            localStorage.setItem('femh_45beds_vFixed9', JSON.stringify(patientsData));
-            localStorage.setItem('femh_shared_memo_vFixed9', globalSharedMemo);
-            localStorage.setItem('femh_nurse_schedule_vFixed9', JSON.stringify(nurseBedAssignments));
+            localStorage.setItem('femh_45beds_vFixed10', JSON.stringify(patientsData));
+            localStorage.setItem('femh_shared_memo_vFixed10', globalSharedMemo);
+            localStorage.setItem('femh_nurse_schedule_vFixed10', JSON.stringify(nurseBedAssignments));
         }
 
         function handleLogin() {
@@ -1072,34 +1072,20 @@
                     });
                 }
             } else {
-                if (currentUser && currentUser.role === 'ns_scheduler') {
-                    Object.keys(nurseBedAssignments).forEach(nurseName => {
-                        const assignedBeds = nurseBedAssignments[nurseName];
-                        if (assignedBeds.length === 0) return;
-                        const rangeStr = `${assignedBeds[0]} ~ ${assignedBeds[assignedBeds.length - 1]}`;
-                        const header = document.createElement('div');
-                        header.className = 'text-xs font-bold text-teal-800 bg-teal-50 px-3 py-2 rounded-lg border border-teal-200 mt-2 flex justify-between items-center shadow-2xs';
-                        header.innerHTML = `<span>護理師：${nurseName}</span><span class="text-[11px] text-slate-600">${rangeStr} (共${assignedBeds.length}床)</span>`;
-                        container.appendChild(header);
-                    });
-                    if (container.children.length === 0) {
-                        container.innerHTML = '<div class="text-center text-slate-400 text-xs py-8">目前全病房無任何護理排班</div>';
-                    }
-                } else {
-                    beds.forEach(bedKey => {
-                        const p = patientsData[bedKey];
-                        container.appendChild(createPatientRow(bedKey, p, true));
-                    });
-                }
+                // 全病房總覽：整齊表格化對齊佈局
+                beds.forEach(bedKey => {
+                    const p = patientsData[bedKey];
+                    container.appendChild(createPatientRow(bedKey, p, true));
+                });
             }
         }
 
         function createPatientRow(bedKey, p, showNurseName) {
             const btn = document.createElement('button');
-            btn.className = 'w-full bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-800 py-2 px-3 rounded-xl shadow-2xs text-left flex justify-between items-center transition text-xs my-1';
+            btn.className = 'w-full bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-800 py-2 px-3 rounded-xl shadow-2xs text-left grid grid-cols-12 items-center transition text-xs my-1';
             
             if (p.isEmpty) {
-                btn.innerHTML = `<span class="text-slate-400 font-normal text-xs">${bedKey} 〔空床待清〕</span>`;
+                btn.innerHTML = `<div class="col-span-12 text-slate-400 font-normal text-xs flex justify-between"><span>${bedKey} 〔空床待清〕</span><span>-</span></div>`;
             } else {
                 let badgeHtml = '';
                 if (p.isolation === '接') badgeHtml += '<span class="bg-rose-500 text-white font-bold px-1 rounded text-[10px] mr-1">接</span>';
@@ -1112,16 +1098,13 @@
                 const nameParts = p.name.split(' ');
                 const bedNo = nameParts[0];
                 const pNameAndGender = nameParts.slice(1).join(' ');
-                let nurseSpan = (showNurseName && p.assignedNurse) ? `<span class="text-[10px] text-teal-700 font-semibold bg-teal-50 px-1.5 py-0.5 rounded border border-teal-200">(${p.assignedNurse})</span>` : '';
+                let nurseSpan = (showNurseName && p.assignedNurse) ? `<span class="text-[10px] text-teal-700 font-semibold bg-teal-50 px-1.5 py-0.5 rounded border border-teal-200">${p.assignedNurse}</span>` : `<span class="text-[10px] text-slate-400">未指派</span>`;
 
                 btn.innerHTML = `
-                    <div class="flex items-center space-x-1.5 truncate">
-                        ${badgeHtml}
-                        <span class="font-bold text-slate-900 text-xs">${bedNo}</span>
-                        <span class="font-medium text-slate-800 text-xs">${pNameAndGender}</span>
-                        ${nurseSpan}
-                    </div>
-                    <span class="text-slate-400 text-xs">❯</span>
+                    <div class="col-span-3 font-bold text-slate-900 text-xs flex items-center">${badgeHtml}${bedNo}</div>
+                    <div class="col-span-5 font-medium text-slate-800 text-xs truncate">${pNameAndGender}</div>
+                    <div class="col-span-3 text-right">${nurseSpan}</div>
+                    <div class="col-span-1 text-right text-slate-400 text-xs">❯</div>
                 `;
             }
             btn.onclick = () => selectPatient(bedKey);
@@ -1212,9 +1195,23 @@
             const container = document.getElementById('schedule-beds-checkboxes');
             container.innerHTML = '';
             const currentAssigned = nurseBedAssignments[nurseName] || [];
+            
+            // 找出已被其他護理師選走的床位集合
+            let takenBeds = new Set();
+            Object.keys(nurseBedAssignments).forEach(n => {
+                if (n !== nurseName) {
+                    nurseBedAssignments[n].forEach(b => takenBeds.add(b));
+                }
+            });
+
             const allBeds = Object.keys(patientsData).sort();
+            let availableCount = 0;
 
             allBeds.forEach(bedKey => {
+                // 如果已經被其他護理師選走，則略過不顯示
+                if (takenBeds.has(bedKey)) return;
+                availableCount++;
+
                 const isChecked = currentAssigned.includes(bedKey);
                 const label = document.createElement('label');
                 label.className = 'flex items-center space-x-2 text-xs font-medium text-slate-700 cursor-pointer';
@@ -1224,12 +1221,20 @@
                 `;
                 container.appendChild(label);
             });
+
+            if (availableCount === 0) {
+                container.innerHTML = '<div class="text-center text-slate-400 text-xs py-4">目前所有床位皆已被指派完畢</div>';
+            }
         }
 
         function quickSelectBeds(count) {
             const chks = document.querySelectorAll('.schedule-bed-chk');
-            chks.forEach((chk, idx) => {
-                if (idx < count) chk.checked = true;
+            let selectedCount = 0;
+            chks.forEach((chk) => {
+                if (!chk.checked && selectedCount < count) {
+                    chk.checked = true;
+                    selectedCount++;
+                }
             });
         }
 
