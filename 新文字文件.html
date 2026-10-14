@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>10/14亞東紀念醫院 手機版醫療照護系統(模擬)</title>
+    <title>亞東紀念醫院 手機版醫療照護系統</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&display=swap');
@@ -123,7 +123,7 @@
                 </div>
                 <div id="welcome-text" class="text-base font-bold text-slate-700 tracking-wide text-center">--，您好</div>
                 <div class="w-full space-y-2">
-                    <button id="btn-home-nfc" onclick="handleNFCScan()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-sm py-2.5 rounded-xl shadow-sm border border-slate-200 text-center">📲 感應 NFC 晶片 (偵測 C5:B7:5C:16)</button>
+                    <button id="btn-home-nfc" onclick="handleNFCScan()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-sm py-2.5 rounded-xl shadow-sm border border-slate-200 text-center">📲 感應 NFC 晶片</button>
                     <button onclick="switchView('patient-list-view')" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 rounded-xl shadow-sm border border-slate-200 text-center">
                         <div class="text-sm font-bold leading-tight">病床清單查詢</div>
                         <div class="text-[10px] font-normal text-slate-500 mt-0.5">檢視責任床位與全病房總覽</div>
@@ -966,22 +966,42 @@
             if ('NDEFReader' in window) {
                 try {
                     const ndef = new NDEFReader();
-                    alert('📲 請將手機靠近 NFC 晶片 (預期 UID: C5:B7:5C:16)...');
+                    alert('請將手機靠近 NFC 晶片');
                     await ndef.scan();
                     ndef.onreading = event => {
-                        alert(`📲 成功偵測 NFC 晶片！開立床位：01-1 床`);
+                        alert(`成功偵測 NFC 晶片！開立床位：01-1 床`);
                         verifyAndOpenBed('01-1');
                     };
                     return;
                 } catch (error) {
-                    console.log('Web NFC API 啟動失敗，切換安全模擬。');
+                    console.log('Web NFC API 啟動失敗。');
                 }
             }
 
-            let scannedUID = prompt("請感應 NFC 晶片 (模擬輸入 UID，例如 C5:B7:5C:16)：", "C5:B7:5C:16");
-            if (scannedUID === "C5:B7:5C:16") {
-                alert('📲 [NFC 晶片 C5:B7:5C:16 驗證成功]\n已安全解鎖 01-1 床位');
-                verifyAndOpenBed('01-1');
+            const validBedCodes = {
+                "01-1": "01-1", "01-2": "01-2", "01-3": "01-3",
+                "02-1": "02-1", "02-2": "02-2",
+                "03-1": "03-1", "03-2": "03-2", "03-3": "03-3",
+                "04-1": "04-1", "04-2": "04-2",
+                "05-1": "05-2",
+                "06-1": "06-1", "06-2": "06-2", "06-3": "06-3",
+                "07-1": "07-2",
+                "08-1": "08-1", "08-2": "08-2",
+                "09-1": "09-1", "09-2": "09-2", "09-3": "09-3",
+                "10-1": "10-1", "10-2": "10-2",
+                "11-1": "11-2",
+                "12-1": "12-1", "12-2": "12-2", "12-3": "12-3",
+                "13-1": "13-2",
+                "14-1": "14-1", "14-2": "14-2",
+                "15-1": "15-1", "15-2": "15-2", "15-3": "15-3",
+                "16-1": "16-1", "16-2": "16-2"
+            };
+
+            let scannedUID = prompt("請感應 NFC 晶片 (輸入對應床號代碼)：", "01-1");
+            if (scannedUID && validBedCodes[scannedUID.trim()]) {
+                let targetBed = validBedCodes[scannedUID.trim()];
+                alert(`[NFC 晶片 驗證成功]\n已安全解鎖 ${targetBed} 床位`);
+                verifyAndOpenBed(targetBed);
             } else {
                 alert('❌ NFC 晶片代碼不符或感應失敗！');
             }
@@ -1829,7 +1849,6 @@
         }
         function closePhotoViewer() { document.getElementById('photo-viewer-modal').classList.add('hidden'); }
 
-        // 輸血頁面初始化：若該床位已儲存過輸血記錄，還原儲存與鎖定狀態
         function initBloodView() {
             const p = patientsData[currentSelectedBed];
             const bloodSelect = document.getElementById('blood-product-type');
@@ -1893,11 +1912,11 @@
                 const nName = userDatabase[id].name;
                 
                 if (currentActiveNurse === 2 && bloodVerifiedNurse1 === nName) {
-                    alert('⚠️ 輸血安全防呆警告：護理師二不能與護理師一為同一人！');
+                    alert('⚠️ 輸血安全警告：護理師不能為同一人！');
                     return;
                 }
                 if (currentActiveNurse === 1 && bloodVerifiedNurse2 === nName) {
-                    alert('⚠️ 輸血安全防呆警告：護理師一不能與護理師二為同一人！');
+                    alert('⚠️ 輸血防呆警告：護理師不能為同一人！');
                     return;
                 }
 
@@ -1914,7 +1933,6 @@
             }
         }
 
-        // 核心修復：寫入 patientsData[currentSelectedBed].bloodRecord 並持久化儲存至 localStorage
         function saveBloodRecord() {
             if (!bloodVerifiedNurse1 || !bloodVerifiedNurse2) {
                 alert('❌ 輸血作業必須由「兩位不同」的護理師完成雙重核對！');
