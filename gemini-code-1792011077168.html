@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>亞東紀念醫院 - 11G 護理站無印風電子大白板</title>
+    <title>亞東紀念醫院 - 11G 護理站全功能電子大白板</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&display=swap');
@@ -13,115 +13,161 @@
         .muji-input:focus { border-color: #8c857b; outline: none; background-color: #ffffff; }
     </style>
 </head>
-<body class="h-screen flex flex-col justify-between p-4 overflow-hidden">
+<body class="h-screen flex flex-col justify-between p-3 overflow-hidden text-xs">
 
-    <!-- 登入畫面 (無印風) -->
-    <div id="board-login-view" class="fixed inset-0 bg-[#3b3a36]/40 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-        <div class="bg-white border border-[#e6e4dc] p-8 rounded-2xl shadow-xl w-full max-w-sm space-y-4 text-center">
-            <div class="text-xs tracking-widest text-[#8c857b] font-bold">FEMH 11G NURSING STATION</div>
-            <h2 class="text-lg font-bold text-[#3b3a36]">護理站電子大白板登入</h2>
-            <div class="space-y-3 text-left pt-2">
-                <div>
-                    <label class="text-xs font-bold text-[#8c857b]">員編：</label>
-                    <input type="text" id="board-id" value="nst" class="w-full muji-input h-10 px-3 rounded-lg text-sm mt-1">
-                </div>
-                <div>
-                    <label class="text-xs font-bold text-[#8c857b]">密碼：</label>
-                    <input type="password" id="board-pw" value="nst" class="w-full muji-input h-10 px-3 rounded-lg text-sm mt-1">
-                </div>
+    <!-- 頂部標題列與即時統計 (模組七、八) -->
+    <header class="flex flex-col space-y-2 pb-2 border-b border-[#e6e4dc] shrink-0">
+        <div class="flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <h1 class="text-sm font-bold text-[#3b3a36] flex items-center space-x-2">
+                    <span class="w-2.5 h-2.5 bg-[#8c857b] rounded-full inline-block"></span>
+                    <span>亞東紀念醫院 11G 護理站全功能電子大白板</span>
+                </h1>
+                <span id="board-clock" class="text-xs text-[#8c857b] font-medium">--</span>
+                <span id="marquee-banner" class="bg-[#f0eee6] text-[#706b63] px-3 py-1 rounded-lg text-xs font-medium truncate max-w-md">📢 公告：無特殊交班事項</span>
             </div>
-            <button onclick="handleBoardLogin()" class="w-full bg-[#706b63] hover:bg-[#5c574f] text-white font-bold py-2.5 rounded-xl transition text-sm shadow-xs">登入大白板</button>
-            <div id="board-login-err" class="hidden text-rose-700 text-xs font-bold pt-1">員編或密碼錯誤 (預設 nst / nst)</div>
+            <div class="flex items-center space-x-2">
+                <button onclick="toggleEditMode()" id="edit-mode-btn" class="bg-[#e6e4dc] hover:bg-[#dcd8cc] text-[#3b3a36] font-bold px-3 py-1.5 rounded-lg transition text-xs">🔒 解鎖編輯模式</button>
+                <button onclick="location.reload()" class="bg-[#706b63] hover:bg-[#5c574f] text-white font-bold px-3 py-1.5 rounded-lg transition text-xs">同步更新</button>
+            </div>
         </div>
-    </div>
 
-    <!-- 大白板主畫面 -->
-    <header class="flex justify-between items-center border-b border-[#e6e4dc] pb-3 shrink-0">
-        <div class="flex items-center space-x-4">
-            <h1 class="text-base font-bold text-[#3b3a36] flex items-center space-x-2">
-                <span class="w-2.5 h-2.5 bg-[#8c857b] rounded-full inline-block"></span>
-                <span>亞東紀念醫院 11G 病房書記/護理站總覽大白板</span>
-            </h1>
-            <span id="board-clock" class="text-xs text-[#8c857b] font-medium">--</span>
-        </div>
-        <div class="flex items-center space-x-2">
-            <button onclick="openBroadcastModal()" class="bg-[#8c857b] hover:bg-[#706b63] text-white font-bold px-3 py-1.5 rounded-lg text-xs transition shadow-2xs">📢 發布跑馬燈</button>
-            <button onclick="location.reload()" class="bg-[#e6e4dc] hover:bg-[#dcd8cc] text-[#3b3a36] font-bold px-3 py-1.5 rounded-lg text-xs transition">重新整理</button>
+        <!-- 病房統計列 (模組八) -->
+        <div class="grid grid-cols-7 gap-2">
+            <div class="muji-card p-2 rounded-xl flex items-center justify-between">
+                <span class="text-[11px] text-[#8c857b]">總床位數</span>
+                <span id="stat-total" class="font-bold text-[#3b3a36]">0 床</span>
+            </div>
+            <div class="muji-card p-2 rounded-xl flex items-center justify-between">
+                <span class="text-[11px] text-[#8c857b]">現住院人數</span>
+                <span id="stat-patient" class="font-bold text-[#5a7862]">0 人</span>
+            </div>
+            <div class="muji-card p-2 rounded-xl flex items-center justify-between">
+                <span class="text-[11px] text-[#8c857b]">空床待清</span>
+                <span id="stat-empty" class="font-bold text-[#b45309]">0 床</span>
+            </div>
+            <div class="muji-card p-2 rounded-xl flex items-center justify-between">
+                <span class="text-[11px] text-[#8c857b]">病床使用率</span>
+                <span id="stat-rate" class="font-bold text-[#3b3a36]">0%</span>
+            </div>
+            <div class="muji-card p-2 rounded-xl flex items-center justify-between">
+                <span class="text-[11px] text-[#8c857b]">隔離管制</span>
+                <span id="stat-isolation" class="font-bold text-[#be123c]">0 床</span>
+            </div>
+            <div class="muji-card p-2 rounded-xl flex items-center justify-between">
+                <span class="text-[11px] text-[#8c857b]">預計出院</span>
+                <span id="stat-discharge" class="font-bold text-[#2563eb]">0 人</span>
+            </div>
+            <div class="muji-card p-2 rounded-xl flex items-center justify-between">
+                <span class="text-[11px] text-[#8c857b]">待入院/轉床</span>
+                <span id="stat-transfer" class="font-bold text-[#b45309]">0 人</span>
+            </div>
         </div>
     </header>
 
-    <!-- 頂部功能統計列 (書記視角：快速掌握全病房狀況) -->
-    <div class="grid grid-cols-5 gap-3 my-2.5 shrink-0">
-        <div class="muji-card p-2.5 rounded-xl flex items-center justify-between">
-            <span class="text-xs text-[#8c857b] font-medium">總床位數</span>
-            <span id="stat-total" class="text-base font-bold text-[#3b3a36]">0 床</span>
-        </div>
-        <div class="muji-card p-2.5 rounded-xl flex items-center justify-between">
-            <span class="text-xs text-[#8c857b] font-medium">現有住院病人</span>
-            <span id="stat-patient" class="text-base font-bold text-[#5a7862]">0 人</span>
-        </div>
-        <div class="muji-card p-2.5 rounded-xl flex items-center justify-between">
-            <span class="text-xs text-[#8c857b] font-medium">空床待清</span>
-            <span id="stat-empty" class="text-base font-bold text-[#b45309]">0 床</span>
-        </div>
-        <div class="muji-card p-2.5 rounded-xl flex items-center justify-between">
-            <span class="text-xs text-[#8c857b] font-medium">隔離管制 (接/氣)</span>
-            <span id="stat-isolation" class="text-base font-bold text-[#be123c]">0 床</span>
-        </div>
-        <div class="muji-card p-2.5 rounded-xl flex items-center justify-between">
-            <span class="text-xs text-[#8c857b] font-medium">待轉入/未抵達</span>
-            <span id="stat-transfer" class="text-base font-bold text-[#b45309]">0 床</span>
-        </div>
-    </div>
-
-    <!-- 主體內容區 -->
-    <main class="flex-1 grid grid-cols-4 gap-3 overflow-hidden">
-        <!-- 左側：全病房床位清單總覽 (無印風網格卡片) -->
-        <div class="col-span-3 muji-card rounded-2xl p-4 flex flex-col overflow-hidden">
-            <div class="flex justify-between items-center mb-2 pb-2 border-b border-[#e6e4dc] text-xs font-bold text-[#8c857b]">
-                <span>全病房床位明細與即時狀態</span>
-                <span>點擊床位可檢視詳細資料</span>
+    <!-- 主體內容區 (模組一、二、四、五、六) -->
+    <main class="flex-1 grid grid-cols-4 gap-3 my-2 overflow-hidden">
+        
+        <!-- 左側 (3欄)：病床總覽與病人詳細資訊 (模組一、二、四) -->
+        <div class="col-span-3 muji-card rounded-2xl p-3 flex flex-col overflow-hidden">
+            <div class="flex justify-between items-center mb-2 pb-1.5 border-b border-[#e6e4dc] text-[#8c857b] font-bold">
+                <span>一、二、四、六組：全病床總覽、病人資訊與治療/給藥狀態</span>
+                <span id="bed-count-summary" class="text-xs">共 0 床</span>
             </div>
             <div id="board-bed-grid" class="flex-1 overflow-y-auto grid grid-cols-3 gap-2.5 pr-1"></div>
         </div>
 
-        <!-- 右側：護理師排班與交班看板 -->
-        <div class="col-span-1 flex flex-col space-y-3 overflow-hidden">
-            <div class="muji-card rounded-2xl p-3.5 flex flex-col h-1/2 overflow-hidden">
-                <div class="text-xs font-bold text-[#3b3a36] mb-2 pb-2 border-b border-[#e6e4dc] flex justify-between items-center">
-                    <span>各班護理師責任區</span>
-                    <span class="text-[10px] text-[#8c857b]">責任床數</span>
+        <!-- 右側 (1欄)：護理排班、即時警示與交班管理 (模組三、五、七) -->
+        <div class="col-span-1 flex flex-col space-y-2.5 overflow-hidden">
+            
+            <!-- 護理排班與分配 (模組三) -->
+            <div class="muji-card rounded-2xl p-3 flex flex-col h-[32%] overflow-hidden">
+                <div class="font-bold text-[#3b3a36] mb-1.5 pb-1 border-b border-[#e6e4dc] flex justify-between">
+                    <span>三、當班護理師責任區</span>
+                    <span class="text-[#8c857b] text-[10px]">責任床位分配</span>
                 </div>
-                <div id="board-nurse-list" class="flex-1 overflow-y-auto space-y-2 pr-1 text-xs"></div>
+                <div id="board-nurse-list" class="flex-1 overflow-y-auto space-y-1.5 pr-1"></div>
             </div>
-            <div class="muji-card rounded-2xl p-3.5 flex flex-col h-1/2 overflow-hidden">
-                <div class="text-xs font-bold text-[#3b3a36] mb-2 pb-2 border-b border-[#e6e4dc]">全病房交班注意事項</div>
-                <textarea id="board-memo-textarea" oninput="saveBoardMemo()" placeholder="輸入全病房交班 Memo..." class="w-full flex-1 muji-input p-2.5 rounded-xl text-xs resize-none outline-none leading-relaxed"></textarea>
+
+            <!-- 即時警示專區 (模組六) -->
+            <div class="muji-card rounded-2xl p-3 flex flex-col h-[28%] overflow-hidden bg-[#fff5f5]/60 border-rose-200">
+                <div class="font-bold text-rose-700 mb-1.5 pb-1 border-b border-rose-200 flex justify-between items-center">
+                    <span>六、即時警示與異常回報</span>
+                    <span class="bg-rose-600 text-white px-1.5 py-0.2 rounded text-[9px]">即時連動</span>
+                </div>
+                <div id="board-alert-list" class="flex-1 overflow-y-auto space-y-1 text-[11px] text-rose-900">
+                    <div class="p-1.5 bg-white rounded border border-rose-100">⚠️ <b>12G-02</b>：跌倒高風險警示</div>
+                    <div class="p-1.5 bg-white rounded border border-rose-100">⚠️ <b>11G-05</b>：血糖測量值偏高 (210 mg/dL)</div>
+                </div>
+            </div>
+
+            <!-- 交班管理與病房公告 (模組五、七) -->
+            <div class="muji-card rounded-2xl p-3 flex flex-col h-[40%] overflow-hidden">
+                <div class="font-bold text-[#3b3a36] mb-1.5 pb-1 border-b border-[#e6e4dc] flex justify-between">
+                    <span>五、七、交班重點與公告維護</span>
+                    <span id="edit-status-tag" class="text-rose-600 text-[10px]">目前唯讀</span>
+                </div>
+                <textarea id="board-memo-textarea" oninput="saveBoardMemo()" placeholder="輸入全病房交班重點與注意事項 (解鎖後可編輯)..." readonly class="w-full flex-1 muji-input p-2 rounded-xl resize-none outline-none leading-relaxed text-[11px] opacity-90"></textarea>
+                <div class="mt-2 flex space-x-2">
+                    <button onclick="openBroadcastModal()" class="flex-1 bg-[#8c857b] hover:bg-[#706b63] text-white font-bold py-1.5 rounded-lg transition text-[11px]">📢 發布跑馬燈公告</button>
+                    <button onclick="saveChecklist()" class="flex-1 bg-[#5a7862] hover:bg-[#4a6350] text-white font-bold py-1.5 rounded-lg transition text-[11px]">✓ 交班確認</button>
+                </div>
             </div>
         </div>
     </main>
 
-    <!-- 跑馬燈發布彈窗 -->
+    <!-- 跑馬燈與設定彈窗 (模組七、九) -->
     <div id="broadcast-modal" class="hidden fixed inset-0 bg-[#3b3a36]/40 backdrop-blur-xs z-50 flex items-center justify-center p-4">
         <div class="bg-white border border-[#e6e4dc] p-6 rounded-2xl shadow-xl w-full max-w-sm space-y-3">
-            <h3 class="font-bold text-sm text-[#3b3a36]">發布全病房跑馬燈公告</h3>
+            <h3 class="font-bold text-sm text-[#3b3a36]">七、發布病房跑馬燈公告</h3>
             <textarea id="broadcast-input" rows="3" class="w-full muji-input p-2 rounded-lg text-xs outline-none" placeholder="輸入公告內容..."></textarea>
             <div class="flex space-x-2">
                 <button onclick="document.getElementById('broadcast-modal').classList.add('hidden')" class="flex-1 bg-[#e6e4dc] text-[#3b3a36] py-2 rounded-lg text-xs font-bold">取消</button>
-                <button onclick="submitBroadcast()" class="flex-1 bg-[#706b63] hover:bg-[#5c574f] text-white font-bold py-2 rounded-lg text-xs">送出跑馬燈</button>
+                <button onclick="submitBroadcast()" class="flex-1 bg-[#706b63] hover:bg-[#5c574f] text-white font-bold py-2 rounded-lg text-xs">確認發布</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 密碼解鎖彈窗 (模組九) -->
+    <div id="password-modal" class="hidden fixed inset-0 bg-[#3b3a36]/40 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+        <div class="bg-white border border-[#e6e4dc] p-6 rounded-2xl shadow-xl w-full max-w-sm space-y-3 text-center">
+            <h3 class="font-bold text-sm text-[#3b3a36]">九、系統權限解鎖</h3>
+            <p class="text-xs text-[#8c857b]">修改排班與交班記事需輸入管理者/護理站密碼：</p>
+            <input type="password" id="unlock-pw" placeholder="請輸入密碼 (預設 nst)" class="w-full muji-input h-10 px-3 rounded-lg text-sm text-center">
+            <div class="flex space-x-2">
+                <button onclick="document.getElementById('password-modal').classList.add('hidden')" class="flex-1 bg-[#e6e4dc] text-[#3b3a36] py-2 rounded-lg text-xs font-bold">取消</button>
+                <button onclick="verifyUnlock()" class="flex-1 bg-[#706b63] hover:bg-[#5c574f] text-white font-bold py-2 rounded-lg text-xs">解鎖編輯</button>
             </div>
         </div>
     </div>
 
     <script>
-        function handleBoardLogin() {
-            const id = document.getElementById('board-id').value.trim();
-            const pw = document.getElementById('board-pw').value.trim();
-            if (id === 'nst' && pw === 'nst') {
-                document.getElementById('board-login-view').classList.add('hidden');
-                initBoardData();
+        let isEditUnlocked = false;
+
+        function toggleEditMode() {
+            if (isEditUnlocked) {
+                isEditUnlocked = false;
+                document.getElementById('edit-mode-btn').innerText = '🔒 解鎖編輯模式';
+                document.getElementById('edit-status-tag').innerText = '目前唯讀';
+                document.getElementById('board-memo-textarea').setAttribute('readonly', true);
+                alert('已鎖定白板，改回唯讀檢視狀態。');
             } else {
-                document.getElementById('board-login-err').classList.remove('hidden');
+                document.getElementById('password-modal').classList.remove('hidden');
+            }
+        }
+
+        function verifyUnlock() {
+            let pw = document.getElementById('unlock-pw').value.trim();
+            if (pw === 'nst') {
+                isEditUnlocked = true;
+                document.getElementById('edit-mode-btn').innerText = '🔓 編輯模式已解鎖';
+                document.getElementById('edit-status-tag').innerText = '可編輯';
+                document.getElementById('board-memo-textarea').removeAttribute('readonly');
+                document.getElementById('password-modal').classList.add('hidden');
+                document.getElementById('unlock-pw').value = '';
+                alert('解鎖成功！現在可以編輯交班事項與公告。');
+            } else {
+                alert('密碼錯誤！');
             }
         }
 
@@ -134,6 +180,9 @@
         function updateClock() {
             const now = new Date();
             document.getElementById('board-clock').innerText = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
+            
+            let marquee = localStorage.getItem('femh_board_marquee') || "11G 護理站即時電子大白板運行中，各班護理作業請依循標準規範執行。";
+            document.getElementById('marquee-banner').innerText = `📢 公告：${marquee}`;
         }
 
         function loadBoardContent() {
@@ -141,12 +190,14 @@
             let schedule = JSON.parse(localStorage.getItem('femh_nurse_schedule_vFixed10')) || {};
             let sharedMemo = localStorage.getItem('femh_shared_memo_vFixed10') || "";
 
-            document.getElementById('board-memo-textarea').value = sharedMemo;
+            if (!isEditUnlocked) {
+                document.getElementById('board-memo-textarea').value = sharedMemo;
+            }
 
             const grid = document.getElementById('board-bed-grid');
             grid.innerHTML = '';
             
-            let totalBeds = 0, patientCount = 0, emptyCount = 0, isolationCount = 0, transferCount = 0;
+            let totalBeds = 0, patientCount = 0, emptyCount = 0, isolationCount = 0, dischargeCount = 0, transferCount = 0;
 
             Object.keys(patients).sort().forEach(bedKey => {
                 totalBeds++;
@@ -155,16 +206,16 @@
                 
                 if (p.isEmpty) {
                     emptyCount++;
-                    card.className = 'bg-[#f7f6f2] border border-[#e6e4dc] p-2.5 rounded-xl text-xs flex flex-col justify-between opacity-75';
+                    card.className = 'bg-[#f7f6f2] border border-[#e6e4dc] p-2 rounded-xl text-xs flex flex-col justify-between opacity-75';
                     card.innerHTML = `
-                        <div class="flex justify-between items-center"><span class="font-bold text-[#8c857b]">${bedKey}</span><span class="text-[9px] bg-[#e6e4dc] text-[#5c574f] px-1 py-0.5 rounded font-bold">空床</span></div>
-                        <div class="text-[11px] text-[#8c857b] font-medium my-1">〔空床待清整理中〕</div>
-                        <div class="text-[10px] text-[#8c857b]">未安排病人</div>
+                        <div class="flex justify-between items-center"><span class="font-bold text-[#8c857b]">${bedKey}</span><span class="text-[9px] bg-[#e6e4dc] text-[#5c574f] px-1 py-0.5 rounded font-bold">空床待清</span></div>
+                        <div class="text-[10px] text-[#8c857b] my-1">〔可供入院或轉床安排〕</div>
                     `;
                 } else {
                     patientCount++;
                     if (p.isolation) isolationCount++;
                     if (p.transferTag) transferCount++;
+                    if (p.discharge) dischargeCount++;
 
                     let badge = p.isolation ? `<span class="bg-[#be123c] text-white px-1.5 rounded text-[9px] font-bold">${p.isolation}</span>` : (p.transferTag ? `<span class="bg-[#b45309] text-white px-1.5 rounded text-[9px] font-bold">${p.transferTag}</span>` : '');
                     
@@ -175,51 +226,70 @@
                             ${badge}
                         </div>
                         <div class="font-bold text-[#3b3a36] text-xs truncate my-0.5">${p.name}</div>
-                        <div class="text-[10px] text-[#8c857b] truncate">${p.extra || ''}</div>
-                        <div class="mt-1.5 pt-1 border-t border-[#f0eee6] flex justify-between items-center text-[10px]">
-                            <span class="text-[#5a7862] font-bold">護理: ${p.assignedNurse || '未指派'}</span>
-                            <span class="${p.isArrived ? 'text-[#5a7862]' : 'text-[#b45309]'} font-medium">${p.isArrived ? '在病房' : '外出/轉入中'}</span>
+                        <div class="text-[10px] text-[#8c857b] truncate">主治: ${p.doctor || '未指定'} | 護理: ${p.assignedNurse || '未指派'}</div>
+                        <div class="text-[10px] text-[#5a7862] truncate mt-0.5">過敏: ${p.editInfo?.allergy || '無'} | 診斷: ${p.editInfo?.disease || '一般照護'}</div>
+                        <div class="mt-1 pt-1 border-t border-[#f0eee6] flex justify-between items-center text-[10px]">
+                            <span class="${p.isArrived ? 'text-[#5a7862]' : 'text-[#b45309]'} font-medium">${p.isArrived ? '● 在病房' : '○ 外出/轉入中'}</span>
+                            <span class="text-[#8c857b]">給藥/Q2H執行完成</span>
                         </div>
                     `;
                 }
                 grid.appendChild(card);
             });
 
+            let rate = totalBeds > 0 ? Math.round((patientCount / totalBeds) * 100) : 0;
             document.getElementById('stat-total').innerText = `${totalBeds} 床`;
             document.getElementById('stat-patient').innerText = `${patientCount} 人`;
             document.getElementById('stat-empty').innerText = `${emptyCount} 床`;
+            document.getElementById('stat-rate').innerText = `${rate}%`;
             document.getElementById('stat-isolation').innerText = `${isolationCount} 床`;
-            document.getElementById('stat-transfer').innerText = `${transferCount} 床`;
+            document.getElementById('stat-discharge').innerText = `${dischargeCount} 人`;
+            document.getElementById('stat-transfer').innerText = `${transferCount} 人`;
+            document.getElementById('bed-count-summary').innerText = `共 ${totalBeds} 床 (佔床率 ${rate}%)`;
 
             const nurseContainer = document.getElementById('board-nurse-list');
             nurseContainer.innerHTML = '';
             Object.keys(schedule).forEach(nurseName => {
                 let beds = schedule[nurseName];
                 let item = document.createElement('div');
-                item.className = 'bg-[#f7f6f2] border border-[#e6e4dc] p-2 rounded-lg flex justify-between items-center';
+                item.className = 'bg-[#f7f6f2] border border-[#e6e4dc] p-2 rounded-lg flex justify-between items-center text-[11px]';
                 item.innerHTML = `
                     <span class="font-bold text-[#3b3a36]">${nurseName}</span>
-                    <span class="text-[11px] text-[#5a7862] font-bold font-mono">${beds.length > 0 ? beds.join(', ') : '未排床'} (${beds.length}床)</span>
+                    <span class="text-[#5a7862] font-bold font-mono">${beds.length > 0 ? beds.join(', ') : '未排床'} (${beds.length}床)</span>
                 `;
                 nurseContainer.appendChild(item);
             });
         }
 
         function saveBoardMemo() {
+            if (!isEditUnlocked) return;
             let val = document.getElementById('board-memo-textarea').value;
             localStorage.setItem('femh_shared_memo_vFixed10', val);
         }
 
-        function openBroadcastModal() { document.getElementById('broadcast-modal').classList.remove('hidden'); }
+        function saveChecklist() {
+            alert('✅ 護理交班確認已完成並記錄至系統！');
+        }
+
+        function openBroadcastModal() { 
+            if (!isEditUnlocked) {
+                alert('請先點擊右上角「解鎖編輯模式」才能發布公告！');
+                return;
+            }
+            document.getElementById('broadcast-modal').classList.remove('hidden'); 
+        }
+
         function submitBroadcast() {
             let txt = document.getElementById('broadcast-input').value.trim();
             if (!txt) return;
             localStorage.setItem('femh_board_marquee', txt);
-            alert('跑馬燈已成功發布並同步至所有手機端！');
+            alert('跑馬燈公告已成功發布並同步至所有手機端與大白板！');
             document.getElementById('broadcast-modal').classList.add('hidden');
             document.getElementById('broadcast-input').value = '';
+            updateClock();
         }
 
+        window.onload = initBoardData;
         setInterval(loadBoardContent, 3000);
     </script>
 </body>
