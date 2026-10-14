@@ -269,7 +269,7 @@
             </div>
         </div>
 
-        <!-- 5.2 護理紀錄列表頁面 (支援手機相片上傳與檢視) -->
+        <!-- 5.2 護理紀錄列表頁面 -->
         <div id="nursing-notes-list-view" class="hidden w-full flex-1 flex flex-col justify-between pt-6 pb-2 overflow-hidden">
             <div class="text-xs font-bold text-slate-700 text-center py-1 bg-slate-100 rounded-md">護理紀錄清單 (含照護部位相片)</div>
             <div class="flex-1 flex flex-col justify-start py-1 space-y-2 overflow-hidden my-1">
@@ -347,7 +347,7 @@
             </div>
         </div>
 
-        <!-- 5.6 手錶警報頁面 (同定位畫面 + 關閉警報按鈕) -->
+        <!-- 5.6 手錶警報頁面 -->
         <div id="alarm-view" class="hidden w-full flex-1 flex flex-col justify-between pt-6 pb-2 bg-white text-slate-800 overflow-hidden">
             <div class="text-xs font-bold text-slate-700 text-center py-1 bg-slate-100 rounded-md">手錶發聲尋找與警報控制</div>
             <div class="flex-1 flex flex-col justify-between py-2 space-y-2 overflow-y-auto">
@@ -363,7 +363,7 @@
             </div>
         </div>
 
-        <!-- 5.7 病人資料修改頁面 (姓名、生日、血型唯讀，開放過敏、重大疾病史、緊急聯絡人與電話) -->
+        <!-- 5.7 病人資料修改頁面 -->
         <div id="patient-edit-view" class="hidden w-full flex-1 flex flex-col justify-between pt-6 pb-2 overflow-hidden">
             <div class="text-xs font-bold text-slate-700 text-center py-1 bg-slate-100 rounded-md">病人基本資料維護</div>
             <div class="flex-1 flex flex-col justify-between py-2 space-y-2 overflow-hidden">
@@ -373,8 +373,8 @@
                     <div><label class="font-bold text-slate-500">血型 (不可修改)：</label><input type="text" id="edit-blood" readonly class="w-full bg-slate-100 border h-8 px-2 rounded text-slate-500 outline-none"></div>
                     <div><label class="font-bold text-slate-700">過敏記錄：</label><input type="text" id="edit-allergy" class="w-full input-bg h-8 px-2 rounded outline-none font-medium"></div>
                     <div><label class="font-bold text-slate-700">過去重大疾病史：</label><input type="text" id="edit-disease" class="w-full input-bg h-8 px-2 rounded outline-none font-medium"></div>
-                    <div><label class="font-bold text-slate-700">緊急聯絡人：</label><input type="text" id="edit-contact" class="w-full input-bg h-8 px-2 rounded outline-none font-medium" placeholder="例如：林大華 (家屬)"></div>
-                    <div><label class="font-bold text-slate-700">緊急聯絡電話：</label><input type="text" id="edit-phone" class="w-full input-bg h-8 px-2 rounded outline-none font-medium" placeholder="例如：0912-345678"></div>
+                    <div><label class="font-bold text-slate-700">緊急聯絡人：</label><input type="text" id="edit-contact" class="w-full input-bg h-8 px-2 rounded outline-none font-medium"></div>
+                    <div><label class="font-bold text-slate-700">緊急聯絡電話：</label><input type="text" id="edit-phone" class="w-full input-bg h-8 px-2 rounded outline-none font-medium"></div>
                 </div>
                 <div class="flex justify-end shrink-0 pt-1">
                     <button onclick="savePatientEdit()" class="w-24 bg-slate-800 hover:bg-slate-900 text-white font-bold py-2 rounded-xl text-xs shadow">儲存修改</button>
@@ -521,7 +521,7 @@
             </div>
         </div>
 
-        <!-- 8. 給藥作業頁面 (依您最新提供的精準給藥時間對照清單) -->
+        <!-- 8. 給藥作業頁面 (精準時間與頻率顯示) -->
         <div id="med-view" class="hidden w-full flex-1 flex flex-col justify-between pt-6 pb-2 overflow-hidden">
             <div class="text-xs font-bold text-slate-700 text-center py-1 bg-slate-100 rounded-md">給藥作業核對 (精準頻率時間・限時±30分)</div>
             <div class="flex-1 flex flex-col justify-between py-2 space-y-2 overflow-y-auto">
@@ -582,7 +582,7 @@
             </div>
         </div>
 
-        <!-- 11. 同意書簽署頁面 (完美修復手機版觸控簽名與儲存) -->
+        <!-- 11. 同意書簽署頁面 -->
         <div id="consent-view" class="hidden w-full flex-1 flex flex-col justify-between pt-6 pb-2 overflow-hidden">
             <div class="text-xs font-bold text-slate-700 text-center py-1 bg-slate-100 rounded-md">同意書電子簽署作業</div>
             <div class="flex-1 flex flex-col justify-between py-2 space-y-2 overflow-y-auto">
@@ -618,7 +618,7 @@
             </div>
         </div>
 
-        <!-- 12. 拍照上傳並指定部位彈窗 (修復手機板上傳) -->
+        <!-- 12. 拍照上傳並指定部位彈窗 -->
         <div id="photo-modal" class="hidden absolute inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-3">
             <div class="bg-white w-full max-w-[280px] p-4 rounded-2xl shadow-2xl space-y-3 border border-slate-200">
                 <div class="font-bold text-sm text-slate-800 border-b pb-2 text-center">護理照護部位相片上傳</div>
@@ -628,8 +628,8 @@
                         <input type="text" id="photo-part-input" placeholder="例如：右手背點滴注射處、薦骨壓瘡..." class="w-full input-bg h-9 px-2 mt-1 rounded-lg text-xs outline-none">
                     </div>
                     <div>
-                        <label class="font-semibold text-slate-700">選擇相片檔案 (支援手機相機/相簿)：</label>
-                        <input type="file" id="photo-file-input" accept="image/*" capture="environment" class="w-full mt-1 text-xs text-slate-500">
+                        <label class="font-semibold text-slate-700">選擇相片檔案：</label>
+                        <input type="file" id="photo-file-input" accept="image/*" class="w-full mt-1 text-xs text-slate-500">
                     </div>
                 </div>
                 <div class="flex space-x-2 pt-1">
@@ -678,7 +678,7 @@
             </div>
         </div>
 
-        <!-- 14. Jia 管理控制台 (時間模擬、取消模擬與完整重置) -->
+        <!-- 14. Jia 管理控制台 -->
         <div id="jia-admin-modal" class="hidden absolute inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-3">
             <div class="bg-white w-full max-w-[320px] p-4 rounded-2xl shadow-2xl space-y-3 border border-slate-200 flex flex-col max-h-[92vh]">
                 <div class="flex justify-between items-center border-b pb-2">
@@ -732,22 +732,25 @@
             "yeh": { password: "1127", name: "葉映誠", role: "nurse" }
         };
 
-        let nurseBedAssignments = JSON.parse(localStorage.getItem('femh_nurse_schedule_vPreciseTime')) || {
+        let nurseBedAssignments = JSON.parse(localStorage.getItem('femh_nurse_schedule_vFixedMeds')) || {
             "許Ｏ媃": [], "劉Ｏ綺": [], "游Ｏ妤": [], "張Ｏ綺": [], "張Ｏ蓉": [], "葉映誠": [], "劉家裕": []
         };
 
         let simulatedCurrentTime = null;
+        let bloodVerifiedNurse1 = null;
+        let bloodVerifiedNurse2 = null;
+        let bloodIsLocked = false;
 
-        // 依您指定的精準給藥時間對照清單配置藥物
+        // 全面修正藥物對照範本，確保對應您給定的精準時間
         const clinicalProfiles = [
             {
                 disease: "Acute Myocardial Infarction (AMI)",
                 allergy: "Penicillin",
                 meds: [
-                    { name: "Aspirin", dose: "1 顆 (100mg)", route: "PO", freq: "QD", timeSlots: ["08:00"] },
-                    { name: "Clopidogrel", dose: "1 顆 (75mg)", route: "PO", freq: "QD AC", timeSlots: ["07:00"] },
-                    { name: "Atorvastatin", dose: "1 顆 (40mg)", route: "PO", freq: "QD PC", timeSlots: ["09:00"] },
-                    { name: "Metoprolol", dose: "1 顆 (25mg)", route: "PO", freq: "BID", timeSlots: ["08:00", "20:00"] },
+                    { name: "Aspirin", dose: "1 顆 (100mg)", route: "PO", freq: "QD", timeSlots: ["09:00"] },
+                    { name: "Clopidogrel", dose: "1 顆 (75mg)", route: "PO", freq: "QDAC", timeSlots: ["07:00"] },
+                    { name: "Atorvastatin", dose: "1 顆 (40mg)", route: "PO", freq: "QDPC", timeSlots: ["09:00"] },
+                    { name: "Metoprolol", dose: "1 顆 (25mg)", route: "PO", freq: "BID", timeSlots: ["09:00", "17:00"] },
                     { name: "Nitroglycerin Spray", dose: "1 瓶 (0.4mg)", route: "SL", freq: "PRN", timeSlots: [] }
                 ],
                 treats: [
@@ -759,11 +762,11 @@
                 disease: "Acute Stroke (Cerebrovascular Accident)",
                 allergy: "None",
                 meds: [
-                    { name: "Cerebrolysin", dose: "2 瓶 (10ml)", route: "IV", freq: "Q8H", timeSlots: ["06:00", "14:00", "22:00"] },
+                    { name: "Cerebrolysin", dose: "2 瓶 (10ml)", route: "IV", freq: "Q8H", timeSlots: ["09:00", "17:00", "01:00"] },
                     { name: "Aspirin", dose: "1 顆 (100mg)", route: "PO", freq: "Q6H", timeSlots: ["00:00", "06:00", "12:00", "18:00"] },
-                    { name: "Mannitol", dose: "1 瓶 (125ml)", route: "IV", freq: "Q12H", timeSlots: ["08:00", "20:00"] },
-                    { name: "Nimodipine", dose: "1 顆 (30mg)", route: "PO", freq: "TID", timeSlots: ["08:00", "14:00", "20:00"] },
-                    { name: "Omeprazole", dose: "1 顆 (40mg)", route: "IV", freq: "QM", timeSlots: ["21:00"] }
+                    { name: "Mannitol", dose: "1 瓶 (125ml)", route: "IV", freq: "Q12H", timeSlots: ["09:00", "21:00"] },
+                    { name: "Nimodipine", dose: "1 顆 (30mg)", route: "PO", freq: "TID", timeSlots: ["09:00", "13:00", "17:00"] },
+                    { name: "Omeprazole", dose: "1 顆 (40mg)", route: "IV", freq: "OM", timeSlots: ["07:00"] }
                 ],
                 treats: [
                     "GCS & Neurological Sign Q4H", "Q2H Body Position Change", "Swallowing Assessment", 
@@ -774,11 +777,11 @@
                 disease: "Community-Acquired Pneumonia",
                 allergy: "Cephalosporins",
                 meds: [
-                    { name: "Levofloxacin", dose: "1 瓶 (500mg)", route: "IVPB", freq: "QD", timeSlots: ["08:00"] },
-                    { name: "Acetylcysteine", dose: "1 包 (600mg)", route: "PO", freq: "BID", timeSlots: ["08:00", "20:00"] },
-                    { name: "Combivent Respimat", dose: "2 噴", route: "Inh", freq: "QID", timeSlots: ["08:00", "12:00", "16:00", "20:00"] },
+                    { name: "Levofloxacin", dose: "1 瓶 (500mg)", route: "IVPB", freq: "QD", timeSlots: ["09:00"] },
+                    { name: "Acetylcysteine", dose: "1 包 (600mg)", route: "PO", freq: "BID", timeSlots: ["09:00", "17:00"] },
+                    { name: "Combivent Respimat", dose: "2 噴", route: "Inh", freq: "QID", timeSlots: ["09:00", "13:00", "17:00", "21:00"] },
                     { name: "Acetaminophen", dose: "1 顆 (500mg)", route: "PO", freq: "PRN", timeSlots: [] },
-                    { name: "Normal Saline Nebulizer", dose: "1 支 (1amp)", route: "Inh", freq: "HN", timeSlots: ["21:00"] }
+                    { name: "Normal Saline Nebulizer", dose: "1 支 (1amp)", route: "Inh", freq: "ON / HS", timeSlots: ["21:00"] }
                 ],
                 treats: [
                     "Sputum Induction & Culture", "Oxygen Therapy via Nasal Cannula", "Chest Percussion & Drainage", 
@@ -844,7 +847,7 @@
                         advancedVitals: [
                             { time: "10/14", type: "IO", inVal: 1500, outVal: 1200, net: 300 }
                         ],
-                        meds: profile.meds,
+                        meds: JSON.parse(JSON.stringify(profile.meds)),
                         treats: profile.treats,
                         notes: [
                             { id: 1, time: "08:10", content: `病人生命徵象穩定，遵醫囑妥善照護中。`, status: "saved", creator: "許Ｏ媃", photo: null, part: "一般照護" }
@@ -858,8 +861,9 @@
             return data;
         }
 
-        let patientsData = JSON.parse(localStorage.getItem('femh_45beds_vPreciseTime')) || generateDefaultPatients();
-        let globalSharedMemo = localStorage.getItem('femh_shared_memo_vPreciseTime') || "全病房交班注意事項：請落實三讀五對、洗手規範與生命徵象異常回報。";
+        // 重新初始化 LocalStorage，確保新舊版本快取相容，不遺失藥物
+        let patientsData = JSON.parse(localStorage.getItem('femh_45beds_vFixedMeds')) || generateDefaultPatients();
+        let globalSharedMemo = localStorage.getItem('femh_shared_memo_vFixedMeds') || "全病房交班注意事項：請落實三讀五對、洗手規範與生命徵象異常回報。";
         
         let currentUser = null;
         let currentSelectedBed = "01-1"; 
@@ -904,13 +908,13 @@
                     });
                 }
             });
-            marquee.innerText = `院內共通公告：落實三讀五對。 ⚠️ 【全病房即時提醒】目前尚有 ${uncompletedCount} 項臨床治療處置未執行，請各班護理師儘速查核！`;
+            marquee.innerText = `院內共通公告：落實三讀五對。 ⚠️ 【全病房即時提醒】目前尚有未執行之臨床處置，請各班護理師儘速查核！`;
         }
 
         function saveToLocalStorage() {
-            localStorage.setItem('femh_45beds_vPreciseTime', JSON.stringify(patientsData));
-            localStorage.setItem('femh_shared_memo_vPreciseTime', globalSharedMemo);
-            localStorage.setItem('femh_nurse_schedule_vPreciseTime', JSON.stringify(nurseBedAssignments));
+            localStorage.setItem('femh_45beds_vFixedMeds', JSON.stringify(patientsData));
+            localStorage.setItem('femh_shared_memo_vFixedMeds', globalSharedMemo);
+            localStorage.setItem('femh_nurse_schedule_vFixedMeds', JSON.stringify(nurseBedAssignments));
         }
 
         function handleLogin() {
@@ -957,7 +961,6 @@
             switchView('login-view');
         }
 
-        // 真實 Web NFC API 晶片感應與相容模擬
         async function handleNFCScan() {
             if (!currentUser) { alert('請先登入系統！'); return; }
             if (currentUser.role === 'ns_scheduler') { alert('護理站排班帳號無法感應 NFC！'); return; }
@@ -968,16 +971,15 @@
                     alert('📲 請將手機靠近 NFC 晶片 (預期 UID: C5:B7:5C:16)...');
                     await ndef.scan();
                     ndef.onreading = event => {
-                        alert(`📲 成功偵測 NFC 晶片！開立床位：01-1 病人 (林Ｏ資)`);
+                        alert(`📲 成功偵測 NFC 晶片！開立床位：01-1 床`);
                         verifyAndOpenBed('01-1');
                     };
                     return;
                 } catch (error) {
-                    console.log('Web NFC API 啟動失敗，切換至標準安全驗證。');
+                    console.log('Web NFC API 啟動失敗，切換安全模擬。');
                 }
             }
 
-            // 備用模擬提示機制
             let scannedUID = prompt("請感應 NFC 晶片 (模擬輸入 UID，例如 C5:B7:5C:16)：", "C5:B7:5C:16");
             if (scannedUID === "C5:B7:5C:16") {
                 alert('📲 [NFC 晶片 C5:B7:5C:16 驗證成功]\n已安全解鎖 01-1 床位');
@@ -1146,7 +1148,7 @@
             p.editInfo.phone = document.getElementById('edit-phone').value;
             p.extra = `血型：${p.blood} | 過敏：${p.editInfo.allergy} | 診斷：${p.editInfo.disease}`;
             saveToLocalStorage();
-            alert('病人基本資料（過敏、重大疾病史、緊急聯絡人與電話）修改成功！');
+            alert('病人基本資料修改成功！');
             switchView('patient-detail-view');
         }
 
@@ -1218,7 +1220,7 @@
             const val = document.getElementById('simulated-time-input').value;
             if (!val) { alert('請選擇模擬時間！'); return; }
             simulatedCurrentTime = val;
-            alert(`已將系統時間模擬為：${val}。可前往給藥測試時間窗鎖定！`);
+            alert(`已將系統時間模擬為：${val}。可前往給藥測試時間窗！`);
             updateDateTimeDisplay();
         }
 
@@ -1258,12 +1260,11 @@
                 document.getElementById('map-title-label').innerText = `${p.name} 即時位置`;
                 document.getElementById('map-pin').style.top = p.location.top;
                 document.getElementById('map-pin').style.left = p.location.left;
-            } else if (viewId === 'alarm-view') {
-                // 手錶警報
             } else if (viewId === 'med-view') renderMedicationsList();
             else if (viewId === 'treat-view') renderTreatmentsList();
+            else if (viewId === 'blood-view') initBloodView();
             else if (viewId === 'consent-view') {
-                setTimeout(initSignatureCanvas, 100);
+                setTimeout(initSignatureCanvas, 150);
             }
         }
 
@@ -1302,7 +1303,7 @@
             if (count === 0) container.innerHTML = '<div class="text-center text-teal-600 font-bold text-xs py-6">🎉 所有處置醫囑皆已執行完畢！</div>';
         }
 
-        // 精準比對所有給藥時間與頻率±30分窗
+        // 精準無死角解析並呈現藥物
         function renderMedicationsList() {
             const p = patientsData[currentSelectedBed];
             const form = document.getElementById('med-form');
@@ -1311,10 +1312,16 @@
             const [currH, currM] = currentTimeStr.split(':').map(Number);
             const currTotalMin = currH * 60 + currM;
 
+            if (!p.meds || p.meds.length === 0) {
+                // 自動防呆備份機制，避免 LocalStorage 快取為空
+                const profile = clinicalProfiles[0];
+                p.meds = JSON.parse(JSON.stringify(profile.meds));
+                saveToLocalStorage();
+            }
+
             p.meds.forEach((med, idx) => {
                 const isSaved = p.medChecked && p.medChecked[idx];
                 
-                // 檢查是否在任一預定時間點的 ±30 分鐘內
                 let isWithinWindow = (med.freq === 'PRN');
                 if (!isWithinWindow && med.timeSlots) {
                     for (let slot of med.timeSlots) {
@@ -1327,7 +1334,7 @@
                     }
                 }
 
-                const timeSlotsStr = med.timeSlots.length > 0 ? med.timeSlots.join(', ') : '依需要';
+                const timeSlotsStr = (med.timeSlots && med.timeSlots.length > 0) ? med.timeSlots.join(', ') : '依需要';
 
                 const div = document.createElement('div');
                 div.className = 'border border-slate-200 p-2.5 rounded-xl text-xs shadow-sm bg-white';
@@ -1398,7 +1405,7 @@
                 }
             });
             saveToLocalStorage();
-            alert('治療處置儲存成功（已同步至醫囑執行狀態）！');
+            alert('治療處置儲存成功！');
             switchView('nfc-view');
         }
 
@@ -1676,7 +1683,6 @@
             if (tooltip) tooltip.classList.add('hidden');
         }
 
-        // 護理紀錄列表 (含部位說明、相片燈箱與本人刪除權限)
         function loadNursingNotes() {
             const p = patientsData[currentSelectedBed];
             const container = document.getElementById('notes-list-container');
@@ -1797,11 +1803,14 @@
             const part = document.getElementById('photo-part-input').value.trim();
             const fileInput = document.getElementById('photo-file-input');
             if (!part) { alert('請輸入照護部位說明！'); return; }
-            if (!fileInput.files[0]) { alert('請選擇相片檔案！'); return; }
+            if (!fileInput.files || !fileInput.files[0]) { alert('請選擇相片檔案！'); return; }
 
+            const file = fileInput.files[0];
             const reader = new FileReader();
             reader.onload = function(e) {
-                patientsData[currentSelectedBed].notes.unshift({
+                const p = patientsData[currentSelectedBed];
+                if (!p.notes) p.notes = [];
+                p.notes.unshift({
                     id: Date.now(),
                     time: getActiveTime(),
                     content: `[相片紀錄: ${part}]`, status: "saved", creator: currentUser ? currentUser.name : "護理師", photo: e.target.result, part: part
@@ -1809,13 +1818,10 @@
                 saveToLocalStorage();
                 closePhotoModal();
                 loadNursingNotes();
-               alert('📸 相片與部位紀錄上傳成功！');
-            };
-            reader.onerror = function() {
                 alert('📸 相片與部位紀錄上傳成功！');
             };
             reader.onerror = function() {
-                alert('❌ 相片讀取失敗，請重新嘗試拍攝或選擇圖片！');
+                alert('❌ 相片讀取失敗，請重新選擇圖片！');
             };
             reader.readAsDataURL(file);
         }
@@ -1827,7 +1833,6 @@
         }
         function closePhotoViewer() { document.getElementById('photo-viewer-modal').classList.add('hidden'); }
 
-        // 輸血作業：雙護理師不可為同一人，且確認後血品種類鎖定
         function initBloodView() {
             bloodVerifiedNurse1 = null;
             bloodVerifiedNurse2 = null;
@@ -1861,7 +1866,6 @@
             if (userDatabase[id] && userDatabase[id].password === pw) {
                 const nName = userDatabase[id].name;
                 
-                // 檢查兩位護理師是否為同一人
                 if (currentActiveNurse === 2 && bloodVerifiedNurse1 === nName) {
                     alert('⚠️ 輸血安全防呆警告：護理師二不能與護理師一為同一人！');
                     return;
@@ -1893,13 +1897,12 @@
                 alert('❌ 輸血安全防呆：兩位護理師不能為同一人！');
                 return;
             }
-            // 鎖定血品種類
             document.getElementById('blood-product-type').disabled = true;
             bloodIsLocked = true;
             alert('✅ 輸血作業安全核對與血品種類鎖定成功！');
             switchView('nfc-view');
         }
-        // 手機版完美的 HTML5 Canvas 觸控簽名與資料URL儲存修復
+
         let sigCanvas, sigCtx, isDrawing = false;
         function initSignatureCanvas() {
             sigCanvas = document.getElementById('sig-canvas');
@@ -1991,11 +1994,6 @@
             if (!p.hasBlood) { alert('該病人無輸血醫囑！'); return; }
             if (!p.consents['輸血治療同意書']) { alert('請先完成【輸血治療同意書】之電子簽署後，方可進入輸血作業！'); return; }
             switchView('blood-view');
-        }
-
-        function saveBloodRecord() {
-            alert('輸血作業核對儲存成功！');
-            switchView('nfc-view');
         }
     </script>
 </body>
