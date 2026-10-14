@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>專題_亞東紀念醫院 手機版醫療照護系統10/15版</title>
+    <title>亞東紀念醫院 手機版醫療照護系統</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&display=swap');
@@ -123,16 +123,16 @@
                 </div>
                 <div id="welcome-text" class="text-base font-bold text-slate-700 tracking-wide text-center">--，您好</div>
                 <div class="w-full space-y-2">
-                    <button id="btn-home-nfc" onclick="handleNFCScan()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-sm py-2.5 rounded-xl shadow-sm border border-slate-200 text-center">📲 感應 NFC 晶片</button>
+                    <button id="btn-home-nfc" onclick="handleNFCScan()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-sm py-2.5 rounded-xl shadow-sm border border-slate-200 text-center">感應 NFC 晶片</button>
                     <button onclick="switchView('patient-list-view')" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 rounded-xl shadow-sm border border-slate-200 text-center">
                         <div class="text-sm font-bold leading-tight">病床清單查詢</div>
                         <div class="text-[10px] font-normal text-slate-500 mt-0.5">檢視責任床位與全病房總覽</div>
                     </button>
                     <div id="ns-admin-panel" class="hidden pt-0.5">
-                        <button onclick="openNSAdminModal()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-2 rounded-xl text-xs transition shadow border border-slate-700">護理排班設定 (綁定病人)</button>
+                        <button onclick="openNSAdminModal()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-2 rounded-xl text-xs transition shadow border border-slate-700">護理排班設定</button>
                     </div>
                     <div id="jia-admin-panel" class="hidden pt-0.5">
-                        <button onclick="openJiaAdminModal()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-2 rounded-xl text-xs transition shadow border border-slate-700">Jia 管理控制台 (時間模擬/重置)</button>
+                        <button onclick="openJiaAdminModal()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-2 rounded-xl text-xs transition shadow border border-slate-700">管理控制台</button>
                     </div>
                 </div>
             </div>
@@ -183,11 +183,11 @@
         <div id="upload-menu-view" class="hidden w-full flex-1 flex flex-col justify-between pt-6 pb-2 overflow-hidden">
             <div class="text-xs font-bold text-slate-700 text-center py-1 bg-slate-100 rounded-md">選擇要上傳的臨床生理量測項目</div>
             <div class="flex-1 flex flex-col justify-center space-y-2.5 px-2">
-                <button onclick="switchView('vitals-upload-view')" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 rounded-xl shadow-sm border text-xs">上傳生命徵象</button>
-                <button onclick="switchView('io-upload-view')" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 rounded-xl shadow-sm border text-xs">上傳 I/O </button>
+                <button onclick="switchView('vitals-upload-view')" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 rounded-xl shadow-sm border text-xs">生命徵象</button>
+                <button onclick="switchView('io-upload-view')" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 rounded-xl shadow-sm border text-xs">I/O</button>
                 <button onclick="switchView('wh-upload-view')" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 rounded-xl shadow-sm border text-xs">上傳 身高 / 體重</button>
-                <button onclick="switchView('gcs-upload-view')" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 rounded-xl shadow-sm border text-xs">上傳 GCS </button>
-                <button onclick="switchView('mp-upload-view')" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 rounded-xl shadow-sm border text-xs">上傳 Muscle Power</button>
+                <button onclick="switchView('gcs-upload-view')" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 rounded-xl shadow-sm border text-xs">GCS</button>
+                <button onclick="switchView('mp-upload-view')" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 rounded-xl shadow-sm border text-xs">Muscle Power</button>
             </div>
             <div class="w-full px-2 mb-2 flex items-center shrink-0">
                 <button onclick="switchView('nfc-view')" class="w-10 h-10 bg-slate-800 hover:bg-slate-900 text-white rounded-full flex items-center justify-center text-sm">❮</button>
@@ -241,7 +241,7 @@
                 </div>
 
                 <div class="w-full grid grid-cols-2 gap-2 pt-1">
-                    <button onclick="openAdvancedQueryView()" class="col-span-2 bg-teal-700 hover:bg-teal-800 text-white font-bold py-3 px-2 rounded-xl shadow-sm text-xs text-center">查詢生理測量記錄 (含折線圖與總計表格)</button>
+                    <button onclick="openAdvancedQueryView()" class="col-span-2 bg-teal-700 hover:bg-teal-800 text-white font-bold py-3 px-2 rounded-xl shadow-sm text-xs text-center">查詢生理測量記錄</button>
                     <button onclick="loadPatientOrders(); switchView('orders-status-view');" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold py-2.5 px-2 rounded-xl shadow-sm border border-slate-200 text-xs text-center">醫囑執行狀態</button>
                     <button onclick="loadNursingNotes(); switchView('nursing-notes-list-view');" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold py-2.5 px-2 rounded-xl shadow-sm border border-slate-200 text-xs text-center">護理紀錄</button>
                     <button id="btn-detail-location" onclick="openPatientLocation(); switchView('patient-location-view');" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold py-2.5 px-2 rounded-xl shadow-sm border border-slate-200 text-xs text-center">病人定位</button>
@@ -403,7 +403,7 @@
 
         <!-- 6. 上傳 V/S 頁面 -->
         <div id="vitals-upload-view" class="hidden w-full flex-1 flex flex-col justify-between pt-6 pb-2 overflow-hidden">
-            <div class="text-xs font-bold text-slate-700 text-center py-1 bg-slate-100 rounded-md">V/S 數據輸入 (異常紅字標準檢查)</div>
+            <div class="text-xs font-bold text-slate-700 text-center py-1 bg-slate-100 rounded-md">生命徵象數據輸入</div>
             <div class="flex-1 flex flex-col justify-between py-2 space-y-2 overflow-y-auto pr-1">
                 <div class="border border-slate-200 bg-white p-3 rounded-xl shadow-sm space-y-2 text-xs font-semibold text-slate-700">
                     <div class="flex items-center justify-between"><span>T (°C):</span><input type="number" step="0.1" id="input-t" oninput="checkVitalInputColor(this, 't')" placeholder="36.5" class="w-24 input-bg px-2 py-1 rounded text-center"></div>
@@ -419,7 +419,7 @@
                     <div class="flex items-center justify-between"><span>SPO2 (max 100%):</span><input type="number" min="0" max="100" id="input-spo2" oninput="checkVitalInputColor(this, 'spo2')" placeholder="98" class="w-24 input-bg px-2 py-1 rounded text-center"></div>
                     <div class="flex items-center justify-between"><span>Pain (0-10):</span><input type="number" min="0" max="10" id="input-pain" oninput="checkVitalInputColor(this, 'pain')" placeholder="0" class="w-24 input-bg px-2 py-1 rounded text-center"></div>
                 </div>
-                <button onclick="saveVitalsData()" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-2.5 rounded-xl shadow text-xs">儲存 V/S</button>
+                <button onclick="saveVitalsData()" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-2.5 rounded-xl shadow text-xs">儲存</button>
             </div>
             <div class="w-full px-2 mb-2 flex items-center shrink-0">
                 <button onclick="switchView('upload-menu-view')" class="w-10 h-10 bg-slate-800 hover:bg-slate-900 text-white rounded-full flex items-center justify-center text-sm">❮</button>
@@ -428,22 +428,24 @@
 
         <!-- 6.1 I/O 上傳頁面 -->
         <div id="io-upload-view" class="hidden w-full flex-1 flex flex-col justify-between pt-6 pb-2 overflow-hidden">
-            <div class="text-xs font-bold text-slate-700 text-center py-1 bg-slate-100 rounded-md">I/O 24小時一日總計輸入</div>
+            <div id="io-title-label" class="text-xs font-bold text-slate-700 text-center py-1 bg-slate-100 rounded-md">幾月幾日I/O輸入</div>
             <div class="flex-1 flex flex-col justify-between py-2 space-y-2 overflow-y-auto pr-1">
                 <div class="border border-slate-200 bg-white p-3 rounded-xl shadow-sm space-y-2 text-xs font-semibold text-slate-700">
                     <div class="text-teal-800 font-bold border-b pb-1">輸入 (Intake)</div>
+                    <div class="flex items-center justify-between"><span>食物 (ml):</span><input type="number" id="io-in-food" placeholder="ml" class="w-24 input-bg px-2 py-1 rounded text-center"></div>
                     <div class="flex items-center justify-between"><span>飲水 (ml):</span><input type="number" id="io-in-water" placeholder="ml" class="w-24 input-bg px-2 py-1 rounded text-center"></div>
-                    <div class="flex items-center justify-between"><span>食物 (ml):</span><input type="number" id="io-in-iv" placeholder="ml" class="w-24 input-bg px-2 py-1 rounded text-center"></div>
-                    <div class="flex items-center justify-between"><span>靜脈滴注 (ml):</span><input type="number" id="io-in-blood" placeholder="ml" class="w-24 input-bg px-2 py-1 rounded text-center"></div>
+                    <div class="flex items-center justify-between"><span>靜脈點滴 (ml):</span><input type="number" id="io-in-iv" placeholder="ml" class="w-24 input-bg px-2 py-1 rounded text-center"></div>
+                    <div class="flex items-center justify-between"><span>血品 (ml):</span><input type="number" id="io-in-blood" placeholder="ml" class="w-24 input-bg px-2 py-1 rounded text-center"></div>
                     <div class="flex items-center justify-between"><span>其他輸入 (ml):</span><input type="number" id="io-in-other" placeholder="ml" class="w-24 input-bg px-2 py-1 rounded text-center"></div>
                     
                     <div class="text-rose-800 font-bold border-b pb-1 pt-2">輸出 (Output)</div>
-                    <div class="flex items-center justify-between"><span>尿液/糞便 (ml):</span><input type="number" id="io-out-urine" placeholder="ml" class="w-24 input-bg px-2 py-1 rounded text-center"></div>
-                    <div class="flex items-center justify-between"><span>嘔吐物 (ml):</span><input type="number" id="io-out-drain" placeholder="ml" class="w-24 input-bg px-2 py-1 rounded text-center"></div>
-                    <div class="flex items-center justify-between"><span>引流 (ml):</span><input type="number" id="io-out-vomit" placeholder="ml" class="w-24 input-bg px-2 py-1 rounded text-center"></div>
+                    <div class="flex items-center justify-between"><span>尿液 (ml):</span><input type="number" id="io-out-urine" placeholder="ml" class="w-24 input-bg px-2 py-1 rounded text-center"></div>
+                    <div class="flex items-center justify-between"><span>糞便 (ml):</span><input type="number" id="io-out-stool" placeholder="ml" class="w-24 input-bg px-2 py-1 rounded text-center"></div>
+                    <div class="flex items-center justify-between"><span>引流 (ml):</span><input type="number" id="io-out-drain" placeholder="ml" class="w-24 input-bg px-2 py-1 rounded text-center"></div>
+                    <div class="flex items-center justify-between"><span>嘔吐物 (ml):</span><input type="number" id="io-out-vomit" placeholder="ml" class="w-24 input-bg px-2 py-1 rounded text-center"></div>
                     <div class="flex items-center justify-between"><span>其他輸出 (ml):</span><input type="number" id="io-out-other" placeholder="ml" class="w-24 input-bg px-2 py-1 rounded text-center"></div>
                 </div>
-                <button onclick="saveIOData()" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-2.5 rounded-xl shadow text-xs">儲存 24H I/O 數據</button>
+                <button onclick="saveIOData()" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-2.5 rounded-xl shadow text-xs">儲存</button>
             </div>
             <div class="w-full px-2 mb-2 flex items-center shrink-0">
                 <button onclick="switchView('upload-menu-view')" class="w-10 h-10 bg-slate-800 hover:bg-slate-900 text-white rounded-full flex items-center justify-center text-sm">❮</button>
@@ -458,7 +460,7 @@
                     <div class="flex items-center justify-between"><span>身高 (CM):</span><input type="number" step="0.1" id="input-height" placeholder="CM" class="w-28 input-bg px-2 py-1.5 rounded text-center"></div>
                     <div class="flex items-center justify-between"><span>體重 (KG):</span><input type="number" step="0.1" id="input-weight" placeholder="KG" class="w-28 input-bg px-2 py-1.5 rounded text-center"></div>
                 </div>
-                <button onclick="saveWHData()" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-2.5 rounded-xl shadow text-xs">儲存身高體重</button>
+                <button onclick="saveWHData()" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-2.5 rounded-xl shadow text-xs">儲存</button>
             </div>
             <div class="w-full px-2 mb-2 flex items-center shrink-0">
                 <button onclick="switchView('upload-menu-view')" class="w-10 h-10 bg-slate-800 hover:bg-slate-900 text-white rounded-full flex items-center justify-center text-sm">❮</button>
@@ -467,14 +469,14 @@
 
         <!-- 6.3 GCS 上傳 -->
         <div id="gcs-upload-view" class="hidden w-full flex-1 flex flex-col justify-between pt-6 pb-2 overflow-hidden">
-            <div class="text-xs font-bold text-slate-700 text-center py-1 bg-slate-100 rounded-md">GCS 昏迷指數 (E1-4, V1-5, M1-6)</div>
+            <div class="text-xs font-bold text-slate-700 text-center py-1 bg-slate-100 rounded-md">上傳GCS</div>
             <div class="flex-1 flex flex-col justify-center space-y-3 px-2">
                 <div class="border border-slate-200 bg-white p-4 rounded-xl shadow-sm space-y-3 text-xs font-semibold text-slate-700">
                     <div class="flex items-center justify-between"><span>睜眼 E (1-4):</span><input type="number" min="1" max="4" id="gcs-e" oninput="checkGCSLimit(this, 1, 4)" placeholder="4" class="w-24 input-bg px-2 py-1.5 rounded text-center"></div>
                     <div class="flex items-center justify-between"><span>語言 V (1-5):</span><input type="number" min="1" max="5" id="gcs-v" oninput="checkGCSLimit(this, 1, 5)" placeholder="5" class="w-24 input-bg px-2 py-1.5 rounded text-center"></div>
                     <div class="flex items-center justify-between"><span>運動 M (1-6):</span><input type="number" min="1" max="6" id="gcs-m" oninput="checkGCSLimit(this, 1, 6)" placeholder="6" class="w-24 input-bg px-2 py-1.5 rounded text-center"></div>
                 </div>
-                <button onclick="saveGCSData()" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-2.5 rounded-xl shadow text-xs">儲存 GCS 指數</button>
+                <button onclick="saveGCSData()" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-2.5 rounded-xl shadow text-xs">儲存</button>
             </div>
             <div class="w-full px-2 mb-2 flex items-center shrink-0">
                 <button onclick="switchView('upload-menu-view')" class="w-10 h-10 bg-slate-800 hover:bg-slate-900 text-white rounded-full flex items-center justify-center text-sm">❮</button>
@@ -483,7 +485,7 @@
 
         <!-- 6.4 肌力 M/P 上傳 -->
         <div id="mp-upload-view" class="hidden w-full flex-1 flex flex-col justify-between pt-6 pb-2 overflow-hidden">
-            <div class="text-xs font-bold text-slate-700 text-center py-1 bg-slate-100 rounded-md">四肢肌力 M/P 評估 (0-5分)</div>
+            <div class="text-xs font-bold text-slate-700 text-center py-1 bg-slate-100 rounded-md">Muscle Power</div>
             <div class="flex-1 flex flex-col justify-center space-y-3 px-2">
                 <div class="border border-slate-200 bg-white p-4 rounded-xl shadow-sm space-y-2 text-xs font-semibold text-slate-700">
                     <div class="grid grid-cols-2 gap-2">
@@ -493,7 +495,7 @@
                         <div class="flex items-center justify-between"><span>左下肢:</span><input type="number" min="0" max="5" id="mp-lle" oninput="checkMPLimit(this)" placeholder="5" class="w-16 input-bg px-1 py-1 rounded text-center"></div>
                     </div>
                 </div>
-                <button onclick="saveMPData()" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-2.5 rounded-xl shadow text-xs">儲存肌力 M/P</button>
+                <button onclick="saveMPData()" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-2.5 rounded-xl shadow text-xs">儲存</button>
             </div>
             <div class="w-full px-2 mb-2 flex items-center shrink-0">
                 <button onclick="switchView('upload-menu-view')" class="w-10 h-10 bg-slate-800 hover:bg-slate-900 text-white rounded-full flex items-center justify-center text-sm">❮</button>
@@ -502,15 +504,15 @@
 
         <!-- 7. 查詢生理測量記錄 -->
         <div id="advanced-query-view" class="hidden w-full flex-1 flex flex-col justify-between pt-6 pb-2 overflow-hidden">
-            <div class="text-xs font-bold text-slate-700 text-center py-1 bg-slate-100 rounded-md">生理測量記錄與 I/O 總結算表格查詢</div>
+            <div class="text-xs font-bold text-slate-700 text-center py-1 bg-slate-100 rounded-md">查詢記錄</div>
             <div class="flex-1 flex flex-col py-2 space-y-2 overflow-y-auto pr-1">
                 <div class="flex space-x-1 shrink-0 px-1">
                     <select id="adv-query-type" onchange="renderAdvancedChart()" class="w-full input-bg h-9 px-2 rounded text-xs font-bold text-slate-800">
-                        <option value="MP">M/P 四肢肌力 (四色折線圖)</option>
-                        <option value="IO">I/O 24H 總結算表格 (淨值對照)</option>
-                        <option value="WH">身高 / 體重 折線趨勢圖</option>
-                        <option value="GCS">GCS 昏迷指數 折線圖</option>
-                        <option value="TPR">TPR 生命徵象紀錄 (含異常紅字)</option>
+                        <option value="MP">Muscle Power</option>
+                        <option value="IO">I/O 每日統計</option>
+                        <option value="WH">身高 / 體重</option>
+                        <option value="GCS">GCS</option>
+                        <option value="TPR">生命徵象</option>
                     </select>
                 </div>
 
@@ -523,14 +525,14 @@
 
         <!-- 8. 給藥作業頁面 -->
         <div id="med-view" class="hidden w-full flex-1 flex flex-col justify-between pt-6 pb-2 overflow-hidden">
-            <div class="text-xs font-bold text-slate-700 text-center py-1 bg-slate-100 rounded-md">給藥作業核對 (精準頻率時間・限時±30分)</div>
+            <div class="text-xs font-bold text-slate-700 text-center py-1 bg-slate-100 rounded-md">藥物三讀五對</div>
             <div class="flex-1 flex flex-col justify-between py-2 space-y-2 overflow-y-auto">
                 <div class="border border-slate-200 bg-slate-50 p-2.5 rounded-xl text-xs space-y-0.5 shadow-sm shrink-0">
                     <div id="med-bed-name" class="font-bold text-slate-900">01-1 林Ｏ資 (男)</div>
                     <div id="med-bed-dob" class="text-[11px] text-slate-600 font-medium">出生年月日：1985/04/12</div>
                 </div>
                 <div id="med-form" class="space-y-2 overflow-y-auto flex-1 pr-1"></div>
-                <button onclick="saveMedications()" class="w-full bg-rose-500 hover:bg-rose-600 text-white font-bold py-2.5 rounded-xl shadow text-sm shrink-0">確認儲存給藥</button>
+                <button onclick="saveMedications()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl shadow text-sm shrink-0">已完成給藥</button>
             </div>
             <div class="w-full px-2 mb-2 flex items-center shrink-0">
                 <button onclick="switchView('nfc-view')" class="w-10 h-10 bg-slate-800 hover:bg-slate-900 text-white rounded-full flex items-center justify-center text-sm">❮</button>
@@ -556,26 +558,14 @@
         <div id="blood-view" class="hidden w-full flex-1 flex flex-col justify-between pt-6 pb-2 overflow-hidden">
             <div class="text-xs font-bold text-slate-700 text-center py-1 bg-slate-100 rounded-md">雙護理師輸血安全核對</div>
             <div class="flex-1 flex flex-col justify-between py-2 space-y-2.5 overflow-y-auto">
-<div class="border border-slate-200 bg-slate-50 p-2.5 rounded-xl shadow-sm text-slate-800 space-y-1 shrink-0">
-
-    <div class="text-sm font-bold text-slate-900 text-center border-b pb-1">
-        輸血三讀五對
-    </div>
-
-    <div class="flex justify-between items-center text-xs font-bold">
-        <span id="detail-bed-name" class="truncate">01-1 林Ｏ資 (男)</span>
-
-        <div class="flex space-x-1 shrink-0">
-            <span id="detail-isolation-badge" class="hidden"></span>
-            <span id="detail-nurse-badge">許Ｏ媃</span>
-        </div>
-    </div>
-
-    <div id="detail-patient-info" class="text-[11px] text-slate-600">
-        1985/04/12 (41Y) | 病例號：1031988001
-    </div>
-
-</div>
+                <div class="border border-slate-300 bg-slate-50 p-2.5 rounded-xl text-xs space-y-1 shadow-sm shrink-0">
+                    <div class="text-center font-bold text-sm border-b pb-1 text-slate-800">輸血三讀五對</div>
+                    <div id="blood-patient-tag-box" class="space-y-0.5">
+                        <div id="blood-bed-name" class="font-bold text-slate-900">01-1 林Ｏ資 (男)</div>
+                        <div id="blood-patient-info" class="text-[11px] text-slate-600">1985/04/12 (41Y) | 病例號：1031988001</div>
+                        <div id="blood-patient-extra" class="text-[11px] text-rose-600 font-medium">血型：O+ | 過敏：Penicillin | 診斷：AMI</div>
+                    </div>
+                </div>
                 <div class="bg-amber-50 border border-amber-300 p-2.5 rounded-xl shadow-sm space-y-1">
                     <div class="flex justify-between items-center text-xs font-bold text-amber-900">
                         <span>血品種類：</span>
@@ -604,6 +594,8 @@
             <div class="flex-1 flex flex-col justify-between py-2 space-y-2 overflow-y-auto">
                 <div class="border border-slate-200 bg-slate-50 p-2.5 rounded-xl text-xs space-y-0.5 shadow-sm shrink-0">
                     <div id="consent-bed-name" class="font-bold text-slate-900">01-1 林Ｏ資 (男)</div>
+                    <div id="consent-patient-info" class="text-[11px] text-slate-600">1985/04/12 (41Y) | 病例號：1031988001</div>
+                    <div id="consent-patient-extra" class="text-[11px] text-rose-600 font-medium">血型：O+ | 過敏：Penicillin | 診斷：AMI</div>
                 </div>
                 <div class="space-y-2 flex-1">
                     <div>
@@ -670,11 +662,12 @@
         <div id="ns-admin-modal" class="hidden absolute inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-3">
             <div class="bg-white w-full max-w-[320px] p-4 rounded-2xl shadow-2xl space-y-3 border border-slate-200 flex flex-col max-h-[92vh]">
                 <div class="flex justify-between items-center border-b pb-2">
-                    <span class="font-bold text-sm text-slate-800">護理人員排班設定</span>
+                    <span class="font-bold text-sm text-slate-800">護理排班設定</span>
                     <button onclick="closeNSAdminModal()" class="text-slate-400 hover:text-slate-600 font-bold text-base">✕</button>
                 </div>
-                <div class="text-[11px] text-slate-600 font-medium bg-slate-100 p-2 rounded-lg border border-slate-200">
-                    請選擇護理師，並勾選分配給他的負責床位 (每人最多 7 床)：
+                <div class="text-[11px] text-slate-600 font-medium bg-slate-100 p-2 rounded-lg border border-slate-200 flex justify-between items-center">
+                    <span>請選擇護理師，並快速選取或清除床位：</span>
+                    <button onclick="clearAllNurseBeds()" class="bg-rose-500 hover:bg-rose-600 text-white font-bold px-2 py-1 rounded text-[10px] transition">清除全部選擇</button>
                 </div>
                 <div class="space-y-2">
                     <label class="text-xs font-bold text-slate-700">選擇護理師：</label>
@@ -688,7 +681,10 @@
                         <option value="劉家裕">劉家裕</option>
                     </select>
                 </div>
-                <div class="text-xs font-bold text-slate-700">勾選負責床位：</div>
+                <div class="flex justify-between items-center text-xs font-bold text-slate-700">
+                    <span>勾選負責床位：</span>
+                    <button onclick="quickSelectBeds(7)" class="text-teal-700 hover:underline text-[11px]">快速選取前7床</button>
+                </div>
                 <div id="schedule-beds-checkboxes" class="flex-1 overflow-y-auto space-y-1 pr-1 max-h-[200px] border border-slate-200 p-2 rounded-xl bg-slate-50"></div>
                 <button onclick="saveNurseSchedule()" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-2.5 rounded-xl text-xs transition">儲存排班設定</button>
             </div>
@@ -698,20 +694,23 @@
         <div id="jia-admin-modal" class="hidden absolute inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-3">
             <div class="bg-white w-full max-w-[320px] p-4 rounded-2xl shadow-2xl space-y-3 border border-slate-200 flex flex-col max-h-[92vh]">
                 <div class="flex justify-between items-center border-b pb-2">
-                    <span class="font-bold text-sm text-slate-800">Jia 管理控制台</span>
+                    <span class="font-bold text-sm text-slate-800">管理員：劉家裕</span>
                     <button onclick="closeJiaAdminModal()" class="text-slate-400 hover:text-slate-600 font-bold text-base">✕</button>
                 </div>
                 
                 <div class="bg-teal-50 border border-teal-200 p-2.5 rounded-xl space-y-1.5 text-xs">
-                    <div class="font-bold text-teal-900">⏰ 時間模擬器設定 (測試給藥時間窗)</div>
+                    <div class="font-bold text-teal-900">時間調整設定</div>
                     <div class="flex items-center space-x-2">
                         <input type="time" id="simulated-time-input" class="input-bg h-8 px-2 rounded text-xs font-bold text-slate-800 w-28">
                         <button onclick="applySimulatedTime()" class="bg-teal-600 hover:bg-teal-700 text-white font-bold px-2 py-1.5 rounded text-xs transition">套用</button>
-                        <button onclick="cancelSimulatedTime()" class="bg-slate-600 hover:bg-slate-700 text-white font-bold px-2 py-1.5 rounded text-xs transition">取消(回到中原)</button>
+                        <button onclick="cancelSimulatedTime()" class="bg-slate-600 hover:bg-slate-700 text-white font-bold px-2 py-1.5 rounded text-xs transition">標準時間</button>
                     </div>
                 </div>
 
-                <div class="text-xs font-bold text-slate-700">全病房床位資料完整重置：</div>
+                <div class="flex justify-between items-center text-xs font-bold text-slate-700">
+                    <span>全病房床位資料重置：</span>
+                    <button onclick="jiaResetAllBeds()" class="bg-rose-600 hover:bg-rose-700 text-white font-bold px-2.5 py-1 rounded text-[11px] transition shadow-xs">一鍵重置全病房</button>
+                </div>
                 <div class="flex-1 overflow-y-auto space-y-1.5 pr-1 max-h-[160px]" id="jia-admin-bed-list"></div>
                 <button onclick="closeJiaAdminModal()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-2 rounded-xl text-xs transition">關閉面板</button>
             </div>
@@ -748,7 +747,7 @@
             "yeh": { password: "1127", name: "葉映誠", role: "nurse" }
         };
 
-        let nurseBedAssignments = JSON.parse(localStorage.getItem('femh_nurse_schedule_vBloodFixed')) || {
+        let nurseBedAssignments = JSON.parse(localStorage.getItem('femh_nurse_schedule_vFixed9')) || {
             "許Ｏ媃": [], "劉Ｏ綺": [], "游Ｏ妤": [], "張Ｏ綺": [], "張Ｏ蓉": [], "葉映誠": [], "劉家裕": []
         };
 
@@ -852,7 +851,7 @@
                         info: `1985/04/12 (41Y) | 病例號：103198${room}${b}`,
                         extra: `血型：O+ | 過敏：${profile.allergy} | 診斷：${profile.disease}`,
                         isolation: isolationTag, transferTag: transferTag,
-                        assignedNurse: "未指派",
+                        assignedNurse: "",
                         hasBlood: (bedKey === "01-1"),
                         hasConsent: (bedKey === "01-1"),
                         hasIO: true, hasGCS: true, hasMP: true,
@@ -876,8 +875,8 @@
             return data;
         }
 
-        let patientsData = JSON.parse(localStorage.getItem('femh_45beds_vBloodFixed')) || generateDefaultPatients();
-        let globalSharedMemo = localStorage.getItem('femh_shared_memo_vBloodFixed') || "全病房交班注意事項：請落實三讀五對、洗手規範與生命徵象異常回報。";
+        let patientsData = JSON.parse(localStorage.getItem('femh_45beds_vFixed9')) || generateDefaultPatients();
+        let globalSharedMemo = localStorage.getItem('femh_shared_memo_vFixed9') || "全病房交班注意事項：請落實三讀五對、洗手規範與生命徵象異常回報。";
         
         let currentUser = null;
         let currentSelectedBed = "01-1"; 
@@ -886,6 +885,9 @@
         let editingNoteId = null;
 
         function syncNurseAssignments() {
+            Object.keys(patientsData).forEach(bedKey => {
+                patientsData[bedKey].assignedNurse = "";
+            });
             Object.keys(nurseBedAssignments).forEach(nurseName => {
                 nurseBedAssignments[nurseName].forEach(bedKey => {
                     if (patientsData[bedKey]) patientsData[bedKey].assignedNurse = nurseName;
@@ -913,22 +915,13 @@
         function updateDynamicMarquee() {
             const marquee = document.getElementById('dynamic-marquee');
             if (!marquee) return;
-            let uncompletedCount = 0;
-            Object.keys(patientsData).forEach(bed => {
-                const p = patientsData[bed];
-                if (!p.isEmpty && p.treats) {
-                    p.treats.forEach((t, idx) => {
-                        if (!p.treatChecked || !p.treatChecked[idx]) uncompletedCount++;
-                    });
-                }
-            });
             marquee.innerText = `院內共通公告：落實三讀五對。 ⚠️ 【全病房即時提醒】目前尚有未執行之臨床處置，請各班護理師儘速查核！`;
         }
 
         function saveToLocalStorage() {
-            localStorage.setItem('femh_45beds_vBloodFixed', JSON.stringify(patientsData));
-            localStorage.setItem('femh_shared_memo_vBloodFixed', globalSharedMemo);
-            localStorage.setItem('femh_nurse_schedule_vBloodFixed', JSON.stringify(nurseBedAssignments));
+            localStorage.setItem('femh_45beds_vFixed9', JSON.stringify(patientsData));
+            localStorage.setItem('femh_shared_memo_vFixed9', globalSharedMemo);
+            localStorage.setItem('femh_nurse_schedule_vFixed9', JSON.stringify(nurseBedAssignments));
         }
 
         function handleLogin() {
@@ -1054,43 +1047,56 @@
             const beds = Object.keys(patientsData).sort();
 
             if (currentPatientTab === 'my') {
-                if (currentUser.role === 'ns_scheduler') {
+                if (currentUser && currentUser.role === 'ns_scheduler') {
                     Object.keys(nurseBedAssignments).forEach(nurseName => {
                         const assignedBeds = nurseBedAssignments[nurseName];
                         if (assignedBeds.length === 0) return;
                         const rangeStr = `${assignedBeds[0]} ~ ${assignedBeds[assignedBeds.length - 1]}`;
                         const header = document.createElement('div');
-                        header.className = 'text-xs font-bold text-teal-800 bg-teal-50 px-2.5 py-1.5 rounded-md border border-teal-200 mt-2 flex justify-between items-center';
+                        header.className = 'text-xs font-bold text-teal-800 bg-teal-50 px-3 py-2 rounded-lg border border-teal-200 mt-2 flex justify-between items-center shadow-2xs';
                         header.innerHTML = `<span>護理師：${nurseName}</span><span class="text-[11px] text-slate-600">${rangeStr} (共${assignedBeds.length}床)</span>`;
                         container.appendChild(header);
-
-                        assignedBeds.forEach(bedKey => {
-                            const p = patientsData[bedKey];
-                            if (p) container.appendChild(createPatientRow(bedKey, p));
-                        });
                     });
+                    if (container.children.length === 0) {
+                        container.innerHTML = '<div class="text-center text-slate-400 text-xs py-8">目前無任何護理師排班指派紀錄</div>';
+                    }
                 } else {
-                    const myAssigned = nurseBedAssignments[currentUser.name] || [];
+                    const myAssigned = (currentUser && nurseBedAssignments[currentUser.name]) || [];
                     if (myAssigned.length === 0) {
                         container.innerHTML = '<div class="text-center text-slate-400 text-xs py-8">目前無負責床位（請洽護理站 NS 進行床位綁定）</div>';
                         return;
                     }
                     myAssigned.forEach(bedKey => {
                         const p = patientsData[bedKey];
-                        if (p) container.appendChild(createPatientRow(bedKey, p));
+                        if (p) container.appendChild(createPatientRow(bedKey, p, false));
                     });
                 }
             } else {
-                beds.forEach(bedKey => {
-                    const p = patientsData[bedKey];
-                    container.appendChild(createPatientRow(bedKey, p));
-                });
+                if (currentUser && currentUser.role === 'ns_scheduler') {
+                    Object.keys(nurseBedAssignments).forEach(nurseName => {
+                        const assignedBeds = nurseBedAssignments[nurseName];
+                        if (assignedBeds.length === 0) return;
+                        const rangeStr = `${assignedBeds[0]} ~ ${assignedBeds[assignedBeds.length - 1]}`;
+                        const header = document.createElement('div');
+                        header.className = 'text-xs font-bold text-teal-800 bg-teal-50 px-3 py-2 rounded-lg border border-teal-200 mt-2 flex justify-between items-center shadow-2xs';
+                        header.innerHTML = `<span>護理師：${nurseName}</span><span class="text-[11px] text-slate-600">${rangeStr} (共${assignedBeds.length}床)</span>`;
+                        container.appendChild(header);
+                    });
+                    if (container.children.length === 0) {
+                        container.innerHTML = '<div class="text-center text-slate-400 text-xs py-8">目前全病房無任何護理排班</div>';
+                    }
+                } else {
+                    beds.forEach(bedKey => {
+                        const p = patientsData[bedKey];
+                        container.appendChild(createPatientRow(bedKey, p, true));
+                    });
+                }
             }
         }
 
-        function createPatientRow(bedKey, p) {
+        function createPatientRow(bedKey, p, showNurseName) {
             const btn = document.createElement('button');
-            btn.className = 'w-full bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-800 py-1.5 px-2.5 rounded-xl shadow-2xs text-left flex justify-between items-center transition text-xs my-0.5';
+            btn.className = 'w-full bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-800 py-2 px-3 rounded-xl shadow-2xs text-left flex justify-between items-center transition text-xs my-1';
             
             if (p.isEmpty) {
                 btn.innerHTML = `<span class="text-slate-400 font-normal text-xs">${bedKey} 〔空床待清〕</span>`;
@@ -1106,13 +1112,14 @@
                 const nameParts = p.name.split(' ');
                 const bedNo = nameParts[0];
                 const pNameAndGender = nameParts.slice(1).join(' ');
+                let nurseSpan = (showNurseName && p.assignedNurse) ? `<span class="text-[10px] text-teal-700 font-semibold bg-teal-50 px-1.5 py-0.5 rounded border border-teal-200">(${p.assignedNurse})</span>` : '';
 
                 btn.innerHTML = `
-                    <div class="flex items-center space-x-1 truncate">
+                    <div class="flex items-center space-x-1.5 truncate">
                         ${badgeHtml}
                         <span class="font-bold text-slate-900 text-xs">${bedNo}</span>
                         <span class="font-medium text-slate-800 text-xs">${pNameAndGender}</span>
-                        <span class="text-[10px] text-slate-500 font-normal">(${p.assignedNurse})</span>
+                        ${nurseSpan}
                     </div>
                     <span class="text-slate-400 text-xs">❯</span>
                 `;
@@ -1126,8 +1133,8 @@
             const p = patientsData[bedNumber];
             
             document.querySelectorAll('#detail-bed-name, #nfc-bed-patient, #orders-bed-name, #loc-bed-name, #med-bed-name, #treat-bed-name, #blood-bed-name, #consent-bed-name').forEach(el => el.innerText = p.name);
-            document.querySelectorAll('#detail-patient-info, #nfc-patient-info').forEach(el => el.innerText = p.info);
-            document.querySelectorAll('#detail-patient-extra, #nfc-patient-extra').forEach(el => el.innerText = p.extra);
+            document.querySelectorAll('#detail-patient-info, #nfc-patient-info, #blood-patient-info, #consent-patient-info').forEach(el => el.innerText = p.info);
+            document.querySelectorAll('#detail-patient-extra, #nfc-patient-extra, #blood-patient-extra, #consent-patient-extra').forEach(el => el.innerText = p.extra);
             const dobEl = document.getElementById('med-bed-dob');
             if (dobEl) dobEl.innerText = `出生年月日：${p.dob}`;
 
@@ -1219,6 +1226,22 @@
             });
         }
 
+        function quickSelectBeds(count) {
+            const chks = document.querySelectorAll('.schedule-bed-chk');
+            chks.forEach((chk, idx) => {
+                if (idx < count) chk.checked = true;
+            });
+        }
+
+        function clearAllNurseBeds() {
+            const nurseName = document.getElementById('schedule-nurse-select').value;
+            nurseBedAssignments[nurseName] = [];
+            loadNurseBedSelection();
+            syncNurseAssignments();
+            saveToLocalStorage();
+            alert(`已清除【${nurseName}】所有選取床位！`);
+        }
+
         function saveNurseSchedule() {
             const nurseName = document.getElementById('schedule-nurse-select').value;
             const chks = document.querySelectorAll('.schedule-bed-chk:checked');
@@ -1275,6 +1298,19 @@
             }
         }
 
+        function jiaResetAllBeds() {
+            if (confirm('確定要一鍵完整重置全病房所有床位與排班資料嗎？')) {
+                patientsData = generateDefaultPatients();
+                nurseBedAssignments = {
+                    "許Ｏ媃": [], "劉Ｏ綺": [], "游Ｏ妤": [], "張Ｏ綺": [], "張Ｏ蓉": [], "葉映誠": [], "劉家裕": []
+                };
+                syncNurseAssignments();
+                saveToLocalStorage();
+                alert('全病房資料已全部一鍵重置完成！');
+                openJiaAdminModal();
+            }
+        }
+
         function switchView(viewId) {
             const views = [
                 'login-view', 'home-view', 'nfc-view', 'upload-menu-view', 'patient-list-view', 
@@ -1297,6 +1333,10 @@
             } else if (viewId === 'med-view') renderMedicationsList();
             else if (viewId === 'treat-view') renderTreatmentsList();
             else if (viewId === 'blood-view') initBloodView();
+            else if (viewId === 'io-upload-view') {
+                const now = new Date();
+                document.getElementById('io-title-label').innerText = `${now.getMonth()+1}月${now.getDate()}日 I/O 輸入`;
+            }
             else if (viewId === 'consent-view') {
                 setTimeout(initSignatureCanvas, 150);
             }
@@ -1334,7 +1374,7 @@
                     container.appendChild(item);
                 }
             });
-            if (count === 0) container.innerHTML = '<div class="text-center text-teal-600 font-bold text-xs py-6">所有處置醫囑皆已執行完畢！</div>';
+            if (count === 0) container.innerHTML = '<div class="text-center text-teal-600 font-bold text-xs py-6">🎉 所有處置醫囑皆已執行完畢！</div>';
         }
 
         function renderMedicationsList() {
@@ -1476,32 +1516,52 @@
                 creator: currentUser ? currentUser.name : "護理師"
             });
             saveToLocalStorage();
-            alert('V/S 上傳成功！');
+            document.getElementById('input-t').value = '';
+            document.getElementById('input-p').value = '';
+            document.getElementById('input-r').value = '';
+            document.getElementById('input-bp-sys').value = '';
+            document.getElementById('input-bp-dia').value = '';
+            document.getElementById('input-spo2').value = '';
+            document.getElementById('input-pain').value = '';
+            alert('生命徵象數據儲存成功！');
             switchView('nfc-view');
         }
 
         function saveIOData() {
+            const inFood = parseInt(document.getElementById('io-in-food').value) || 0;
             const inW = parseInt(document.getElementById('io-in-water').value) || 0;
             const inIV = parseInt(document.getElementById('io-in-iv').value) || 0;
             const inB = parseInt(document.getElementById('io-in-blood').value) || 0;
             const inO = parseInt(document.getElementById('io-in-other').value) || 0;
             const outU = parseInt(document.getElementById('io-out-urine').value) || 0;
+            const outStool = parseInt(document.getElementById('io-out-stool').value) || 0;
             const outD = parseInt(document.getElementById('io-out-drain').value) || 0;
             const outV = parseInt(document.getElementById('io-out-vomit').value) || 0;
             const outO = parseInt(document.getElementById('io-out-other').value) || 0;
 
-            const totalIn = inW + inIV + inB + inO;
-            const totalOut = outU + outD + outV + outO;
+            const totalIn = inFood + inW + inIV + inB + inO;
+            const totalOut = outU + outStool + outD + outV + outO;
             const net = totalIn - totalOut;
 
             const p = patientsData[currentSelectedBed];
             if (!p.advancedVitals) p.advancedVitals = [];
+            const now = new Date();
             p.advancedVitals.unshift({
-                time: `10/14`,
+                time: `${now.getMonth()+1}/${now.getDate()}`,
                 type: 'IO', inVal: totalIn, outVal: totalOut, net: net
             });
             saveToLocalStorage();
-            alert(`24H I/O 總結算儲存成功！淨值：${net >= 0 ? '+' + net : net} ml`);
+            document.getElementById('io-in-food').value = '';
+            document.getElementById('io-in-water').value = '';
+            document.getElementById('io-in-iv').value = '';
+            document.getElementById('io-in-blood').value = '';
+            document.getElementById('io-in-other').value = '';
+            document.getElementById('io-out-urine').value = '';
+            document.getElementById('io-out-stool').value = '';
+            document.getElementById('io-out-drain').value = '';
+            document.getElementById('io-out-vomit').value = '';
+            document.getElementById('io-out-other').value = '';
+            alert(`I/O 數據儲存成功！淨值：${net >= 0 ? '+' + net : net} ml`);
             switchView('nfc-view');
         }
 
@@ -1510,11 +1570,14 @@
             const w = parseFloat(document.getElementById('input-weight').value) || 68;
             const p = patientsData[currentSelectedBed];
             if (!p.advancedVitals) p.advancedVitals = [];
+            const now = new Date();
             p.advancedVitals.unshift({
-                time: `10/14`,
+                time: `${now.getMonth()+1}/${now.getDate()}`,
                 type: 'WH', height: h, weight: w
             });
             saveToLocalStorage();
+            document.getElementById('input-height').value = '';
+            document.getElementById('input-weight').value = '';
             alert('身高體重儲存成功！');
             switchView('nfc-view');
         }
@@ -1530,11 +1593,15 @@
             const m = parseInt(document.getElementById('gcs-m').value) || 6;
             const p = patientsData[currentSelectedBed];
             if (!p.advancedVitals) p.advancedVitals = [];
+            const now = new Date();
             p.advancedVitals.unshift({
-                time: `10/14`,
+                time: `${now.getMonth()+1}/${now.getDate()}`,
                 type: 'GCS', e, v, m, score: `E${e}V${v}M${m}`, total: e+v+m
             });
             saveToLocalStorage();
+            document.getElementById('gcs-e').value = '';
+            document.getElementById('gcs-v').value = '';
+            document.getElementById('gcs-m').value = '';
             alert(`GCS 儲存成功 (E${e}V${v}M${m})！`);
             switchView('nfc-view');
         }
@@ -1551,12 +1618,17 @@
             const lle = parseInt(document.getElementById('mp-lle').value) || 5;
             const p = patientsData[currentSelectedBed];
             if (!p.advancedVitals) p.advancedVitals = [];
+            const now = new Date();
             p.advancedVitals.unshift({
-                time: `10/14`,
+                time: `${now.getMonth()+1}/${now.getDate()}`,
                 type: 'MP', rue, lue, rle, lle
             });
             saveToLocalStorage();
-            alert('四肢肌力儲存成功！');
+            document.getElementById('mp-rue').value = '';
+            document.getElementById('mp-lue').value = '';
+            document.getElementById('mp-rle').value = '';
+            document.getElementById('mp-lle').value = '';
+            alert('Muscle Power 儲存成功！');
             switchView('nfc-view');
         }
 
@@ -1607,7 +1679,7 @@
 
             if (qType === 'TPR') {
                 if (!p.vitals || p.vitals.length === 0) {
-                    container.innerHTML = '<div class="text-center text-slate-400 text-xs py-8">無 V/S 紀錄</div>';
+                    container.innerHTML = '<div class="text-center text-slate-400 text-xs py-8">無生命徵象紀錄</div>';
                     return;
                 }
                 p.vitals.forEach(v => {
@@ -1928,11 +2000,11 @@
                 const nName = userDatabase[id].name;
                 
                 if (currentActiveNurse === 2 && bloodVerifiedNurse1 === nName) {
-                    alert('⚠️ 輸血安全警告：護理師不能為同一人！');
+                    alert('⚠️ 輸血安全防呆警告：護理師二不能與護理師一為同一人！');
                     return;
                 }
                 if (currentActiveNurse === 1 && bloodVerifiedNurse2 === nName) {
-                    alert('⚠️ 輸血防呆警告：護理師不能為同一人！');
+                    alert('⚠️ 輸血安全防呆警告：護理師一不能與護理師二為同一人！');
                     return;
                 }
 
