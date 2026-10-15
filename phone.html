@@ -79,7 +79,7 @@
         </div>
 
         <!-- 雲端連線狀態指示燈 -->
-        <div id="cloud-sync-status" class="absolute top-1 right-2 text-[9px] font-bold text-amber-600 z-30">連線</div>
+        <div id="cloud-sync-status" class="absolute top-1 right-2 text-[9px] font-bold text-amber-600 z-30">☁️ 連線中...</div>
 
         <!-- 全院共通訊息跑馬燈 -->
         <div class="w-full overflow-hidden bg-rose-50 py-1 border-b border-rose-200 z-10">
@@ -104,7 +104,7 @@
                 </div>
                 <div class="pt-2">
                     <button onclick="handleLogin()" class="w-full bg-slate-800 hover:bg-slate-900 active:bg-slate-700 py-3 text-base font-semibold text-white transition-colors shadow-md rounded-lg flex items-center justify-center space-x-1">
-                        <span>登入</span><span class="text-[11px] font-normal opacity-75">_模擬病房雲端</span>
+                        <span>登入</span><span class="text-[11px] font-normal opacity-75">_雲端同步版</span>
                     </button>
                 </div>
                 <div id="error-message" class="hidden mt-2 text-center text-rose-600 font-semibold bg-rose-50 py-2 border border-rose-200 rounded-lg text-xs">員編或密碼錯誤，請重新輸入</div>
@@ -131,8 +131,9 @@
                         <div class="text-sm font-bold leading-tight">病床清單查詢</div>
                         <div class="text-[10px] font-normal text-slate-500 mt-0.5">檢視責任床位與全病房總覽 (即時同步)</div>
                     </button>
-                    <div id="ns-admin-panel" class="hidden pt-0.5">
+                    <div id="ns-admin-panel" class="hidden pt-0.5 space-y-1.5">
                         <button onclick="openNSAdminModal()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-2 rounded-xl text-xs transition shadow border border-slate-700">護理排班設定</button>
+                        <button onclick="openNurseManagerModal()" class="w-full bg-teal-700 hover:bg-teal-800 text-white font-bold py-2 rounded-xl text-xs transition shadow border border-teal-600">護理師管理 (新增/修改/刪除)</button>
                     </div>
                     <div id="jia-admin-panel" class="hidden pt-0.5">
                         <button onclick="openJiaAdminModal()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-2 rounded-xl text-xs transition shadow border border-slate-700">管理控制台</button>
@@ -674,15 +675,7 @@
                 </div>
                 <div class="space-y-2">
                     <label class="text-xs font-bold text-slate-700">選擇護理師：</label>
-                    <select id="schedule-nurse-select" onchange="loadNurseBedSelection()" class="w-full input-bg h-9 px-2 rounded text-xs font-bold text-slate-800">
-                        <option value="許Ｏ媃">許Ｏ媃</option>
-                        <option value="劉Ｏ綺">劉Ｏ綺</option>
-                        <option value="游Ｏ妤">游Ｏ妤</option>
-                        <option value="張Ｏ綺">張Ｏ綺</option>
-                        <option value="張Ｏ蓉">張Ｏ蓉</option>
-                        <option value="葉映誠">葉映誠</option>
-                        <option value="劉家裕">劉家裕</option>
-                    </select>
+                    <select id="schedule-nurse-select" onchange="loadNurseBedSelection()" class="w-full input-bg h-9 px-2 rounded text-xs font-bold text-slate-800"></select>
                 </div>
                 <div class="flex justify-between items-center text-xs font-bold text-slate-700">
                     <span>勾選負責床位 (已選走者不顯示)：</span>
@@ -690,6 +683,32 @@
                 </div>
                 <div id="schedule-beds-checkboxes" class="flex-1 overflow-y-auto space-y-1 pr-1 max-h-[200px] border border-slate-200 p-2 rounded-xl bg-slate-50"></div>
                 <button onclick="saveNurseSchedule()" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-2.5 rounded-xl text-xs transition">儲存排班設定</button>
+            </div>
+        </div>
+
+        <!-- 13.1 護理師管理視窗 (新增、修改、刪除) -->
+        <div id="nurse-manager-modal" class="hidden absolute inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-3">
+            <div class="bg-white w-full max-w-[330px] p-4 rounded-2xl shadow-2xl space-y-3 border border-slate-200 flex flex-col max-h-[92vh]">
+                <div class="flex justify-between items-center border-b pb-2">
+                    <span class="font-bold text-sm text-slate-800">護理師人員帳號管理</span>
+                    <button onclick="closeNurseManagerModal()" class="text-slate-400 hover:text-slate-600 font-bold text-base">✕</button>
+                </div>
+
+                <!-- 新增護理師表單區 -->
+                <div class="bg-teal-50 border border-teal-200 p-2.5 rounded-xl space-y-2 text-xs">
+                    <div class="font-bold text-teal-900">＋ 新增護理師</div>
+                    <div class="grid grid-cols-3 gap-1.5">
+                        <input type="text" id="new-nurse-id" placeholder="員編(不重複)" class="input-bg h-8 px-2 rounded text-xs font-medium">
+                        <input type="password" id="new-nurse-pw" placeholder="密碼" class="input-bg h-8 px-2 rounded text-xs font-medium">
+                        <input type="text" id="new-nurse-name" placeholder="姓名" class="input-bg h-8 px-2 rounded text-xs font-medium">
+                    </div>
+                    <button onclick="addNewNurse()" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-1.5 rounded-lg text-xs transition">確認新增</button>
+                </div>
+
+                <div class="text-[11px] font-bold text-slate-700">現有護理師列表 (可修改密碼/姓名或刪除離職人員)：</div>
+                <div id="nurse-manager-list" class="flex-1 overflow-y-auto space-y-2 pr-1 max-h-[220px]"></div>
+
+                <button onclick="closeNurseManagerModal()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-2 rounded-xl text-xs transition">關閉面板</button>
             </div>
         </div>
 
@@ -756,7 +775,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        const userDatabase = {
+        let userDatabase = {
             "NS": { password: "NS", name: "護理站", role: "ns_scheduler" },
             "Jia": { password: "1224", name: "劉家裕", role: "admin" },
             "101": { password: "101", name: "許Ｏ媃", role: "nurse" },
@@ -887,35 +906,38 @@
         }
 
         let patientsData = {};
-        let nurseBedAssignments = {
-            "許Ｏ媃": [], "劉Ｏ綺": [], "游Ｏ妤": [], "張Ｏ綺": [], "張Ｏ蓉": [], "葉映誠": [], "劉家裕": []
-        };
+        let nurseBedAssignments = {};
         let globalSharedMemo = "全病房交班注意事項：請落實三讀五對、洗手規範與生命徵象異常回報。";
 
         // Firebase 即時資料同步監聽
-        onValue(ref(db, 'femh_cloud_db'), (snapshot) => {
+        onValue(ref(db, 'femh_cloud_db_v2'), (snapshot) => {
             const cloudData = snapshot.val();
             const statusEl = document.getElementById('cloud-sync-status');
             if (cloudData) {
                 patientsData = cloudData.patientsData || generateDefaultPatients();
-                nurseBedAssignments = cloudData.nurseBedAssignments || nurseBedAssignments;
+                nurseBedAssignments = cloudData.nurseBedAssignments || {};
+                userDatabase = cloudData.userDatabase || userDatabase;
                 globalSharedMemo = cloudData.globalSharedMemo || globalSharedMemo;
                 if (statusEl) { statusEl.innerText = "🟢 雲端同步正常"; statusEl.className = "absolute top-1 right-2 text-[9px] font-bold text-emerald-600 z-30"; }
             } else {
-                // 初始化雲端預設資料
                 patientsData = generateDefaultPatients();
+                // 初始化預設護理師排班對應
+                Object.keys(userDatabase).forEach(k => {
+                    if (userDatabase[k].role === 'nurse') {
+                        let nName = userDatabase[k].name;
+                        if (!nurseBedAssignments[nName]) nurseBedAssignments[nName] = [];
+                    }
+                });
                 saveToCloud();
                 if (statusEl) { statusEl.innerText = "🟢 雲端初始化完成"; statusEl.className = "absolute top-1 right-2 text-[9px] font-bold text-emerald-600 z-30"; }
             }
             syncNurseAssignments();
-            // 如果當前在列表或詳細頁，即時更新畫面
             if (!document.getElementById('patient-list-view').classList.contains('hidden')) renderPatientList();
         }, (error) => {
             const statusEl = document.getElementById('cloud-sync-status');
             if (statusEl) { statusEl.innerText = "🔴 雲端連線失敗(使用本地)"; statusEl.className = "absolute top-1 right-2 text-[9px] font-bold text-rose-600 z-30"; }
-            // 讀取本地快取備份
             patientsData = JSON.parse(localStorage.getItem('femh_45beds_vFixed10')) || generateDefaultPatients();
-            nurseBedAssignments = JSON.parse(localStorage.getItem('femh_nurse_schedule_vFixed10')) || nurseBedAssignments;
+            nurseBedAssignments = JSON.parse(localStorage.getItem('femh_nurse_schedule_vFixed10')) || {};
             globalSharedMemo = localStorage.getItem('femh_shared_memo_vFixed10') || globalSharedMemo;
             syncNurseAssignments();
         });
@@ -924,22 +946,20 @@
             const payload = {
                 patientsData: patientsData,
                 nurseBedAssignments: nurseBedAssignments,
+                userDatabase: userDatabase,
                 globalSharedMemo: globalSharedMemo,
                 lastUpdated: new Date().toISOString()
             };
-            // 存入 Firebase 雲端
-            set(ref(db, 'femh_cloud_db'), payload).catch(err => console.log('Cloud save err:', err));
-            // 同時備份至 LocalStorage
+            set(ref(db, 'femh_cloud_db_v2'), payload).catch(err => console.log('Cloud save err:', err));
             localStorage.setItem('femh_45beds_vFixed10', JSON.stringify(patientsData));
             localStorage.setItem('femh_shared_memo_vFixed10', globalSharedMemo);
             localStorage.setItem('femh_nurse_schedule_vFixed10', JSON.stringify(nurseBedAssignments));
         }
 
-        // 為了相容原本全域呼叫
         window.saveToLocalStorage = saveToCloud;
         window.patientsData = patientsData;
         window.nurseBedAssignments = nurseBedAssignments;
-        window.globalSharedMemo = globalSharedMemo;
+        window.userDatabase = userDatabase;
 
         let currentUser = null;
         let currentSelectedBed = "01-1"; 
@@ -1254,7 +1274,21 @@
         window.closeNSAdminModal = function() { document.getElementById('ns-admin-modal').classList.add('hidden'); };
 
         window.loadNurseBedSelection = function() {
-            const nurseName = document.getElementById('schedule-nurse-select').value;
+            const selectEl = document.getElementById('schedule-nurse-select');
+            selectEl.innerHTML = '';
+            
+            // 動態從 userDatabase 載入角色為 nurse 的護理師
+            Object.keys(userDatabase).forEach(empId => {
+                let u = userDatabase[empId];
+                if (u.role === 'nurse') {
+                    let opt = document.createElement('option');
+                    opt.value = u.name;
+                    opt.innerText = `${u.name} (員編:${empId})`;
+                    selectEl.appendChild(opt);
+                }
+            });
+
+            const nurseName = selectEl.value;
             const container = document.getElementById('schedule-beds-checkboxes');
             container.innerHTML = '';
             const currentAssigned = nurseBedAssignments[nurseName] || [];
@@ -1322,6 +1356,102 @@
             closeNSAdminModal();
         };
 
+        // --- 新增：護理師管理功能 (NS帳號專屬) ---
+        window.openNurseManagerModal = function() {
+            renderNurseManagerList();
+            document.getElementById('new-nurse-id').value = '';
+            document.getElementById('new-nurse-pw').value = '';
+            document.getElementById('new-nurse-name').value = '';
+            document.getElementById('nurse-manager-modal').classList.remove('hidden');
+        };
+        window.closeNurseManagerModal = function() { document.getElementById('nurse-manager-modal').classList.add('hidden'); };
+
+        window.renderNurseManagerList = function() {
+            const listContainer = document.getElementById('nurse-manager-list');
+            listContainer.innerHTML = '';
+
+            Object.keys(userDatabase).forEach(empId => {
+                let u = userDatabase[empId];
+                if (u.role === 'nurse') {
+                    let item = document.createElement('div');
+                    item.className = 'bg-slate-50 border border-slate-200 p-2.5 rounded-xl text-xs space-y-1.5 shadow-2xs';
+                    item.innerHTML = `
+                        <div class="flex justify-between items-center font-bold text-slate-800">
+                            <span>員編：${empId} <span class="text-[10px] text-slate-400 font-normal">(不可更動)</span></span>
+                            <button onclick="deleteNurse('${empId}')" class="bg-rose-600 hover:bg-rose-700 text-white font-bold px-2 py-1 rounded text-[10px]">刪除(離職)</button>
+                        </div>
+                        <div class="grid grid-cols-2 gap-1.5">
+                            <div>
+                                <label class="text-[10px] text-slate-500 font-semibold">修改姓名：</label>
+                                <input type="text" id="nurse-name-${empId}" value="${u.name}" class="input-bg h-7 px-2 rounded text-xs font-medium w-full">
+                            </div>
+                            <div>
+                                <label class="text-[10px] text-slate-500 font-semibold">修改密碼：</label>
+                                <input type="text" id="nurse-pw-${empId}" value="${u.password}" class="input-bg h-7 px-2 rounded text-xs font-medium w-full">
+                            </div>
+                        </div>
+                        <div class="text-right pt-1">
+                            <button onclick="updateNurse('${empId}')" class="bg-teal-600 hover:bg-teal-700 text-white font-bold px-3 py-1 rounded text-[11px]">儲存修改</button>
+                        </div>
+                    `;
+                    listContainer.appendChild(item);
+                }
+            });
+        };
+
+        window.addNewNurse = function() {
+            let id = document.getElementById('new-nurse-id').value.trim();
+            let pw = document.getElementById('new-nurse-pw').value.trim();
+            let name = document.getElementById('new-nurse-name').value.trim();
+
+            if (!id || !pw || !name) { alert('請完整填寫員編、密碼與姓名！'); return; }
+            if (userDatabase[id]) { alert('❌ 該員編已存在，新員編不可與舊有護理師重疊！'); return; }
+
+            userDatabase[id] = { password: pw, name: name, role: "nurse" };
+            if (!nurseBedAssignments[name]) nurseBedAssignments[name] = [];
+
+            saveToCloud();
+            alert(`✅ 成功新增護理師：${name} (員編: ${id})！`);
+            renderNurseManagerList();
+        };
+
+        window.updateNurse = function(empId) {
+            let newName = document.getElementById(`nurse-name-${empId}`).value.trim();
+            let newPw = document.getElementById(`nurse-pw-${empId}`).value.trim();
+
+            if (!newName || !newPw) { alert('姓名與密碼不得為空白！'); return; }
+
+            let oldName = userDatabase[empId].name;
+            userDatabase[empId].name = newName;
+            userDatabase[empId].password = newPw;
+
+            // 如果名字有更改，同步更新排班陣列的Key
+            if (oldName !== newName) {
+                if (nurseBedAssignments[oldName]) {
+                    nurseBedAssignments[newName] = nurseBedAssignments[oldName];
+                    delete nurseBedAssignments[oldName];
+                }
+            }
+
+            syncNurseAssignments();
+            saveToCloud();
+            alert(`✅ 員編 [${empId}] 之護理師資料已更新成功！`);
+            renderNurseManagerList();
+        };
+
+        window.deleteNurse = function(empId) {
+            let nurseName = userDatabase[empId].name;
+            if (confirm(`確定要刪除護理師【${nurseName} (員編:${empId})】的資料嗎？此操作代表該護理師離職並移除帳號。`)) {
+                delete userDatabase[empId];
+                if (nurseBedAssignments[nurseName]) delete nurseBedAssignments[nurseName];
+                syncNurseAssignments();
+                saveToCloud();
+                alert(`🗑️ 已成功刪除護理師 ${nurseName} 的帳號！`);
+                renderNurseManagerList();
+            }
+        };
+        // ------------------------------------------
+
         window.openJiaAdminModal = function() {
             const container = document.getElementById('jia-admin-bed-list');
             container.innerHTML = '';
@@ -1367,9 +1497,7 @@
         window.jiaResetAllBeds = function() {
             if (confirm('確定要一鍵完整重置全病房所有床位與排班資料嗎？')) {
                 patientsData = generateDefaultPatients();
-                nurseBedAssignments = {
-                    "許Ｏ媃": [], "劉Ｏ綺": [], "游Ｏ妤": [], "張Ｏ綺": [], "張Ｏ蓉": [], "葉映誠": [], "劉家裕": []
-                };
+                nurseBedAssignments = {};
                 syncNurseAssignments();
                 saveToCloud();
                 alert('全病房資料已全部一鍵重置完成！');
@@ -2194,7 +2322,7 @@
 
         window.saveSignatureData = function() {
             if (!sigCanvas) return;
-            const cType = document.getElementById('consent-type-select').value;
+            const cType = document.getElementById('consent-type-select'].value;
             const p = patientsData[currentSelectedBed];
             if (!p.consents) p.consents = {};
             
