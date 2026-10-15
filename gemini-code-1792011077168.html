@@ -259,17 +259,19 @@
         const SYNC_DB_PATH = 'femh_cloud_db_v3';
         const dbRef = ref(db, SYNC_DB_PATH);
 
-        let rawCloudPatientsData = {}; // 完整的雲端原始資料（保護手機端定位物件不被損壞）
+        let rawCloudPatientsData = {}; 
         let patientsData = {};
         let nurseBedAssignments = {};
         let marqueeHistory = [];
+        let cloudUserDatabase = null;
+        let cloudSharedMemo = null;
+
         let currentFilterStatus = 'all';
         let currentFilterGender = null;
         let currentFilterTag = null;
         let isUnlocked = false;
         let isConnected = false;
 
-        // 醫師名單編派 (每位醫師最多負責約 5 位病人)
         const doctorList = ["陳大鈞 醫師", "林哲宇 醫師", "張志豪 醫師", "黃建勳 醫師", "許智勝 醫師", "鄭博文 醫師", "王立峰 醫師"];
 
         function getAssignedDoctor(bedKey) {
@@ -289,26 +291,21 @@
         setInterval(updateWhiteboardClock, 1000);
         updateWhiteboardClock();
 
-        // 精準清洗姓名：移除贅字 (如 "01-1 ", " (男)", " (女)")
         function cleanPatientName(rawName) {
             if (!rawName) return "";
             return rawName.replace(/^[\d\-]+\s*/, '').replace(/\s*\([男女]\)$/, '').trim();
         }
 
-        // 剖析狀態文字（過濾手機端的繪圖座標物件）
         function parseStatusString(pObj) {
             if (!pObj) return "在病房";
             let statusVal = pObj.status || pObj.patientStatus || pObj.userStatus;
             if (typeof statusVal === 'string' && statusVal.length < 20) return statusVal;
-            
-            // 如果 location 是純字串（如 "請假", "檢查中"）
             if (typeof pObj.location === 'string' && !pObj.location.includes('{')) {
                 return pObj.location;
             }
             return "在病房";
         }
 
-        // 相容雲端所有 Key，精準分析性別與診斷
         function sanitizePatientsData(rawPatients) {
             let sanitized = {};
             let allBedKeys = new Set();
@@ -330,7 +327,6 @@
                 let rawName = p.realName || p.name || p.patientName || p.realname || "";
                 let cleanedName = cleanPatientName(rawName);
 
-                // 從姓名中的 (女) 或 (男) 提取正確性別，若無則看 p.gender
                 let detectedGender = "男";
                 if (rawName.includes("(女)") || p.gender === "女" || p.gender === "女性") {
                     detectedGender = "女";
@@ -351,7 +347,7 @@
                     isAbnormal: !!p.isAbnormal,
                     diag: p.diag || p.diagnosis || "一般照護",
                     doctor: p.doctor || getAssignedDoctor(bedKey),
-                    location: parseStatusString(p), // 【狀態】: 在病房 / 檢查中 / 請假
+                    location: parseStatusString(p),
                     assignedNurse: p.assignedNurse || "-"
                 };
             });
@@ -371,6 +367,8 @@
                     patientsData = sanitizePatientsData(cloudData.patientsData);
                     nurseBedAssignments = cloudData.nurseBedAssignments || {};
                     marqueeHistory = cloudData.marquee || [];
+                    cloudUserDatabase = cloudData.userDatabase || null;
+                    cloudSharedMemo = cloudData.globalSharedMemo || null;
                     isConnected = true;
                     dot.className = "w-4 h-4 rounded-full bg-emerald-500 animate-pulse";
                     if (marqueeHistory.length > 0) {
@@ -399,6 +397,8 @@
                     patientsData = sanitizePatientsData(cloudData.patientsData);
                     nurseBedAssignments = cloudData.nurseBedAssignments || {};
                     marqueeHistory = cloudData.marquee || [];
+                    cloudUserDatabase = cloudData.userDatabase || cloudUserDatabase;
+                    cloudSharedMemo = cloudData.globalSharedMemo || cloudSharedMemo;
                     isConnected = true;
                     syncNurseAssignments();
                     renderBedGrid();
@@ -428,7 +428,7 @@
             nurseBedAssignments = {};
         }
 
-        // 寫回 Firebase：保留手機端的 location 座標物件，避免手機端總覽資料壞掉
+        // 🌟 關鍵修正：白板存檔時，完整保留手機端的 userDatabase、globalSharedMemo 以及病人臨床詳細資料！
         function saveAndSyncToCloud() {
             syncNurseAssignments();
             
@@ -440,7 +440,6 @@
                     updatedPatientsDataForCloud[bKey] = {};
                 }
                 
-                // 更新白板屬性
                 updatedPatientsDataForCloud[bKey].isEmpty = p.isEmpty;
                 updatedPatientsDataForCloud[bKey].realName = p.realName;
                 updatedPatientsDataForCloud[bKey].name = `${bKey} ${p.realName} (${p.gender})`;
@@ -452,7 +451,7 @@
                 updatedPatientsDataForCloud[bKey].isAbnormal = p.isAbnormal;
                 updatedPatientsDataForCloud[bKey].diag = p.diag;
                 updatedPatientsDataForCloud[bKey].doctor = p.doctor;
-                updatedPatientsDataForCloud[bKey].status = p.location; // 存入【狀態】
+                updatedPatientsDataForCloud[bKey].status = p.location;
                 updatedPatientsDataForCloud[bKey].assignedNurse = p.assignedNurse;
             });
 
@@ -460,6 +459,8 @@
                 patientsData: updatedPatientsDataForCloud,
                 nurseBedAssignments: nurseBedAssignments,
                 marquee: marqueeHistory,
+                userDatabase: cloudUserDatabase, // 保護手機端護理師帳號
+                globalSharedMemo: cloudSharedMemo, // 保護交班注意事項
                 updatedAt: new Date().toISOString()
             };
             set(dbRef, payload).catch(err => console.log('Cloud save err:', err));
@@ -582,7 +583,6 @@
                             <div class="text-xs text-slate-400 text-right">待清床</div>
                         </div>`;
                 } else {
-                    // 男生藍條、女生粉紅條；未連線灰條
                     let leftColorBarClass = !isConnected ? 'bg-slate-300' : ((p.gender === '女') ? 'bg-rose-400' : 'bg-sky-400');
                     let cardStyleClass = p.isAbnormal ? 'muji-card muji-card-abnormal p-6 flex justify-between h-52 relative overflow-hidden' : 'muji-card p-6 flex justify-between h-52 relative overflow-hidden bg-white';
 
@@ -604,16 +604,12 @@
                             <div>
                                 <div class="flex justify-between items-center mb-1">
                                     <span class="font-bold text-lg text-[#383533]">${tagsHtml}</span>
-                                    <!-- 右上角加大的顯眼床號 -->
                                     <span class="text-base bg-[#F7F6F2] px-3.5 py-1 rounded-xl font-extrabold text-[#383533] border border-[#E5E0D8] shrink-0 shadow-2xs">${bedKey}</span>
                                 </div>
-                                <!-- 純病人姓名 -->
                                 <div class="font-bold text-lg text-[#383533] truncate mt-1">${displayName}</div>
                                 <div class="text-sm text-[#8C827A] truncate mt-1">診斷：${p.diag || '一般照護'}</div>
-                                <!-- 位置改成【狀態】 -->
                                 <div class="text-sm text-[#5C554E] truncate mt-0.5">狀態：<span class="font-bold text-teal-800">${p.location || '在病房'}</span></div>
                             </div>
-                            <!-- 責任改護理師，主治醫師改醫師 -->
                             <div class="pt-2 border-t border-[#E5E0D8] flex justify-between items-center text-sm text-[#786759]">
                                 <span class="text-teal-800 font-bold">護理師: ${p.assignedNurse}</span>
                                 <span class="text-teal-700 font-bold">醫師: ${p.doctor}</span>
