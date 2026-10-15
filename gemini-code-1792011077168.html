@@ -259,13 +259,12 @@
         const SYNC_DB_PATH = 'femh_cloud_db_v3';
         const dbRef = ref(db, SYNC_DB_PATH);
 
-        let rawCloudPatientsData = {}; 
+        let rawCloudPatientsData = {};
         let patientsData = {};
         let nurseBedAssignments = {};
         let marqueeHistory = [];
+        let globalSharedMemo = "";
         let cloudUserDatabase = null;
-        let cloudSharedMemo = null;
-
         let currentFilterStatus = 'all';
         let currentFilterGender = null;
         let currentFilterTag = null;
@@ -367,8 +366,8 @@
                     patientsData = sanitizePatientsData(cloudData.patientsData);
                     nurseBedAssignments = cloudData.nurseBedAssignments || {};
                     marqueeHistory = cloudData.marquee || [];
+                    globalSharedMemo = cloudData.globalSharedMemo || "";
                     cloudUserDatabase = cloudData.userDatabase || null;
-                    cloudSharedMemo = cloudData.globalSharedMemo || null;
                     isConnected = true;
                     dot.className = "w-4 h-4 rounded-full bg-emerald-500 animate-pulse";
                     if (marqueeHistory.length > 0) {
@@ -397,8 +396,8 @@
                     patientsData = sanitizePatientsData(cloudData.patientsData);
                     nurseBedAssignments = cloudData.nurseBedAssignments || {};
                     marqueeHistory = cloudData.marquee || [];
+                    globalSharedMemo = cloudData.globalSharedMemo || globalSharedMemo;
                     cloudUserDatabase = cloudData.userDatabase || cloudUserDatabase;
-                    cloudSharedMemo = cloudData.globalSharedMemo || cloudSharedMemo;
                     isConnected = true;
                     syncNurseAssignments();
                     renderBedGrid();
@@ -428,7 +427,6 @@
             nurseBedAssignments = {};
         }
 
-        // 🌟 關鍵修正：白板存檔時，完整保留手機端的 userDatabase、globalSharedMemo 以及病人臨床詳細資料！
         function saveAndSyncToCloud() {
             syncNurseAssignments();
             
@@ -458,9 +456,9 @@
             const payload = {
                 patientsData: updatedPatientsDataForCloud,
                 nurseBedAssignments: nurseBedAssignments,
+                userDatabase: cloudUserDatabase,
+                globalSharedMemo: globalSharedMemo,
                 marquee: marqueeHistory,
-                userDatabase: cloudUserDatabase, // 保護手機端護理師帳號
-                globalSharedMemo: cloudSharedMemo, // 保護交班注意事項
                 updatedAt: new Date().toISOString()
             };
             set(dbRef, payload).catch(err => console.log('Cloud save err:', err));
