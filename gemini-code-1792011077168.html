@@ -794,8 +794,25 @@
 
         window.dischargeBed = function(b) {
             if(!isUnlocked) { alert('請先解鎖編輯！'); return; }
-            if (confirm(`確定為 ${b} 床辦理出院嗎？此床資料將徹底刪除並同步至雲端。`)) {
+            if (confirm(`確定為 ${b} 床辦理出院嗎？此床資料將徹底清除並同步至雲端。`)) {
                 patientsData[b] = { isEmpty: true, realName: "", isPublicName: true, gender: "男", isolation: "", isDischarging: false, dnr: false, isAbnormal: false, diag: "", location: "在病房", assignedNurse: "-" };
+                if (rawCloudPatientsData && rawCloudPatientsData[b]) {
+                    rawCloudPatientsData[b] = {
+                        isEmpty: true,
+                        realName: "",
+                        name: "",
+                        diag: "",
+                        diagnosis: "",
+                        status: "在病房",
+                        location: "在病房",
+                        assignedNurse: "-",
+                        doctor: patientsData[b].doctor,
+                        isolation: "",
+                        isDischarging: false,
+                        dnr: false,
+                        isAbnormal: false
+                    };
+                }
                 saveAndSyncToCloud();
                 alert(`${b} 床已辦理出院並徹底清除同步至雲端！`);
             }
