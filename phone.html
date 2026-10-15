@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>專題_亞東紀念醫院 手機醫療照護系統 (雲端同步版)</title>
+    <title>專題_亞東紀念醫院 手機醫療照護系統 (完整對接版)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&display=swap');
@@ -756,7 +756,7 @@
         <div class="home-indicator"></div>
     </div>
 
-    <!-- Firebase SDK 引入與雲端即時同步邏輯 (已完美防護跑馬燈與白板資料) -->
+    <!-- Firebase SDK 引入與雲端即時同步邏輯 (具備智慧雙向名稱相容機制) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
         import { getDatabase, ref, set, onValue, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
@@ -833,6 +833,16 @@
             }
         ];
 
+        function getSafePatientName(p, bedKey) {
+            if (!p) return `${bedKey} 〔空床待清〕`;
+            if (p.realName) {
+                let genderStr = p.gender ? ` (${p.gender})` : '';
+                return `${bedKey} ${p.realName}${genderStr}`;
+            }
+            if (p.name && p.name !== 'undefined') return p.name;
+            return `${bedKey} 病人`;
+        }
+
         function generateDefaultPatients() {
             let data = {};
             const uniqueNames = [
@@ -856,7 +866,7 @@
                     let bedKey = `${roomStr}-${b}`;
 
                     if (bedKey === "01-2" || bedKey === "03-1") {
-                        data[bedKey] = { isEmpty: true, name: `${bedKey} 〔空床待清〕`, info: "", extra: "", assignedNurse: "", vitals: [], advancedVitals: [], meds: [], treats: [], notes: [], editInfo: {}, bloodRecord: null, consents: {}, medChecked: {}, treatChecked: {}, treatTimestamps: {} };
+                        data[bedKey] = { isEmpty: true, realName: "", name: `${bedKey} 〔空床待清〕`, info: "", extra: "", assignedNurse: "", vitals: [], advancedVitals: [], meds: [], treats: [], notes: [], editInfo: {}, bloodRecord: null, consents: {}, medChecked: {}, treatChecked: {}, treatTimestamps: {} };
                         continue;
                     }
 
@@ -873,9 +883,12 @@
                     else if (opdCount < 1 && bedKey === "04-1") { transferTag = "門診"; isArrived = false; opdCount++; }
                     else if (erCount < 2 && (room + b) % 7 === 0) { transferTag = "急診"; isArrived = false; erCount++; }
 
+                    let genderVal = (b % 2 === 0 ? '女' : '男');
+
                     data[bedKey] = {
                         isEmpty: false, isArrived: isArrived,
-                        name: `${bedKey} ${pName} (${b % 2 === 0 ? '女' : '男'})`,
+                        realName: pName, gender: genderVal,
+                        name: `${bedKey} ${pName} (${genderVal})`,
                         dob: `1985/04/12`, blood: "O+",
                         info: `1985/04/12 (41Y) | 病例號：103198${room}${b}`,
                         extra: `血型：O+ | 過敏：${profile.allergy} | 診斷：${profile.disease}`,
@@ -908,14 +921,14 @@
         let patientsData = {};
         let nurseBedAssignments = {};
         let globalSharedMemo = "全病房交班注意事項：請落實三讀五對、洗手規範與生命徵象異常回報。";
-        let cloudMarquee = []; // 保護白板公告不被覆蓋
+        let cloudMarquee = [];
 
         const dbRef = ref(db, 'femh_cloud_db_v3');
         get(dbRef).then((snapshot) => {
             const statusEl = document.getElementById('cloud-sync-status');
             const cloudData = snapshot.val();
-            if (cloudData) {
-                patientsData = cloudData.patientsData || generateDefaultPatients();
+            if (cloudData && cloudData.patientsData) {
+                patientsData = cloudData.patientsData;
                 nurseBedAssignments = cloudData.nurseBedAssignments || {};
                 userDatabase = cloudData.userDatabase || defaultUserDatabase;
                 globalSharedMemo = cloudData.globalSharedMemo || globalSharedMemo;
@@ -940,8 +953,8 @@
 
         onValue(dbRef, (snapshot) => {
             const cloudData = snapshot.val();
-            if (cloudData) {
-                patientsData = cloudData.patientsData || patientsData;
+            if (cloudData && cloudData.patientsData) {
+                patientsData = cloudData.patientsData;
                 nurseBedAssignments = cloudData.nurseBedAssignments || nurseBedAssignments;
                 if (cloudData.userDatabase) userDatabase = cloudData.userDatabase;
                 globalSharedMemo = cloudData.globalSharedMemo || globalSharedMemo;
@@ -949,17 +962,17 @@
                 syncNurseAssignments();
                 if (!document.getElementById('patient-list-view').classList.contains('hidden')) renderPatientList();
                 if (!document.getElementById('nurse-manager-modal').classList.contains('hidden')) renderNurseManagerList();
+                if (!document.getElementById('ns-admin-modal').classList.contains('hidden')) loadNurseBedSelection();
             }
         });
 
-        // 【關鍵防護】手機端儲存時，完整保留 marquee 跑馬燈與白板資料
         function saveToCloud() {
             const payload = {
                 patientsData: patientsData,
                 nurseBedAssignments: nurseBedAssignments,
                 userDatabase: userDatabase,
                 globalSharedMemo: globalSharedMemo,
-                marquee: cloudMarquee, // 保護白板公告不被手機覆蓋消失
+                marquee: cloudMarquee,
                 lastUpdated: new Date().toISOString()
             };
             set(dbRef, payload).catch(err => console.log('Cloud save err:', err));
@@ -1068,43 +1081,9 @@
             if (!currentUser) { alert('請先登入系統！'); return; }
             if (currentUser.role === 'ns_scheduler') { alert('護理站排班帳號無法感應 NFC！'); return; }
 
-            if ('NDEFReader' in window) {
-                try {
-                    const ndef = new NDEFReader();
-                    alert('請將手機靠近 NFC 晶片');
-                    await ndef.scan();
-                    ndef.onreading = event => {
-                        alert(`成功偵測 NFC 晶片！開立床位：01-1 床`);
-                        verifyAndOpenBed('01-1');
-                    };
-                    return;
-                } catch (error) {
-                    console.log('Web NFC API 啟動失敗。');
-                }
-            }
-
-            const validBedCodes = {
-                "01-1": "01-1", "01-2": "01-2", "01-3": "01-3",
-                "02-1": "02-1", "02-2": "02-2",
-                "03-1": "03-1", "03-2": "03-2", "03-3": "03-3",
-                "04-1": "04-1", "04-2": "04-2",
-                "05-1": "05-2",
-                "06-1": "06-1", "06-2": "06-2", "06-3": "06-3",
-                "07-1": "07-2",
-                "08-1": "08-1", "08-2": "08-2",
-                "09-1": "09-1", "09-2": "09-2", "09-3": "09-3",
-                "10-1": "10-1", "10-2": "10-2",
-                "11-1": "11-2",
-                "12-1": "12-1", "12-2": "12-2", "12-3": "12-3",
-                "13-1": "13-2",
-                "14-1": "14-1", "14-2": "14-2",
-                "15-1": "15-1", "15-2": "15-2", "15-3": "15-3",
-                "16-1": "16-1", "16-2": "16-2"
-            };
-
             let scannedUID = prompt("請感應 NFC 晶片 (輸入對應床號代碼)：", "01-1");
-            if (scannedUID && validBedCodes[scannedUID.trim()]) {
-                let targetBed = validBedCodes[scannedUID.trim()];
+            if (scannedUID && patientsData[scannedUID.trim()]) {
+                let targetBed = scannedUID.trim();
                 alert(`[NFC 晶片 驗證成功]\n已安全解鎖 ${targetBed} 床位`);
                 verifyAndOpenBed(targetBed);
             } else {
@@ -1153,6 +1132,11 @@
                         header.className = 'text-xs font-bold text-teal-800 bg-teal-50 px-3 py-2 rounded-lg border border-teal-200 mt-2 flex justify-between items-center shadow-2xs';
                         header.innerHTML = `<span>護理人員：${nurseName}</span><span class="text-[11px] text-slate-600">${rangeStr} (共${assignedBeds.length}床)</span>`;
                         container.appendChild(header);
+
+                        assignedBeds.forEach(bKey => {
+                            const p = patientsData[bKey];
+                            if (p) container.appendChild(createPatientRow(bKey, p, false));
+                        });
                     });
                     if (container.children.length === 0) {
                         container.innerHTML = '<div class="text-center text-slate-400 text-xs py-8">目前無任何護理人員排班指派紀錄</div>';
@@ -1180,6 +1164,8 @@
             const btn = document.createElement('button');
             btn.className = 'w-full bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-800 py-2 px-3 rounded-xl shadow-2xs text-left grid grid-cols-12 items-center transition text-xs my-1';
             
+            let safeFullName = getSafePatientName(p, bedKey);
+
             if (p.isEmpty) {
                 btn.innerHTML = `<div class="col-span-12 text-slate-400 font-normal text-xs flex justify-between"><span>${bedKey} 〔空床待清〕</span><span>-</span></div>`;
             } else {
@@ -1191,9 +1177,9 @@
                     badgeHtml += `<span class="bg-amber-600 text-white font-bold px-1 rounded text-[10px] mr-1">${p.transferTag}</span>`;
                 }
 
-                const nameParts = p.name.split(' ');
+                const nameParts = safeFullName.split(' ');
                 const bedNo = nameParts[0];
-                const pNameAndGender = nameParts.slice(1).join(' ');
+                const pNameAndGender = nameParts.slice(1).join(' ') || (p.realName ? `${p.realName} (${p.gender || '男'})` : '病人');
                 let nurseSpan = (showNurseName && p.assignedNurse) ? `<span class="text-[10px] text-teal-700 font-semibold bg-teal-50 px-1.5 py-0.5 rounded border border-teal-200">${p.assignedNurse}</span>` : `<span class="text-[10px] text-slate-400">未指派</span>`;
 
                 btn.innerHTML = `
@@ -1210,12 +1196,13 @@
         function selectPatient(bedNumber) {
             currentSelectedBed = bedNumber;
             const p = patientsData[bedNumber];
+            let safeFullName = getSafePatientName(p, bedNumber);
             
-            document.querySelectorAll('#detail-bed-name, #nfc-bed-patient, #orders-bed-name, #loc-bed-name, #med-bed-name, #treat-bed-name, #blood-bed-name, #consent-bed-name').forEach(el => el.innerText = p.name);
-            document.querySelectorAll('#detail-patient-info, #nfc-patient-info, #blood-patient-info, #consent-patient-info').forEach(el => el.innerText = p.info);
-            document.querySelectorAll('#detail-patient-extra, #nfc-patient-extra, #blood-patient-extra, #consent-patient-extra').forEach(el => el.innerText = p.extra);
+            document.querySelectorAll('#detail-bed-name, #nfc-bed-patient, #orders-bed-name, #loc-bed-name, #med-bed-name, #treat-bed-name, #blood-bed-name, #consent-bed-name').forEach(el => el.innerText = safeFullName);
+            document.querySelectorAll('#detail-patient-info, #nfc-patient-info, #blood-patient-info, #consent-patient-info').forEach(el => el.innerText = p.info || '1985/04/12 (41Y) | 病例號：1031988001');
+            document.querySelectorAll('#detail-patient-extra, #nfc-patient-extra, #blood-patient-extra, #consent-patient-extra').forEach(el => el.innerText = p.extra || `診斷：${p.diag || '一般照護'}`);
             const dobEl = document.getElementById('med-bed-dob');
-            if (dobEl) dobEl.innerText = `出生年月日：${p.dob}`;
+            if (dobEl) dobEl.innerText = `出生年月日：${p.dob || '1985/04/12'}`;
 
             const isolationEl = document.getElementById('detail-isolation-badge');
             const nfcIsolationEl = document.getElementById('nfc-isolation-badge');
@@ -1232,12 +1219,12 @@
                 }
             });
 
-            document.querySelectorAll('#detail-nurse-badge, #nfc-nurse-badge').forEach(el => el.innerText = p.assignedNurse);
+            document.querySelectorAll('#detail-nurse-badge, #nfc-nurse-badge').forEach(el => el.innerText = p.assignedNurse || '-');
 
             const locBtn = document.getElementById('btn-detail-location');
             if (locBtn) {
-                locBtn.disabled = !p.isArrived;
-                locBtn.className = p.isArrived ? 'bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold py-2.5 px-2 rounded-xl shadow-sm border border-slate-200 text-xs text-center' : 'bg-slate-300 text-slate-500 font-semibold py-2.5 px-2 rounded-xl text-xs text-center cursor-not-allowed';
+                locBtn.disabled = (p.isArrived === false);
+                locBtn.className = (p.isArrived !== false) ? 'bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold py-2.5 px-2 rounded-xl shadow-sm border border-slate-200 text-xs text-center' : 'bg-slate-300 text-slate-500 font-semibold py-2.5 px-2 rounded-xl text-xs text-center cursor-not-allowed';
             }
 
             switchView('patient-detail-view');
@@ -1245,28 +1232,29 @@
 
         window.openPatientLocation = function() {
             const p = patientsData[currentSelectedBed];
-            if (!p.isArrived) { alert('此病人資料已到，但人尚未抵達病房，尚無病人定位！'); return; }
-            document.getElementById('loc-bed-name').innerText = p.name;
+            if (p.isArrived === false) { alert('此病人資料已到，但人尚未抵達病房，尚無病人定位！'); return; }
+            document.getElementById('loc-bed-name').innerText = getSafePatientName(p, currentSelectedBed);
         };
 
         window.openPatientEdit = function() {
             const p = patientsData[currentSelectedBed];
-            document.getElementById('edit-name').value = p.editInfo.name || '';
-            document.getElementById('edit-dob').value = p.dob || '';
-            document.getElementById('edit-blood').value = p.blood || '';
-            document.getElementById('edit-allergy').value = p.editInfo.allergy || '';
-            document.getElementById('edit-disease').value = p.editInfo.disease || '';
-            document.getElementById('edit-contact').value = p.editInfo.contact || '';
-            document.getElementById('edit-phone').value = p.editInfo.phone || '';
+            document.getElementById('edit-name').value = p.realName || p.name || '';
+            document.getElementById('edit-dob').value = p.dob || '1985/04/12';
+            document.getElementById('edit-blood').value = p.blood || 'O+';
+            document.getElementById('edit-allergy').value = (p.editInfo && p.editInfo.allergy) || 'Penicillin';
+            document.getElementById('edit-disease').value = p.diag || (p.editInfo && p.editInfo.disease) || 'AMI';
+            document.getElementById('edit-contact').value = (p.editInfo && p.editInfo.contact) || '家屬';
+            document.getElementById('edit-phone').value = (p.editInfo && p.editInfo.phone) || '0912-345678';
         };
 
         window.savePatientEdit = function() {
             const p = patientsData[currentSelectedBed];
+            if (!p.editInfo) p.editInfo = {};
             p.editInfo.allergy = document.getElementById('edit-allergy').value;
             p.editInfo.disease = document.getElementById('edit-disease').value;
             p.editInfo.contact = document.getElementById('edit-contact').value;
             p.editInfo.phone = document.getElementById('edit-phone').value;
-            p.extra = `血型：${p.blood} | 過敏：${p.editInfo.allergy} | 診斷：${p.editInfo.disease}`;
+            p.extra = `血型：${p.blood || 'O+'} | 過敏：${p.editInfo.allergy} | 診斷：${p.editInfo.disease}`;
             saveToCloud();
             alert('病人基本資料修改成功（已同步雲端）！');
             switchView('patient-detail-view');
@@ -1327,11 +1315,12 @@
                 availableCount++;
 
                 const isChecked = currentAssigned.includes(bedKey);
+                const safeName = getSafePatientName(patientsData[bedKey], bedKey);
                 const div = document.createElement('div');
                 div.className = 'flex items-center space-x-2.5 text-xs font-semibold text-slate-800 bg-white p-1.5 rounded-lg border border-slate-200 cursor-pointer hover:bg-slate-100 transition';
                 div.innerHTML = `
                     <input type="checkbox" value="${bedKey}" ${isChecked ? 'checked' : ''} class="w-4 h-4 accent-teal-600 rounded schedule-bed-chk cursor-pointer">
-                    <span class="cursor-pointer flex-1">${bedKey} (${patientsData[bedKey].name})</span>
+                    <span class="cursor-pointer flex-1">${safeName}</span>
                 `;
                 div.onclick = (e) => {
                     if (e.target.tagName !== 'INPUT') {
@@ -1484,10 +1473,11 @@
             container.innerHTML = '';
             Object.keys(patientsData).sort().forEach(bedKey => {
                 const p = patientsData[bedKey];
+                const safeName = getSafePatientName(p, bedKey);
                 const item = document.createElement('div');
                 item.className = 'bg-slate-50 border border-slate-200 p-2 rounded-xl text-xs flex justify-between items-center';
                 item.innerHTML = `
-                    <span class="font-bold text-slate-800">${bedKey} - ${p.name}</span>
+                    <span class="font-bold text-slate-800">${safeName}</span>
                     <button onclick="jiaResetBed('${bedKey}')" class="bg-rose-600 hover:bg-rose-700 text-white font-bold px-2 py-1 rounded text-[10px]">完全重置</button>
                 `;
                 container.appendChild(item);
@@ -1553,9 +1543,9 @@
             else if (viewId === 'map-view') {
                 const p = patientsData[currentSelectedBed];
                 if (p) {
-                    document.getElementById('map-title-label').innerText = `${p.name} 即時位置`;
-                    document.getElementById('map-pin').style.top = p.location.top;
-                    document.getElementById('map-pin').style.left = p.location.left;
+                    document.getElementById('map-title-label').innerText = `${getSafePatientName(p, currentSelectedBed)} 即時位置`;
+                    document.getElementById('map-pin').style.top = (p.location && p.location.top) || "45%";
+                    document.getElementById('map-pin').style.left = (p.location && p.location.left) || "40%";
                 }
             } else if (viewId === 'med-view') renderMedicationsList();
             else if (viewId === 'treat-view') renderTreatmentsList();
@@ -1583,24 +1573,26 @@
             const [currH, currM] = currentTimeStr.split(':').map(Number);
             const currTotalMin = currH * 60 + currM;
 
-            p.treats.forEach((t, idx) => {
-                if (p.treatChecked && p.treatChecked[idx] && p.treatTimestamps && p.treatTimestamps[idx]) {
-                    const [doneH, doneM] = p.treatTimestamps[idx].split(':').map(Number);
-                    const doneTotalMin = doneH * 60 + doneM;
-                    if (currTotalMin - doneTotalMin >= 90) {
-                        p.treatChecked[idx] = false;
-                        saveToCloud();
+            if (p.treats) {
+                p.treats.forEach((t, idx) => {
+                    if (p.treatChecked && p.treatChecked[idx] && p.treatTimestamps && p.treatTimestamps[idx]) {
+                        const [doneH, doneM] = p.treatTimestamps[idx].split(':').map(Number);
+                        const doneTotalMin = doneH * 60 + doneM;
+                        if (currTotalMin - doneTotalMin >= 90) {
+                            p.treatChecked[idx] = false;
+                            saveToCloud();
+                        }
                     }
-                }
 
-                if (!p.treatChecked || !p.treatChecked[idx]) {
-                    count++;
-                    const item = document.createElement('div');
-                    item.className = 'flex items-center space-x-2 border border-slate-300 p-2 rounded-xl bg-slate-50 text-xs shadow-2xs';
-                    item.innerHTML = `<span class="font-semibold text-slate-800">⏳ ${t} (尚未執行)</span>`;
-                    container.appendChild(item);
-                }
-            });
+                    if (!p.treatChecked || !p.treatChecked[idx]) {
+                        count++;
+                        const item = document.createElement('div');
+                        item.className = 'flex items-center space-x-2 border border-slate-300 p-2 rounded-xl bg-slate-50 text-xs shadow-2xs';
+                        item.innerHTML = `<span class="font-semibold text-slate-800">⏳ ${t} (尚未執行)</span>`;
+                        container.appendChild(item);
+                    }
+                });
+            }
             if (count === 0) container.innerHTML = '<div class="text-center text-teal-600 font-bold text-xs py-6">🎉 所有處置醫囑皆已執行完畢！</div>';
         };
 
@@ -1674,20 +1666,22 @@
             const form = document.getElementById('treat-form');
             form.innerHTML = '';
 
-            p.treats.forEach((treatText, idx) => {
-                const isSaved = p.treatChecked && p.treatChecked[idx];
+            if (p.treats) {
+                p.treats.forEach((treatText, idx) => {
+                    const isSaved = p.treatChecked && p.treatChecked[idx];
 
-                const div = document.createElement('div');
-                div.className = 'border border-slate-200 p-2.5 rounded-xl text-xs shadow-sm bg-white flex items-center justify-between';
-                div.innerHTML = `
-                    <label class="flex items-center space-x-2 cursor-pointer">
-                        <input type="checkbox" id="treat-chk-${idx}" ${isSaved ? 'checked disabled' : ''} class="w-4 h-4 accent-teal-600 rounded">
-                        <span class="font-bold text-slate-800">${treatText}</span>
-                    </label>
-                    <span class="text-[10px] font-bold ${isSaved ? 'text-slate-400' : 'text-teal-600'}">${isSaved ? '已儲存(鎖定)' : '可執行'}</span>
-                `;
-                form.appendChild(div);
-            });
+                    const div = document.createElement('div');
+                    div.className = 'border border-slate-200 p-2.5 rounded-xl text-xs shadow-sm bg-white flex items-center justify-between';
+                    div.innerHTML = `
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" id="treat-chk-${idx}" ${isSaved ? 'checked disabled' : ''} class="w-4 h-4 accent-teal-600 rounded">
+                            <span class="font-bold text-slate-800">${treatText}</span>
+                        </label>
+                        <span class="text-[10px] font-bold ${isSaved ? 'text-slate-400' : 'text-teal-600'}">${isSaved ? '已儲存(鎖定)' : '可執行'}</span>
+                    `;
+                    form.appendChild(div);
+                });
+            }
         }
 
         window.saveTreatments = function() {
@@ -1696,13 +1690,15 @@
             if (!p.treatTimestamps) p.treatTimestamps = {};
             const currentTimeStr = getActiveTime();
 
-            p.treats.forEach((treatText, idx) => {
-                const chk = document.getElementById(`treat-chk-${idx}`);
-                if (chk && chk.checked && !chk.disabled) {
-                    p.treatChecked[idx] = true;
-                    p.treatTimestamps[idx] = currentTimeStr;
-                }
-            });
+            if (p.treats) {
+                p.treats.forEach((treatText, idx) => {
+                    const chk = document.getElementById(`treat-chk-${idx}`);
+                    if (chk && chk.checked && !chk.disabled) {
+                        p.treatChecked[idx] = true;
+                        p.treatTimestamps[idx] = currentTimeStr;
+                    }
+                });
+            }
             saveToCloud();
             alert('治療處置儲存成功（已同步雲端）！');
             switchView('nfc-view');
@@ -1732,6 +1728,7 @@
 
         window.saveVitalsData = function() {
             const p = patientsData[currentSelectedBed];
+            if (!p.vitals) p.vitals = [];
             p.vitals.unshift({
                 time: getActiveTime(),
                 t: document.getElementById('input-t').value || '36.5',
@@ -1948,13 +1945,6 @@
             }
 
             const stepX = (svgWidth - 2 * padding) / Math.max(1, list.length - 1);
-            let tooltipDiv = document.getElementById('chart-tooltip');
-            if (!tooltipDiv) {
-                tooltipDiv = document.createElement('div');
-                tooltipDiv.id = 'chart-tooltip';
-                tooltipDiv.className = 'absolute bg-slate-900 text-white text-[10px] px-2 py-1 rounded shadow-lg pointer-events-none hidden z-30';
-                container.parentNode.appendChild(tooltipDiv);
-            }
 
             if (qType === 'MP') {
                 const lines = [
@@ -1970,7 +1960,7 @@
                         let x = padding + idx * stepX;
                         let y = svgHeight - padding - (val / 5) * (svgHeight - 2 * padding);
                         points += `${x},${y} `;
-                        svgHtml += `<circle cx="${x}" cy="${y}" r="4" fill="${l.color}" class="cursor-pointer" onmouseover="showTooltip(event, '${l.label}: ${val}分 (${item.time})')" onmouseout="hideTooltip()" />`;
+                        svgHtml += `<circle cx="${x}" cy="${y}" r="4" fill="${l.color}" />`;
                     });
                     svgHtml += `<polyline fill="none" stroke="${l.color}" stroke-width="2" points="${points.trim()}" />`;
                 });
@@ -1980,7 +1970,7 @@
                     let x = padding + idx * stepX;
                     let y = svgHeight - padding - ((item.weight - 40) / 60) * (svgHeight - 2 * padding);
                     points += `${x},${y} `;
-                    svgHtml += `<circle cx="${x}" cy="${y}" r="4.5" fill="#0d9488" onmouseover="showTooltip(event, '體重: ${item.weight}kg (${item.time})')" onmouseout="hideTooltip()" />`;
+                    svgHtml += `<circle cx="${x}" cy="${y}" r="4.5" fill="#0d9488" />`;
                 });
                 svgHtml += `<polyline fill="none" stroke="#0d9488" stroke-width="2.5" points="${points.trim()}" />`;
             } else if (qType === 'GCS') {
@@ -1989,7 +1979,7 @@
                     let x = padding + idx * stepX;
                     let y = svgHeight - padding - ((item.total - 3) / 12) * (svgHeight - 2 * padding);
                     points += `${x},${y} `;
-                    svgHtml += `<circle cx="${x}" cy="${y}" r="4.5" fill="#4f46e5" onmouseover="showTooltip(event, 'GCS: ${item.score} (${item.time})')" onmouseout="hideTooltip()" />`;
+                    svgHtml += `<circle cx="${x}" cy="${y}" r="4.5" fill="#4f46e5" />`;
                 });
                 svgHtml += `<polyline fill="none" stroke="#4f46e5" stroke-width="2.5" points="${points.trim()}" />`;
             }
@@ -2001,19 +1991,6 @@
 
             svgHtml += `</svg>`;
             container.innerHTML += svgHtml;
-        };
-
-        window.showTooltip = function(evt, text) {
-            const tooltip = document.getElementById('chart-tooltip');
-            if (!tooltip) return;
-            tooltip.innerText = text;
-            tooltip.classList.remove('hidden');
-            tooltip.style.left = `${evt.offsetX + 10}px`;
-            tooltip.style.top = `${evt.offsetY - 20}px`;
-        };
-        window.hideTooltip = function() {
-            const tooltip = document.getElementById('chart-tooltip');
-            if (tooltip) tooltip.classList.add('hidden');
         };
 
         window.loadNursingNotes = function() {
