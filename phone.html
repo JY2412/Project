@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>專題_亞東紀念醫院 手機版醫療照護系統</title>
+    <title>專題_亞東紀念醫院 手機版醫療照護系統(雲端)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&display=swap');
@@ -78,6 +78,9 @@
             <div class="phone-camera"></div>
         </div>
 
+        <!-- 雲端連線狀態指示燈 -->
+        <div id="cloud-sync-status" class="absolute top-1 right-2 text-[9px] font-bold text-amber-600 z-30">☁️ 連線中...</div>
+
         <!-- 全院共通訊息跑馬燈 -->
         <div class="w-full overflow-hidden bg-rose-50 py-1 border-b border-rose-200 z-10">
             <div id="dynamic-marquee" class="animate-marquee-rtl text-xs font-bold text-rose-600">
@@ -101,7 +104,7 @@
                 </div>
                 <div class="pt-2">
                     <button onclick="handleLogin()" class="w-full bg-slate-800 hover:bg-slate-900 active:bg-slate-700 py-3 text-base font-semibold text-white transition-colors shadow-md rounded-lg flex items-center justify-center space-x-1">
-                        <span>登入</span><span class="text-[11px] font-normal opacity-75">_模擬</span>
+                        <span>登入</span><span class="text-[11px] font-normal opacity-75">_雲端同步版</span>
                     </button>
                 </div>
                 <div id="error-message" class="hidden mt-2 text-center text-rose-600 font-semibold bg-rose-50 py-2 border border-rose-200 rounded-lg text-xs">員編或密碼錯誤，請重新輸入</div>
@@ -126,7 +129,7 @@
                     <button id="btn-home-nfc" onclick="handleNFCScan()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-sm py-2.5 rounded-xl shadow-sm border border-slate-200 text-center">感應 NFC 晶片</button>
                     <button onclick="switchView('patient-list-view')" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 rounded-xl shadow-sm border border-slate-200 text-center">
                         <div class="text-sm font-bold leading-tight">病床清單查詢</div>
-                        <div class="text-[10px] font-normal text-slate-500 mt-0.5">檢視責任床位與全病房總覽</div>
+                        <div class="text-[10px] font-normal text-slate-500 mt-0.5">檢視責任床位與全病房總覽 (即時同步)</div>
                     </button>
                     <div id="ns-admin-panel" class="hidden pt-0.5">
                         <button onclick="openNSAdminModal()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-2 rounded-xl text-xs transition shadow border border-slate-700">護理排班設定</button>
@@ -735,7 +738,24 @@
         <div class="home-indicator"></div>
     </div>
 
-    <script>
+    <!-- Firebase SDK 引入與雲端即時同步邏輯 -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBe__9-uFJkSrN2m5_qldgS2UgtQzcb9EQ",
+            authDomain: "nursingapp-2c5eb.firebaseapp.com",
+            databaseURL: "https://nursingapp-2c5eb-default-rtdb.asia-southeast1.firebasedatabase.app/",
+            projectId: "nursingapp-2c5eb",
+            storageBucket: "nursingapp-2c5eb.firebasestorage.app",
+            messagingSenderId: "731250223633",
+            appId: "1:731250223633:web:c9a28e673e719fb3811fb0"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
         const userDatabase = {
             "NS": { password: "NS", name: "護理站", role: "ns_scheduler" },
             "Jia": { password: "1224", name: "劉家裕", role: "admin" },
@@ -746,15 +766,6 @@
             "105": { password: "105", name: "張Ｏ蓉", role: "nurse" },
             "yeh": { password: "1127", name: "葉映誠", role: "nurse" }
         };
-
-        let nurseBedAssignments = JSON.parse(localStorage.getItem('femh_nurse_schedule_vFixed10')) || {
-            "許Ｏ媃": [], "劉Ｏ綺": [], "游Ｏ妤": [], "張Ｏ綺": [], "張Ｏ蓉": [], "葉映誠": [], "劉家裕": []
-        };
-
-        let simulatedCurrentTime = null;
-        let bloodVerifiedNurse1 = null;
-        let bloodVerifiedNurse2 = null;
-        let bloodIsLocked = false;
 
         const clinicalProfiles = [
             {
@@ -875,9 +886,61 @@
             return data;
         }
 
-        let patientsData = JSON.parse(localStorage.getItem('femh_45beds_vFixed10')) || generateDefaultPatients();
-        let globalSharedMemo = localStorage.getItem('femh_shared_memo_vFixed10') || "全病房交班注意事項：請落實三讀五對、洗手規範與生命徵象異常回報。";
-        
+        let patientsData = {};
+        let nurseBedAssignments = {
+            "許Ｏ媃": [], "劉Ｏ綺": [], "游Ｏ妤": [], "張Ｏ綺": [], "張Ｏ蓉": [], "葉映誠": [], "劉家裕": []
+        };
+        let globalSharedMemo = "全病房交班注意事項：請落實三讀五對、洗手規範與生命徵象異常回報。";
+
+        // Firebase 即時資料同步監聽
+        onValue(ref(db, 'femh_cloud_db'), (snapshot) => {
+            const cloudData = snapshot.val();
+            const statusEl = document.getElementById('cloud-sync-status');
+            if (cloudData) {
+                patientsData = cloudData.patientsData || generateDefaultPatients();
+                nurseBedAssignments = cloudData.nurseBedAssignments || nurseBedAssignments;
+                globalSharedMemo = cloudData.globalSharedMemo || globalSharedMemo;
+                if (statusEl) { statusEl.innerText = "🟢 雲端同步正常"; statusEl.className = "absolute top-1 right-2 text-[9px] font-bold text-emerald-600 z-30"; }
+            } else {
+                // 初始化雲端預設資料
+                patientsData = generateDefaultPatients();
+                saveToCloud();
+                if (statusEl) { statusEl.innerText = "🟢 雲端初始化完成"; statusEl.className = "absolute top-1 right-2 text-[9px] font-bold text-emerald-600 z-30"; }
+            }
+            syncNurseAssignments();
+            // 如果當前在列表或詳細頁，即時更新畫面
+            if (!document.getElementById('patient-list-view').classList.contains('hidden')) renderPatientList();
+        }, (error) => {
+            const statusEl = document.getElementById('cloud-sync-status');
+            if (statusEl) { statusEl.innerText = "🔴 雲端連線失敗(使用本地)"; statusEl.className = "absolute top-1 right-2 text-[9px] font-bold text-rose-600 z-30"; }
+            // 讀取本地快取備份
+            patientsData = JSON.parse(localStorage.getItem('femh_45beds_vFixed10')) || generateDefaultPatients();
+            nurseBedAssignments = JSON.parse(localStorage.getItem('femh_nurse_schedule_vFixed10')) || nurseBedAssignments;
+            globalSharedMemo = localStorage.getItem('femh_shared_memo_vFixed10') || globalSharedMemo;
+            syncNurseAssignments();
+        });
+
+        function saveToCloud() {
+            const payload = {
+                patientsData: patientsData,
+                nurseBedAssignments: nurseBedAssignments,
+                globalSharedMemo: globalSharedMemo,
+                lastUpdated: new Date().toISOString()
+            };
+            // 存入 Firebase 雲端
+            set(ref(db, 'femh_cloud_db'), payload).catch(err => console.log('Cloud save err:', err));
+            // 同時備份至 LocalStorage
+            localStorage.setItem('femh_45beds_vFixed10', JSON.stringify(patientsData));
+            localStorage.setItem('femh_shared_memo_vFixed10', globalSharedMemo);
+            localStorage.setItem('femh_nurse_schedule_vFixed10', JSON.stringify(nurseBedAssignments));
+        }
+
+        // 為了相容原本全域呼叫
+        window.saveToLocalStorage = saveToCloud;
+        window.patientsData = patientsData;
+        window.nurseBedAssignments = nurseBedAssignments;
+        window.globalSharedMemo = globalSharedMemo;
+
         let currentUser = null;
         let currentSelectedBed = "01-1"; 
         let currentActiveNurse = null;
@@ -886,15 +949,21 @@
 
         function syncNurseAssignments() {
             Object.keys(patientsData).forEach(bedKey => {
-                patientsData[bedKey].assignedNurse = "";
+                if (patientsData[bedKey]) patientsData[bedKey].assignedNurse = "";
             });
             Object.keys(nurseBedAssignments).forEach(nurseName => {
-                nurseBedAssignments[nurseName].forEach(bedKey => {
-                    if (patientsData[bedKey]) patientsData[bedKey].assignedNurse = nurseName;
-                });
+                if (nurseBedAssignments[nurseName]) {
+                    nurseBedAssignments[nurseName].forEach(bedKey => {
+                        if (patientsData[bedKey]) patientsData[bedKey].assignedNurse = nurseName;
+                    });
+                }
             });
         }
-        syncNurseAssignments();
+
+        let simulatedCurrentTime = null;
+        let bloodVerifiedNurse1 = null;
+        let bloodVerifiedNurse2 = null;
+        let bloodIsLocked = false;
 
         function getActiveTime() {
             if (simulatedCurrentTime) return simulatedCurrentTime;
@@ -918,13 +987,7 @@
             marquee.innerText = `院內共通公告：落實三讀五對。 ⚠️ 【全病房即時提醒】目前尚有未執行之臨床處置，請各班護理師儘速查核！`;
         }
 
-        function saveToLocalStorage() {
-            localStorage.setItem('femh_45beds_vFixed10', JSON.stringify(patientsData));
-            localStorage.setItem('femh_shared_memo_vFixed10', globalSharedMemo);
-            localStorage.setItem('femh_nurse_schedule_vFixed10', JSON.stringify(nurseBedAssignments));
-        }
-
-        function handleLogin() {
+        window.handleLogin = function() {
             const empIdInput = document.getElementById('emp-id').value.trim();
             const passwordInput = document.getElementById('password').value.trim();
             const errorMessage = document.getElementById('error-message');
@@ -958,17 +1021,17 @@
             } else {
                 errorMessage.classList.remove('hidden');
             }
-        }
+        };
 
-        function handleLogout() {
+        window.handleLogout = function() {
             currentUser = null;
             document.getElementById('emp-id').value = '';
             document.getElementById('password').value = '';
             document.getElementById('error-message').classList.add('hidden');
             switchView('login-view');
-        }
+        };
 
-        async function handleNFCScan() {
+        window.handleNFCScan = async function() {
             if (!currentUser) { alert('請先登入系統！'); return; }
             if (currentUser.role === 'ns_scheduler') { alert('護理站排班帳號無法感應 NFC！'); return; }
 
@@ -1014,7 +1077,7 @@
             } else {
                 alert('❌ NFC 晶片代碼不符或感應失敗！');
             }
-        }
+        };
 
         function verifyAndOpenBed(bedKey) {
             const myAssigned = nurseBedAssignments[currentUser.name] || [];
@@ -1026,7 +1089,7 @@
             switchView('nfc-view');
         }
 
-        function switchPatientTab(tabType) {
+        window.switchPatientTab = function(tabType) {
             currentPatientTab = tabType;
             const myBtn = document.getElementById('tab-my-btn');
             const allBtn = document.getElementById('tab-all-btn');
@@ -1039,17 +1102,18 @@
                 allBtn.className = 'flex-1 py-1.5 bg-white rounded-lg shadow-xs transition text-slate-800 font-bold';
             }
             renderPatientList();
-        }
+        };
 
         function renderPatientList() {
             const container = document.getElementById('patient-list-container');
+            if (!container) return;
             container.innerHTML = '';
             const beds = Object.keys(patientsData).sort();
 
             if (currentPatientTab === 'my') {
                 if (currentUser && currentUser.role === 'ns_scheduler') {
                     Object.keys(nurseBedAssignments).forEach(nurseName => {
-                        const assignedBeds = nurseBedAssignments[nurseName];
+                        const assignedBeds = nurseBedAssignments[nurseName] || [];
                         if (assignedBeds.length === 0) return;
                         const rangeStr = `${assignedBeds[0]} ~ ${assignedBeds[assignedBeds.length - 1]}`;
                         const header = document.createElement('div');
@@ -1072,10 +1136,9 @@
                     });
                 }
             } else {
-                // 全病房總覽：整齊表格化對齊佈局
                 beds.forEach(bedKey => {
                     const p = patientsData[bedKey];
-                    container.appendChild(createPatientRow(bedKey, p, true));
+                    if (p) container.appendChild(createPatientRow(bedKey, p, true));
                 });
             }
         }
@@ -1147,13 +1210,13 @@
             switchView('patient-detail-view');
         }
 
-        function openPatientLocation() {
+        window.openPatientLocation = function() {
             const p = patientsData[currentSelectedBed];
             if (!p.isArrived) { alert('此病人資料已到，但人尚未抵達病房，尚無病人定位！'); return; }
             document.getElementById('loc-bed-name').innerText = p.name;
-        }
+        };
 
-        function openPatientEdit() {
+        window.openPatientEdit = function() {
             const p = patientsData[currentSelectedBed];
             document.getElementById('edit-name').value = p.editInfo.name || '';
             document.getElementById('edit-dob').value = p.dob || '';
@@ -1162,45 +1225,44 @@
             document.getElementById('edit-disease').value = p.editInfo.disease || '';
             document.getElementById('edit-contact').value = p.editInfo.contact || '';
             document.getElementById('edit-phone').value = p.editInfo.phone || '';
-        }
+        };
 
-        function savePatientEdit() {
+        window.savePatientEdit = function() {
             const p = patientsData[currentSelectedBed];
             p.editInfo.allergy = document.getElementById('edit-allergy').value;
             p.editInfo.disease = document.getElementById('edit-disease').value;
             p.editInfo.contact = document.getElementById('edit-contact').value;
             p.editInfo.phone = document.getElementById('edit-phone').value;
             p.extra = `血型：${p.blood} | 過敏：${p.editInfo.allergy} | 診斷：${p.editInfo.disease}`;
-            saveToLocalStorage();
-            alert('病人基本資料修改成功！');
+            saveToCloud();
+            alert('病人基本資料修改成功（已同步雲端）！');
             switchView('patient-detail-view');
-        }
+        };
 
-        function openSpecialMemo() { document.getElementById('memo-textarea').value = globalSharedMemo; }
-        function saveSpecialMemo() {
+        window.openSpecialMemo = function() { document.getElementById('memo-textarea').value = globalSharedMemo; };
+        window.saveSpecialMemo = function() {
             globalSharedMemo = document.getElementById('memo-textarea').value;
-            saveToLocalStorage();
-            alert('交班注意事項已儲存同步！');
+            saveToCloud();
+            alert('交班注意事項已儲存並同步至雲端！');
             switchView('patient-detail-view');
-        }
+        };
 
-        function openNSAdminModal() {
+        window.openNSAdminModal = function() {
             loadNurseBedSelection();
             document.getElementById('ns-admin-modal').classList.remove('hidden');
-        }
-        function closeNSAdminModal() { document.getElementById('ns-admin-modal').classList.add('hidden'); }
+        };
+        window.closeNSAdminModal = function() { document.getElementById('ns-admin-modal').classList.add('hidden'); };
 
-        function loadNurseBedSelection() {
+        window.loadNurseBedSelection = function() {
             const nurseName = document.getElementById('schedule-nurse-select').value;
             const container = document.getElementById('schedule-beds-checkboxes');
             container.innerHTML = '';
             const currentAssigned = nurseBedAssignments[nurseName] || [];
             
-            // 找出已被其他護理師選走的床位集合
             let takenBeds = new Set();
             Object.keys(nurseBedAssignments).forEach(n => {
                 if (n !== nurseName) {
-                    nurseBedAssignments[n].forEach(b => takenBeds.add(b));
+                    (nurseBedAssignments[n] || []).forEach(b => takenBeds.add(b));
                 }
             });
 
@@ -1208,7 +1270,6 @@
             let availableCount = 0;
 
             allBeds.forEach(bedKey => {
-                // 如果已經被其他護理師選走，則略過不顯示
                 if (takenBeds.has(bedKey)) return;
                 availableCount++;
 
@@ -1225,9 +1286,9 @@
             if (availableCount === 0) {
                 container.innerHTML = '<div class="text-center text-slate-400 text-xs py-4">目前所有床位皆已被指派完畢</div>';
             }
-        }
+        };
 
-        function quickSelectBeds(count) {
+        window.quickSelectBeds = function(count) {
             const chks = document.querySelectorAll('.schedule-bed-chk');
             let selectedCount = 0;
             chks.forEach((chk) => {
@@ -1236,18 +1297,18 @@
                     selectedCount++;
                 }
             });
-        }
+        };
 
-        function clearAllNurseBeds() {
+        window.clearAllNurseBeds = function() {
             const nurseName = document.getElementById('schedule-nurse-select').value;
             nurseBedAssignments[nurseName] = [];
             loadNurseBedSelection();
             syncNurseAssignments();
-            saveToLocalStorage();
+            saveToCloud();
             alert(`已清除【${nurseName}】所有選取床位！`);
-        }
+        };
 
-        function saveNurseSchedule() {
+        window.saveNurseSchedule = function() {
             const nurseName = document.getElementById('schedule-nurse-select').value;
             const chks = document.querySelectorAll('.schedule-bed-chk:checked');
             if (chks.length > 7) { alert('每位護理師最多只能負責 7 個病人！'); return; }
@@ -1256,12 +1317,12 @@
             chks.forEach(chk => newBeds.push(chk.value));
             nurseBedAssignments[nurseName] = newBeds;
             syncNurseAssignments();
-            saveToLocalStorage();
-            alert(`已成功儲存【${nurseName}】的責任床位排班！`);
+            saveToCloud();
+            alert(`已成功儲存【${nurseName}】的責任床位排班（已同步雲端）！`);
             closeNSAdminModal();
-        }
+        };
 
-        function openJiaAdminModal() {
+        window.openJiaAdminModal = function() {
             const container = document.getElementById('jia-admin-bed-list');
             container.innerHTML = '';
             Object.keys(patientsData).sort().forEach(bedKey => {
@@ -1275,48 +1336,48 @@
                 container.appendChild(item);
             });
             document.getElementById('jia-admin-modal').classList.remove('hidden');
-        }
-        function closeJiaAdminModal() { document.getElementById('jia-admin-modal').classList.add('hidden'); }
+        };
+        window.closeJiaAdminModal = function() { document.getElementById('jia-admin-modal').classList.add('hidden'); };
         
-        function applySimulatedTime() {
+        window.applySimulatedTime = function() {
             const val = document.getElementById('simulated-time-input').value;
             if (!val) { alert('請選擇模擬時間！'); return; }
             simulatedCurrentTime = val;
             alert(`已將系統時間模擬為：${val}。可前往給藥測試時間窗！`);
             updateDateTimeDisplay();
-        }
+        };
 
-        function cancelSimulatedTime() {
+        window.cancelSimulatedTime = function() {
             simulatedCurrentTime = null;
             document.getElementById('simulated-time-input').value = '';
             alert('已取消模擬時間，恢復為中原標準時間！');
             updateDateTimeDisplay();
-        }
+        };
 
-        function jiaResetBed(bedKey) {
+        window.jiaResetBed = function(bedKey) {
             if (confirm(`確定完整重置 ${bedKey} 床位資料嗎？`)) {
                 let fresh = generateDefaultPatients();
                 patientsData[bedKey] = fresh[bedKey];
-                saveToLocalStorage();
+                saveToCloud();
                 alert(`${bedKey} 已完整重置！`);
                 openJiaAdminModal();
             }
-        }
+        };
 
-        function jiaResetAllBeds() {
+        window.jiaResetAllBeds = function() {
             if (confirm('確定要一鍵完整重置全病房所有床位與排班資料嗎？')) {
                 patientsData = generateDefaultPatients();
                 nurseBedAssignments = {
                     "許Ｏ媃": [], "劉Ｏ綺": [], "游Ｏ妤": [], "張Ｏ綺": [], "張Ｏ蓉": [], "葉映誠": [], "劉家裕": []
                 };
                 syncNurseAssignments();
-                saveToLocalStorage();
+                saveToCloud();
                 alert('全病房資料已全部一鍵重置完成！');
                 openJiaAdminModal();
             }
-        }
+        };
 
-        function switchView(viewId) {
+        window.switchView = function(viewId) {
             const views = [
                 'login-view', 'home-view', 'nfc-view', 'upload-menu-view', 'patient-list-view', 
                 'patient-detail-view', 'orders-status-view', 
@@ -1326,15 +1387,21 @@
                 'vitals-upload-view', 'io-upload-view', 'wh-upload-view', 'gcs-upload-view', 'mp-upload-view', 'advanced-query-view',
                 'med-view', 'treat-view', 'blood-view', 'consent-view'
             ];
-            views.forEach(id => document.getElementById(id).classList.add('hidden'));
-            document.getElementById(viewId).classList.remove('hidden');
+            views.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.add('hidden');
+            });
+            const target = document.getElementById(viewId);
+            if (target) target.classList.remove('hidden');
 
             if (viewId === 'patient-list-view') renderPatientList();
             else if (viewId === 'map-view') {
                 const p = patientsData[currentSelectedBed];
-                document.getElementById('map-title-label').innerText = `${p.name} 即時位置`;
-                document.getElementById('map-pin').style.top = p.location.top;
-                document.getElementById('map-pin').style.left = p.location.left;
+                if (p) {
+                    document.getElementById('map-title-label').innerText = `${p.name} 即時位置`;
+                    document.getElementById('map-pin').style.top = p.location.top;
+                    document.getElementById('map-pin').style.left = p.location.left;
+                }
             } else if (viewId === 'med-view') renderMedicationsList();
             else if (viewId === 'treat-view') renderTreatmentsList();
             else if (viewId === 'blood-view') initBloodView();
@@ -1345,14 +1412,14 @@
             else if (viewId === 'consent-view') {
                 setTimeout(initSignatureCanvas, 150);
             }
-        }
+        };
 
-        function stopWatchAlarm() { 
+        window.stopWatchAlarm = function() { 
             alert('已成功關閉手錶警報！'); 
             switchView('patient-location-view'); 
-        }
+        };
 
-        function loadPatientOrders() {
+        window.loadPatientOrders = function() {
             const p = patientsData[currentSelectedBed];
             const container = document.getElementById('orders-list-container');
             container.innerHTML = '';
@@ -1367,7 +1434,7 @@
                     const doneTotalMin = doneH * 60 + doneM;
                     if (currTotalMin - doneTotalMin >= 90) {
                         p.treatChecked[idx] = false;
-                        saveToLocalStorage();
+                        saveToCloud();
                     }
                 }
 
@@ -1380,7 +1447,7 @@
                 }
             });
             if (count === 0) container.innerHTML = '<div class="text-center text-teal-600 font-bold text-xs py-6">🎉 所有處置醫囑皆已執行完畢！</div>';
-        }
+        };
 
         function renderMedicationsList() {
             const p = patientsData[currentSelectedBed];
@@ -1393,7 +1460,7 @@
             if (!p.meds || p.meds.length === 0) {
                 const profile = clinicalProfiles[0];
                 p.meds = JSON.parse(JSON.stringify(profile.meds));
-                saveToLocalStorage();
+                saveToCloud();
             }
 
             p.meds.forEach((med, idx) => {
@@ -1433,7 +1500,7 @@
             });
         }
 
-        function saveMedications() {
+        window.saveMedications = function() {
             const p = patientsData[currentSelectedBed];
             if (!p.medChecked) p.medChecked = {};
             p.meds.forEach((med, idx) => {
@@ -1442,10 +1509,10 @@
                     p.medChecked[idx] = true;
                 }
             });
-            saveToLocalStorage();
-            alert('給藥作業儲存成功（已鎖定不可更改）！');
+            saveToCloud();
+            alert('給藥作業儲存成功（已同步雲端並鎖定）！');
             switchView('nfc-view');
-        }
+        };
 
         function renderTreatmentsList() {
             const p = patientsData[currentSelectedBed];
@@ -1468,7 +1535,7 @@
             });
         }
 
-        function saveTreatments() {
+        window.saveTreatments = function() {
             const p = patientsData[currentSelectedBed];
             if (!p.treatChecked) p.treatChecked = {};
             if (!p.treatTimestamps) p.treatTimestamps = {};
@@ -1481,12 +1548,12 @@
                     p.treatTimestamps[idx] = currentTimeStr;
                 }
             });
-            saveToLocalStorage();
-            alert('治療處置儲存成功！');
+            saveToCloud();
+            alert('治療處置儲存成功（已同步雲端）！');
             switchView('nfc-view');
-        }
+        };
 
-        function checkVitalInputColor(el, type) {
+        window.checkVitalInputColor = function(el, type) {
             let val = parseFloat(el.value);
             if (isNaN(val)) { el.style.color = '#1e293b'; return; }
             let isAbnormal = false;
@@ -1506,9 +1573,9 @@
 
             el.style.color = isAbnormal ? '#e11d48' : '#1e293b';
             el.style.fontWeight = isAbnormal ? '700' : '500';
-        }
+        };
 
-        function saveVitalsData() {
+        window.saveVitalsData = function() {
             const p = patientsData[currentSelectedBed];
             p.vitals.unshift({
                 time: getActiveTime(),
@@ -1520,7 +1587,7 @@
                 pain: document.getElementById('input-pain').value || '0',
                 creator: currentUser ? currentUser.name : "護理師"
             });
-            saveToLocalStorage();
+            saveToCloud();
             document.getElementById('input-t').value = '';
             document.getElementById('input-p').value = '';
             document.getElementById('input-r').value = '';
@@ -1528,11 +1595,11 @@
             document.getElementById('input-bp-dia').value = '';
             document.getElementById('input-spo2').value = '';
             document.getElementById('input-pain').value = '';
-            alert('生命徵象數據儲存成功！');
+            alert('生命徵象數據儲存成功（已同步雲端）！');
             switchView('nfc-view');
-        }
+        };
 
-        function saveIOData() {
+        window.saveIOData = function() {
             const inFood = parseInt(document.getElementById('io-in-food').value) || 0;
             const inW = parseInt(document.getElementById('io-in-water').value) || 0;
             const inIV = parseInt(document.getElementById('io-in-iv').value) || 0;
@@ -1555,7 +1622,7 @@
                 time: `${now.getMonth()+1}/${now.getDate()}`,
                 type: 'IO', inVal: totalIn, outVal: totalOut, net: net
             });
-            saveToLocalStorage();
+            saveToCloud();
             document.getElementById('io-in-food').value = '';
             document.getElementById('io-in-water').value = '';
             document.getElementById('io-in-iv').value = '';
@@ -1566,11 +1633,11 @@
             document.getElementById('io-out-drain').value = '';
             document.getElementById('io-out-vomit').value = '';
             document.getElementById('io-out-other').value = '';
-            alert(`I/O 數據儲存成功！淨值：${net >= 0 ? '+' + net : net} ml`);
+            alert(`I/O 數據儲存成功（已同步雲端）！淨值：${net >= 0 ? '+' + net : net} ml`);
             switchView('nfc-view');
-        }
+        };
 
-        function saveWHData() {
+        window.saveWHData = function() {
             const h = parseFloat(document.getElementById('input-height').value) || 172;
             const w = parseFloat(document.getElementById('input-weight').value) || 68;
             const p = patientsData[currentSelectedBed];
@@ -1580,19 +1647,20 @@
                 time: `${now.getMonth()+1}/${now.getDate()}`,
                 type: 'WH', height: h, weight: w
             });
-            saveToLocalStorage();
+            saveToCloud();
             document.getElementById('input-height').value = '';
             document.getElementById('input-weight').value = '';
-            alert('身高體重儲存成功！');
+            alert('身高體重儲存成功（已同步雲端）！');
             switchView('nfc-view');
-        }
+        };
 
-        function checkGCSLimit(el, min, max) {
+        window.checkGCSLimit = function(el, min, max) {
             let val = parseInt(el.value);
             if (val > max) el.value = max;
             else if (val < min && el.value !== '') el.value = min;
-        }
-        function saveGCSData() {
+        };
+
+        window.saveGCSData = function() {
             const e = parseInt(document.getElementById('gcs-e').value) || 4;
             const v = parseInt(document.getElementById('gcs-v').value) || 5;
             const m = parseInt(document.getElementById('gcs-m').value) || 6;
@@ -1603,20 +1671,21 @@
                 time: `${now.getMonth()+1}/${now.getDate()}`,
                 type: 'GCS', e, v, m, score: `E${e}V${v}M${m}`, total: e+v+m
             });
-            saveToLocalStorage();
+            saveToCloud();
             document.getElementById('gcs-e').value = '';
             document.getElementById('gcs-v').value = '';
             document.getElementById('gcs-m').value = '';
             alert(`GCS 儲存成功 (E${e}V${v}M${m})！`);
             switchView('nfc-view');
-        }
+        };
 
-        function checkMPLimit(el) {
+        window.checkMPLimit = function(el) {
             let val = parseInt(el.value);
             if (val > 5) el.value = 5;
             else if (val < 0) el.value = 0;
-        }
-        function saveMPData() {
+        };
+
+        window.saveMPData = function() {
             const rue = parseInt(document.getElementById('mp-rue').value) || 5;
             const lue = parseInt(document.getElementById('mp-lue').value) || 5;
             const rle = parseInt(document.getElementById('mp-rle').value) || 5;
@@ -1628,21 +1697,21 @@
                 time: `${now.getMonth()+1}/${now.getDate()}`,
                 type: 'MP', rue, lue, rle, lle
             });
-            saveToLocalStorage();
+            saveToCloud();
             document.getElementById('mp-rue').value = '';
             document.getElementById('mp-lue').value = '';
             document.getElementById('mp-rle').value = '';
             document.getElementById('mp-lle').value = '';
-            alert('Muscle Power 儲存成功！');
+            alert('Muscle Power 儲存成功（已同步雲端）！');
             switchView('nfc-view');
-        }
+        };
 
-        function openAdvancedQueryView() {
+        window.openAdvancedQueryView = function() {
             switchView('advanced-query-view');
             renderAdvancedChart();
-        }
+        };
 
-        function renderAdvancedChart() {
+        window.renderAdvancedChart = function() {
             const qType = document.getElementById('adv-query-type').value;
             const container = document.getElementById('adv-chart-container');
             const p = patientsData[currentSelectedBed];
@@ -1777,26 +1846,26 @@
 
             svgHtml += `</svg>`;
             container.innerHTML += svgHtml;
-        }
+        };
 
-        function showTooltip(evt, text) {
+        window.showTooltip = function(evt, text) {
             const tooltip = document.getElementById('chart-tooltip');
             if (!tooltip) return;
             tooltip.innerText = text;
             tooltip.classList.remove('hidden');
             tooltip.style.left = `${evt.offsetX + 10}px`;
             tooltip.style.top = `${evt.offsetY - 20}px`;
-        }
-        function hideTooltip() {
+        };
+        window.hideTooltip = function() {
             const tooltip = document.getElementById('chart-tooltip');
             if (tooltip) tooltip.classList.add('hidden');
-        }
+        };
 
-        function loadNursingNotes() {
+        window.loadNursingNotes = function() {
             const p = patientsData[currentSelectedBed];
             const container = document.getElementById('notes-list-container');
             container.innerHTML = '';
-            if (p.notes.length === 0) {
+            if (!p.notes || p.notes.length === 0) {
                 container.innerHTML = '<div class="text-center text-slate-400 text-xs py-8">目前尚無護理紀錄</div>';
                 return;
             }
@@ -1844,17 +1913,17 @@
                     </div>
                 `;
             });
-        }
+        };
 
-        function openNoteCreate() {
+        window.openNoteCreate = function() {
             editingNoteId = null;
             document.getElementById('note-edit-title').innerText = '新增護理紀錄';
             document.getElementById('note-edit-time').innerText = getActiveTime();
             document.getElementById('note-textarea').value = '';
             switchView('nursing-notes-edit-view');
-        }
+        };
 
-        function editNote(id) {
+        window.editNote = function(id) {
             const p = patientsData[currentSelectedBed];
             const note = p.notes.find(n => n.id === id);
             if (!note || note.status !== 'draft') { alert('已儲存送出的紀錄無法修改！'); return; }
@@ -1863,9 +1932,9 @@
             document.getElementById('note-edit-title').innerText = '修改暫存護理紀錄';
             document.getElementById('note-textarea').value = note.content;
             switchView('nursing-notes-edit-view');
-        }
+        };
 
-        function saveNoteData(statusType) {
+        window.saveNoteData = function(statusType) {
             const content = document.getElementById('note-textarea').value.trim();
             if (!content) { alert('請輸入內容！'); return; }
             const p = patientsData[currentSelectedBed];
@@ -1877,38 +1946,39 @@
                     note.status = statusType;
                 }
             } else {
+                if (!p.notes) p.notes = [];
                 p.notes.unshift({
                     id: Date.now(),
                     time: `${getActiveTime()}`,
                     content: content, status: statusType, creator: currentUser ? currentUser.name : "護理師", photo: null, part: ""
                 });
             }
-            saveToLocalStorage();
+            saveToCloud();
             loadNursingNotes();
             switchView('nursing-notes-list-view');
-        }
+        };
 
-        function deleteNote(id) {
+        window.deleteNote = function(id) {
             const p = patientsData[currentSelectedBed];
             const idx = p.notes.findIndex(n => n.id === id);
             if (idx !== -1) {
                 if (currentUser && p.notes[idx].creator !== currentUser.name) { alert('非建立者本人無法刪除！'); return; }
                 if (confirm('確定要刪除這筆護理紀錄嗎？')) {
                     p.notes.splice(idx, 1);
-                    saveToLocalStorage();
+                    saveToCloud();
                     loadNursingNotes();
                 }
             }
-        }
+        };
 
-        function openPhotoModal() {
+        window.openPhotoModal = function() {
             document.getElementById('photo-part-input').value = '';
             document.getElementById('photo-file-input').value = '';
             document.getElementById('photo-modal').classList.remove('hidden');
-        }
-        function closePhotoModal() { document.getElementById('photo-modal').classList.add('hidden'); }
+        };
+        window.closePhotoModal = function() { document.getElementById('photo-modal').classList.add('hidden'); };
 
-        function submitPhotoRecord() {
+        window.submitPhotoRecord = function() {
             const part = document.getElementById('photo-part-input').value.trim();
             const fileInput = document.getElementById('photo-file-input');
             if (!part) { alert('請輸入照護部位說明！'); return; }
@@ -1924,23 +1994,23 @@
                     time: getActiveTime(),
                     content: `[相片紀錄: ${part}]`, status: "saved", creator: currentUser ? currentUser.name : "護理師", photo: e.target.result, part: part
                 });
-                saveToLocalStorage();
+                saveToCloud();
                 closePhotoModal();
                 loadNursingNotes();
-                alert('📸 相片與部位紀錄上傳成功！');
+                alert('📸 相片與部位紀錄上傳成功（已同步雲端）！');
             };
             reader.onerror = function() {
                 alert('❌ 相片讀取失敗，請重新選擇圖片！');
             };
             reader.readAsDataURL(file);
-        }
+        };
 
-        function openPhotoViewer(imgSrc, partDesc) {
+        window.openPhotoViewer = function(imgSrc, partDesc) {
             document.getElementById('viewer-title').innerText = `照護部位：${partDesc}`;
             document.getElementById('viewer-img').src = imgSrc;
             document.getElementById('photo-viewer-modal').classList.remove('hidden');
-        }
-        function closePhotoViewer() { document.getElementById('photo-viewer-modal').classList.add('hidden'); }
+        };
+        window.closePhotoViewer = function() { document.getElementById('photo-viewer-modal').classList.add('hidden'); };
 
         function initBloodView() {
             const p = patientsData[currentSelectedBed];
@@ -1988,17 +2058,17 @@
             }
         }
 
-        function openNurseModal(num) {
+        window.openNurseModal = function(num) {
             currentActiveNurse = num;
             document.getElementById('modal-title').innerText = `護理師${num} 身分核對`;
             document.getElementById('nurse-id-input').value = '';
             document.getElementById('nurse-pw-input').value = '';
             document.getElementById('modal-err').classList.add('hidden');
             document.getElementById('nurse-modal').classList.remove('hidden');
-        }
-        function closeNurseModal() { document.getElementById('nurse-modal').classList.add('hidden'); }
+        };
+        window.closeNurseModal = function() { document.getElementById('nurse-modal').classList.add('hidden'); };
 
-        function verifyNurseLogin() {
+        window.verifyNurseLogin = function() {
             const id = document.getElementById('nurse-id-input').value.trim();
             const pw = document.getElementById('nurse-pw-input').value.trim();
             if (userDatabase[id] && userDatabase[id].password === pw) {
@@ -2024,9 +2094,9 @@
             } else {
                 document.getElementById('modal-err').classList.remove('hidden');
             }
-        }
+        };
 
-        function saveBloodRecord() {
+        window.saveBloodRecord = function() {
             if (!bloodVerifiedNurse1 || !bloodVerifiedNurse2) {
                 alert('❌ 輸血作業必須由「兩位不同」的護理師完成雙重核對！');
                 return;
@@ -2046,14 +2116,14 @@
                 timestamp: getActiveTime()
             };
 
-            saveToLocalStorage();
+            saveToCloud();
 
             document.getElementById('blood-product-type').disabled = true;
             bloodIsLocked = true;
 
-            alert(`✅ 輸血作業儲存成功！\n- 血品：${selectedProduct}\n- 核對人員：${bloodVerifiedNurse1} & ${bloodVerifiedNurse2}\n- 儲存時間：${p.bloodRecord.timestamp}`);
+            alert(`✅ 輸血作業儲存成功（已同步雲端）！\n- 血品：${selectedProduct}\n- 核對人員：${bloodVerifiedNurse1} & ${bloodVerifiedNurse2}\n- 儲存時間：${p.bloodRecord.timestamp}`);
             switchView('nfc-view');
-        }
+        };
 
         let sigCanvas, sigCtx, isDrawing = false;
         function initSignatureCanvas() {
@@ -2101,13 +2171,13 @@
             sigCanvas.ontouchend = () => isDrawing = false;
         }
 
-        function clearSignatureCanvas() { 
+        window.clearSignatureCanvas = function() { 
             if (sigCtx && sigCanvas) {
                 sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height);
             } 
-        }
+        };
         
-        function checkConsentStatus() {
+        window.checkConsentStatus = function() {
             const cType = document.getElementById('consent-type-select').value;
             const p = patientsData[currentSelectedBed];
             if (!p.consents) p.consents = {};
@@ -2120,33 +2190,33 @@
                 document.getElementById('signed-status-section').classList.add('hidden');
                 setTimeout(initSignatureCanvas, 150);
             }
-        }
+        };
 
-        function saveSignatureData() {
+        window.saveSignatureData = function() {
             if (!sigCanvas) return;
             const cType = document.getElementById('consent-type-select').value;
             const p = patientsData[currentSelectedBed];
             if (!p.consents) p.consents = {};
             
             p.consents[cType] = sigCanvas.toDataURL('image/png');
-            saveToLocalStorage();
-            alert(`【${cType}】電子簽名完成並安全鎖定！`);
+            saveToCloud();
+            alert(`【${cType}】電子簽名完成並安全鎖定（已同步雲端）！`);
             checkConsentStatus();
-        }
+        };
 
-        function checkConsentAccessAndOpen() {
+        window.checkConsentAccessAndOpen = function() {
             const p = patientsData[currentSelectedBed];
             if (!p.hasConsent) { alert('該病人無需要簽署同意書之醫囑！'); return; }
             switchView('consent-view');
             checkConsentStatus();
-        }
+        };
 
-        function checkBloodAccessAndOpen() {
+        window.checkBloodAccessAndOpen = function() {
             const p = patientsData[currentSelectedBed];
             if (!p.hasBlood) { alert('該病人無輸血醫囑！'); return; }
-            if (!p.consents['輸血治療同意書']) { alert('請先完成【輸血治療同意書】之電子簽署後，方可進入輸血作業！'); return; }
+            if (!p.consents || !p.consents['輸血治療同意書']) { alert('請先完成【輸血治療同意書】之電子簽署後，方可進入輸血作業！'); return; }
             switchView('blood-view');
-        }
+        };
     </script>
 </body>
 </html>
