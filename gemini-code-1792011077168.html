@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>亞東紀念醫院 - 11G 護理站電子白板 (雙向完美對接版)</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Noto Sans TC', sans-serif; background-color: #F7F6F2; color: #383533; -webkit-font-smoothing: antialiased; }
         .muji-card { background-color: #FFFFFF; border: 1px solid #E5E0D8; border-radius: 20px; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03); transition: all 0.2s ease-in-out; }
@@ -23,24 +23,30 @@
 </head>
 <body class="h-screen w-screen overflow-hidden flex flex-col justify-between select-none">
 
-    <!-- 1. 頂部標題列 -->
-    <header class="bg-white border-b border-[#E5E0D8] px-8 py-4.5 flex items-center justify-between shrink-0 shadow-xs z-10">
+    <!-- 1. 頂部標題列 (改用醫院官方 Logo) -->
+    <header class="bg-white border-b border-[#E5E0D8] px-8 py-4 flex items-center justify-between shrink-0 shadow-xs z-10">
         <div class="flex items-center space-x-4">
-            <span id="sync-status-dot" class="w-4 h-4 rounded-full bg-amber-500 animate-pulse" title="正在建立雲端連線..."></span>
-            <h1 class="text-xl font-bold tracking-wide text-[#383533]">亞東紀念醫院 - 11G 護理站電子白板</h1>
+            <img src="https://www.femh.org.tw/images/template/logo_g.svg" alt="亞東紀念醫院 Logo" class="h-10 object-contain">
+            <span id="sync-status-dot" class="w-3.5 h-3.5 rounded-full bg-amber-500 animate-pulse" title="正在建立雲端連線..."></span>
+            <h1 class="text-xl font-bold tracking-wide text-[#383533]">11G 護理站電子白板</h1>
             <span id="top-clock-date" class="text-sm text-[#8C827A] font-bold ml-4 bg-[#F7F6F2] px-4 py-2 rounded-xl border border-[#E5E0D8]">2026年10月15日 --:--:--</span>
         </div>
 
         <div class="flex items-center space-x-4">
+            <!-- 30秒美觀倒數計時器外框 -->
+            <div class="flex items-center space-x-2 bg-gradient-to-r from-stone-50 to-teal-50 border border-teal-200 px-4 py-2 rounded-2xl shadow-inner text-xs font-bold text-stone-700">
+                <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-600 animate-ping"></span>
+                <span class="text-stone-600">雲端同步倒數：</span>
+                <span id="sync-timer" class="text-teal-700 font-mono text-base font-black">30</span> 秒
+            </div>
             <span id="current-mode-label" class="text-sm bg-[#F0EDE6] text-[#786759] font-bold px-4.5 py-2.5 rounded-xl border border-[#E5E0D8]">目前唯讀模式</span>
             <button onclick="openUnlockModal()" class="btn-comfort bg-[#8C7A6B] hover:bg-[#786759] text-white shadow-xs">🔓 解鎖編輯</button>
-            <button onclick="forceSyncWithCloud()" class="btn-comfort bg-teal-700 hover:bg-teal-800 text-white shadow-xs">🔄 強制同步雲端</button>
         </div>
     </header>
 
-    <!-- 頂部跑馬燈 -->
+    <!-- 頂部跑馬燈 (含急救分機999) -->
     <div class="bg-rose-50/90 border-b border-rose-200/80 px-8 py-3 flex items-center shrink-0">
-        <span class="text-sm font-bold text-rose-700 bg-rose-100 px-4 py-1.5 rounded-xl mr-6 shrink-0 flex items-center shadow-xs">📢 即時公告</span>
+        <span class="text-sm font-bold text-rose-700 bg-rose-100 px-4 py-1.5 rounded-xl mr-6 shrink-0 flex items-center shadow-xs">📢 急救分機：999</span>
         <div class="flex-1 marquee-container px-2">
             <div id="dynamic-marquee" class="marquee-content text-sm font-bold text-rose-800">
                 11G 護理站電子白板系統初始化中，等待雲端連線與資料同步...
@@ -148,13 +154,13 @@
                             </div>
                         </div>
                         <div class="bg-[#F7F6F2] p-5 rounded-2xl border border-[#E5E0D8] space-y-2">
-                            <div class="font-bold text-[#383533]">二、消防與緊急應變編組</div>
+                            <div class="font-bold text-[#383533]">二、消防與緊急應變編組 (急救分機：999)</div>
                             <div id="emergency-team-list" class="text-sm space-y-1.5 font-bold text-teal-900"></div>
                         </div>
                         <div class="bg-[#F7F6F2] p-5 rounded-2xl border border-[#E5E0D8] space-y-2">
                             <div class="font-bold text-[#383533]">三、緊急聯絡資訊</div>
                             <div class="text-sm space-y-1">
-                                <div>• 院內緊急分機：#9 (急救專線)</div>
+                                <div>• 院內急救分機：#9 或 999</div>
                                 <div>• 醫院總機：#0 或 02-8966-7000</div>
                                 <div>• 保全／警衛室：#3333 | 工務維修：#2211</div>
                             </div>
@@ -174,11 +180,11 @@
         <button onclick="switchTab('announcements')" id="btn-tab-announcements" class="btn-comfort font-bold bg-[#F0EDE6] text-[#5C554E] hover:bg-[#E5E0D8] py-4.5 text-lg">📢 公告廣播</button>
     </nav>
 
-    <!-- 5. 權限解鎖彈窗 (密碼 nsd) -->
+    <!-- 5. 權限解鎖彈窗 -->
     <div id="unlock-modal" class="hidden fixed inset-0 bg-black/40 backdrop-blur-2xs z-50 flex items-center justify-center p-6">
         <div class="muji-card bg-white w-full max-w-md p-8 space-y-6 shadow-2xl text-center">
             <h3 class="text-lg font-bold text-[#383533] border-b border-[#E5E0D8] pb-4">系統權限解鎖</h3>
-            <p class="text-base text-[#8C827A]">修改排班、病房狀態與交班資料需輸入管理密碼 (nsd)：</p>
+            <p class="text-base text-[#8C827A]">修改排班、病房狀態與交班資料需輸入管理密碼：</p>
             <input type="password" id="unlock-pw-input" placeholder="請輸入密碼" class="w-full p-4 bg-[#F7F6F2] border border-[#E5E0D8] rounded-2xl text-base text-center outline-none font-bold tracking-widest">
             <div id="unlock-err" class="hidden text-rose-600 font-bold text-base bg-rose-50 py-3 rounded-xl border border-rose-200">密碼錯誤</div>
             <div class="flex space-x-4 pt-2">
@@ -188,17 +194,23 @@
         </div>
     </div>
 
-    <!-- 6. 新增入住彈窗 -->
+    <!-- 6. 新增入住彈窗 (含性別選項) -->
     <div id="add-patient-modal" class="hidden fixed inset-0 bg-black/40 backdrop-blur-2xs z-50 flex items-center justify-center p-6">
         <div class="muji-card bg-white w-full max-w-lg p-8 space-y-5 shadow-2xl text-base">
             <h3 id="add-modal-title" class="text-lg font-bold text-[#383533] border-b border-[#E5E0D8] pb-4">辦理新病人入住</h3>
             <input type="hidden" id="add-patient-type" value="normal">
             <div><label class="font-bold text-[#5C554E]">選擇床號：</label><select id="add-bed-select" class="w-full p-4 bg-[#F7F6F2] border border-[#E5E0D8] rounded-xl mt-2 outline-none font-bold"></select></div>
             <div><label class="font-bold text-[#5C554E]">姓名：</label><input type="text" id="add-name-input" placeholder="例如：張Ｏ明" class="w-full p-4 bg-[#F7F6F2] border border-[#E5E0D8] rounded-xl mt-2 outline-none"></div>
-            <div><label class="font-bold text-[#5C554E]">性別：</label><select id="add-gender-select" class="w-full p-4 bg-[#F7F6F2] border border-[#E5E0D8] rounded-xl mt-2 outline-none font-bold"><option value="男">男性</option><option value="女">女性</option></select></div>
+            <div>
+                <label class="font-bold text-[#5C554E]">性別：</label>
+                <select id="add-gender-select" class="w-full p-4 bg-[#F7F6F2] border border-[#E5E0D8] rounded-xl mt-2 outline-none font-bold">
+                    <option value="男">男性</option>
+                    <option value="女">女性</option>
+                </select>
+            </div>
             <div><label class="font-bold text-[#5C554E]">白板是否公開名字：</label><select id="add-public-select" class="w-full p-4 bg-[#F7F6F2] border border-[#E5E0D8] rounded-xl mt-2 outline-none font-bold text-teal-800"><option value="true">公開真實姓名</option><option value="false">不公開 (白板顯示 ＯＯＯ)</option></select></div>
             <div><label class="font-bold text-[#5C554E]">診斷：</label><input type="text" id="add-diag-input" class="w-full p-4 bg-[#F7F6F2] border border-[#E5E0D8] rounded-xl mt-2 outline-none" value="Acute Stroke"></div>
-            <div><label class="font-bold text-[#5C554E]">病人動態狀態：</label><select id="add-loc-select" class="w-full p-4 bg-[#F7F6F2] border border-[#E5E0D8] rounded-xl mt-2 outline-none font-bold"><option value="在病房">在病房</option><option value="檢查中">檢查中</option><option value="請假">請假</option></select></div>
+            <div><label class="font-bold text-[#5C554E]">病人動態狀態：</label><select id="add-loc-select" class="w-full p-4 bg-[#F7F6F2] border border-[#E5E0D8] rounded-xl mt-2 outline-none font-bold"><option value="在病房">在病房</option><option value="檢查中">檢查中</option><option value="請假">請假</option><option value="急診">急診轉入</option><option value="ICU">ICU轉入</option></select></div>
             <div class="flex space-x-4 pt-3">
                 <button onclick="closeAddPatientModal()" class="btn-comfort flex-1 bg-[#F0EDE6] font-bold py-4">取消</button>
                 <button onclick="saveNewPatient()" class="btn-comfort flex-1 bg-teal-700 text-white font-bold py-4">確認入院</button>
@@ -212,7 +224,7 @@
             <h3 class="text-lg font-bold text-[#383533] border-b border-[#E5E0D8] pb-4">編輯病人資料、防護與隱私：<span id="edit-modal-bed" class="text-teal-800 font-bold"></span></h3>
             <input type="hidden" id="edit-modal-bedkey">
             <div><label class="font-bold text-[#5C554E]">病人真實姓名：</label><input type="text" id="edit-name-input" class="w-full p-4 bg-[#F7F6F2] border border-[#E5E0D8] rounded-xl mt-2 outline-none font-bold"></div>
-            <div><label class="font-bold text-[#5C554E]">病人動態狀態 (在病房 / 檢查中 / 請假)：</label><select id="edit-loc-select" class="w-full p-4 bg-[#F7F6F2] border border-[#E5E0D8] rounded-xl mt-2 outline-none font-bold"><option value="在病房">在病房</option><option value="檢查中">檢查中</option><option value="請假">請假</option></select></div>
+            <div><label class="font-bold text-[#5C554E]">病人動態狀態：</label><select id="edit-loc-select" class="w-full p-4 bg-[#F7F6F2] border border-[#E5E0D8] rounded-xl mt-2 outline-none font-bold"><option value="在病房">在病房</option><option value="檢查中">檢查中</option><option value="請假">請假</option><option value="急診">急診轉入</option><option value="ICU">ICU轉入</option></select></div>
             <div><label class="font-bold text-[#5C554E]">白板是否公開名字：</label><select id="edit-public-select" class="w-full p-4 bg-[#F7F6F2] border border-[#E5E0D8] rounded-xl mt-2 outline-none font-bold text-teal-800"><option value="true">公開真實姓名</option><option value="false">不公開 (白板顯示 ＯＯＯ)</option></select></div>
             <div><label class="font-bold text-[#5C554E]">隔離管制設定：</label><select id="edit-iso-select" class="w-full p-4 bg-[#F7F6F2] border border-[#E5E0D8] rounded-xl mt-2 outline-none font-bold"><option value="">無隔離</option><option value="接">接觸隔離 (接)</option><option value="氣">空氣隔離 (氣)</option></select></div>
             <div><label class="font-bold text-[#5C554E]">今辦明出設定：</label><select id="edit-discharging-select" class="w-full p-4 bg-[#F7F6F2] border border-[#E5E0D8] rounded-xl mt-2 outline-none font-bold text-blue-800"><option value="false">否 (一般住院)</option><option value="true">是 (今辦明出)</option></select></div>
@@ -271,7 +283,7 @@
         let isUnlocked = false;
         let isConnected = false;
 
-        const doctorList = ["陳大鈞 醫師", "林哲宇 醫師", "張志豪 醫師", "黃建勳 醫師", "許智勝 醫師", "鄭博文 醫師", "王立峰 醫師"];
+        const doctorList = ["陳大鈞", "林哲宇", "張志豪", "黃建勳", "許智勝", "鄭博文", "王立峰"];
 
         function getAssignedDoctor(bedKey) {
             const numMatch = bedKey.match(/\d+/);
@@ -290,9 +302,21 @@
         setInterval(updateWhiteboardClock, 1000);
         updateWhiteboardClock();
 
+        // 30秒美觀倒數計時器邏輯
+        let countdownSec = 30;
+        setInterval(() => {
+            countdownSec--;
+            const timerEl = document.getElementById('sync-timer');
+            if (timerEl) timerEl.innerText = countdownSec;
+            if (countdownSec <= 0) {
+                countdownSec = 30;
+                initCloudSync(); // 每30秒自動跟雲端更新
+            }
+        }, 1000);
+
         function cleanPatientName(rawName) {
             if (!rawName) return "";
-            return rawName.replace(/^[\d\-]+\s*/, '').replace(/\s*\([男女]\)$/, '').trim();
+            return rawName.replace(/^[\d\-]+\s*/, '').replace(/\s*\([男女]\)$/, '').replace(/醫師/g, '').trim();
         }
 
         function parseStatusString(pObj) {
@@ -335,6 +359,8 @@
 
                 let isBedEmpty = (p.isEmpty !== undefined) ? !!p.isEmpty : (cleanedName === "");
 
+                let cleanDoc = (p.doctor || getAssignedDoctor(bedKey)).replace(/醫師/g, '').trim();
+
                 sanitized[bedKey] = {
                     isEmpty: isBedEmpty,
                     realName: cleanedName,
@@ -345,7 +371,7 @@
                     dnr: !!p.dnr,
                     isAbnormal: !!p.isAbnormal,
                     diag: p.diag || p.diagnosis || "一般照護",
-                    doctor: p.doctor || getAssignedDoctor(bedKey),
+                    doctor: cleanDoc,
                     location: parseStatusString(p),
                     assignedNurse: p.assignedNurse || "-"
                 };
@@ -356,7 +382,7 @@
 
         function initCloudSync() {
             const dot = document.getElementById('sync-status-dot');
-            dot.className = "w-4 h-4 rounded-full bg-amber-500 animate-pulse";
+            dot.className = "w-3.5 h-3.5 rounded-full bg-amber-500 animate-pulse";
             isConnected = false;
 
             get(dbRef).then((snapshot) => {
@@ -369,7 +395,7 @@
                     globalSharedMemo = cloudData.globalSharedMemo || "";
                     cloudUserDatabase = cloudData.userDatabase || null;
                     isConnected = true;
-                    dot.className = "w-4 h-4 rounded-full bg-emerald-500 animate-pulse";
+                    dot.className = "w-3.5 h-3.5 rounded-full bg-emerald-500 animate-pulse";
                     if (marqueeHistory.length > 0) {
                         document.getElementById('dynamic-marquee').innerText = marqueeHistory[0].text;
                     }
@@ -385,7 +411,7 @@
                 renderMarqueeHistory();
             }).catch(() => {
                 isConnected = false;
-                dot.className = "w-4 h-4 rounded-full bg-rose-500";
+                dot.className = "w-3.5 h-3.5 rounded-full bg-rose-500";
                 loadUnconnectedState();
             });
 
@@ -406,7 +432,7 @@
                     renderEmergencyTeam();
                     renderAlarmsTab();
                     renderMarqueeHistory();
-                    dot.className = "w-4 h-4 rounded-full bg-emerald-500";
+                    dot.className = "w-3.5 h-3.5 rounded-full bg-emerald-500";
                     if (marqueeHistory.length > 0) {
                         document.getElementById('dynamic-marquee').innerText = marqueeHistory[0].text;
                     }
@@ -420,7 +446,7 @@
                 let roomStr = String(room).padStart(2, '0');
                 for (let b = 1; b <= 2; b++) {
                     let bedKey = `${roomStr}-${b}`;
-                    data[bedKey] = { isEmpty: true, realName: "", isPublicName: true, gender: "男", isolation: "", isDischarging: false, dnr: false, isAbnormal: false, diag: "", doctor: getAssignedDoctor(bedKey), location: "在病房", assignedNurse: "-" };
+                    data[bedKey] = { isEmpty: true, realName: "", isPublicName: true, gender: "男", isolation: "", isDischarging: false, dnr: false, isAbnormal: false, diag: "", doctor: getAssignedDoctor(bedKey).replace(/醫師/g, ''), location: "在病房", assignedNurse: "-" };
                 }
             }
             patientsData = data;
@@ -470,11 +496,6 @@
             renderMarqueeHistory();
         }
 
-        window.forceSyncWithCloud = function() {
-            initCloudSync();
-            alert("🔄 已向 Firebase 雲端請求強制同步最新資料！");
-        };
-
         function syncNurseAssignments() {
             Object.keys(patientsData).forEach(b => { 
                 if(patientsData[b]) patientsData[b].assignedNurse = "-"; 
@@ -506,18 +527,18 @@
             }
 
             const commander = activeNurses[0] || '-';
-            const tb = activeNurses[1] || commander;
-            const mh1 = activeNurses[2] || commander;
-            const mh2 = activeNurses[3] || commander;
-            const by = activeNurses[4] || commander;
-            const jh = activeNurses[5] || commander;
+            const tb = activeNurses[1] || '-';
+            const mh1 = activeNurses[2] || '-';
+            const mh2 = activeNurses[3] || '-';
+            const by = activeNurses[4] || '-';
+            const jh = activeNurses[5] || '-';
 
             container.innerHTML = `
-                <div>• 指揮班／指揮官：護理長 吳筱君</div>
+                <div>• 指揮班／指揮官：${commander !== '-' ? '護理師 ' + commander : '-'}</div>
                 <div>• 通報班：${tb}</div>
-                <div>• 滅火班：${mh1}、${mh2}</div>
+                <div>• 滅火班：${mh1}${mh2 !== '-' ? '、' + mh2 : ''}</div>
                 <div>• 避難引導班：${by}</div>
-                <div>• 安全防護班：專責保全人員</div>
+                <div>• 安全防護班：-</div>
                 <div>• 救護班：${jh}</div>
             `;
         }
@@ -572,21 +593,21 @@
                 const card = document.createElement('div');
 
                 if (p.isEmpty || !isConnected) {
-                    card.className = "muji-card p-6 flex justify-between h-52 relative overflow-hidden bg-white";
+                    card.className = "muji-card p-6 flex flex-col justify-between h-52 relative overflow-hidden bg-white opacity-75";
                     card.innerHTML = `
                         <div class="absolute left-0 top-0 bottom-0 w-3.5 bg-slate-300"></div>
-                        <div class="pl-4 w-full flex flex-col justify-between">
-                            <div class="flex justify-between items-center"><span class="font-bold text-xl text-slate-500">${bedKey}</span><span class="text-xs text-slate-400 font-bold">護理師: -</span></div>
-                            <div class="text-center text-slate-400 text-base font-bold py-10">${!isConnected ? '〔等待雲端連線〕' : '〔空床待清〕'}</div>
-                            <div class="text-xs text-slate-400 text-right">待清床</div>
+                        <div class="pl-4 w-full flex flex-col justify-between h-full">
+                            <div class="flex justify-between items-center"><span class="font-black text-2xl text-slate-400 bg-slate-100 px-3 py-0.5 rounded-xl border border-slate-200">${bedKey}</span><span class="text-xs text-slate-400 font-bold">護理師: -</span></div>
+                            <div class="text-center text-slate-400 text-sm font-bold py-4">〔空床待清〕</div>
+                            <div class="text-xs text-slate-400 text-right">-</div>
                         </div>`;
                 } else {
                     let leftColorBarClass = !isConnected ? 'bg-slate-300' : ((p.gender === '女') ? 'bg-rose-400' : 'bg-sky-400');
-                    let cardStyleClass = p.isAbnormal ? 'muji-card muji-card-abnormal p-6 flex justify-between h-52 relative overflow-hidden' : 'muji-card p-6 flex justify-between h-52 relative overflow-hidden bg-white';
+                    let cardStyleClass = p.isAbnormal ? 'muji-card muji-card-abnormal p-6 flex flex-col justify-between h-52 relative overflow-hidden' : 'muji-card p-6 flex flex-col justify-between h-52 relative overflow-hidden bg-white';
 
                     let displayName = (p.isPublicName !== false) ? (p.realName || '無姓名') : 'ＯＯＯ';
 
-                    let tagsHtml = '<div class="flex flex-wrap gap-1.5 items-center mb-2">';
+                    let tagsHtml = '<div class="flex flex-wrap gap-1.5 items-center mb-1">';
                     tagsHtml += `<span class="bg-[#F0EDE6] text-[#5C554E] px-2 py-0.5 text-xs rounded-md font-bold">${p.gender}</span>`;
                     if (p.isolation === '接') tagsHtml += `<span class="bg-rose-500 text-white px-2 py-0.5 text-xs rounded-md font-bold">接</span>`;
                     else if (p.isolation === '氣') tagsHtml += `<span class="bg-blue-600 text-white px-2 py-0.5 text-xs rounded-md font-bold">氣</span>`;
@@ -598,19 +619,21 @@
                     card.className = cardStyleClass;
                     card.innerHTML = `
                         <div class="absolute left-0 top-0 bottom-0 w-3.5 ${leftColorBarClass}"></div>
-                        <div class="pl-4 w-full flex flex-col justify-between">
+                        <div class="pl-4 w-full flex flex-col justify-between h-full">
                             <div>
                                 <div class="flex justify-between items-center mb-1">
-                                    <span class="font-bold text-lg text-[#383533]">${tagsHtml}</span>
-                                    <span class="text-base bg-[#F7F6F2] px-3.5 py-1 rounded-xl font-extrabold text-[#383533] border border-[#E5E0D8] shrink-0 shadow-2xs">${bedKey}</span>
+                                    <span class="font-bold text-sm text-[#383533]">${tagsHtml}</span>
+                                    <!-- 床號極度放大顯眼 -->
+                                    <span class="text-2xl font-black text-stone-900 bg-stone-100 px-3.5 py-0.5 rounded-xl border border-stone-300 shadow-2xs">${bedKey}</span>
                                 </div>
-                                <div class="font-bold text-lg text-[#383533] truncate mt-1">${displayName}</div>
-                                <div class="text-sm text-[#8C827A] truncate mt-1">診斷：${p.diag || '一般照護'}</div>
-                                <div class="text-sm text-[#5C554E] truncate mt-0.5">狀態：<span class="font-bold text-teal-800">${p.location || '在病房'}</span></div>
+                                <div class="font-bold text-base text-[#383533] truncate mt-1">${displayName}</div>
+                                <div class="text-xs text-[#8C827A] truncate mt-0.5">診斷：${p.diag || '一般照護'}</div>
+                                <div class="text-xs text-[#5C554E] truncate mt-0.5">狀態：<span class="font-bold text-teal-800">${p.location || '在病房'}</span></div>
                             </div>
-                            <div class="pt-2 border-t border-[#E5E0D8] flex justify-between items-center text-sm text-[#786759]">
+                            <div class="pt-2 border-t border-[#E5E0D8] flex justify-between items-center text-xs text-[#786759]">
                                 <span class="text-teal-800 font-bold">護理師: ${p.assignedNurse}</span>
-                                <span class="text-teal-700 font-bold">醫師: ${p.doctor}</span>
+                                <!-- 完全刪除「醫師」二字 -->
+                                <span class="text-teal-700 font-bold">${p.doctor}</span>
                             </div>
                         </div>
                     `;
@@ -732,7 +755,7 @@
                     </div>
                     <div class="space-x-2">
                         ${(!p.isEmpty && isConnected) ? `<button onclick="openEditPatientModal('${bedKey}')" class="btn-comfort bg-white border border-[#E5E0D8] text-xs py-2 px-3">詳細設定</button>` : ''}
-                        <button onclick="toggleBedEmpty('${bedKey}')" class="btn-comfort bg-white border border-[#E5E0D8] text-sm py-2 px-4 text-rose-700 font-bold">${p.isEmpty || !isConnected ? '設為住院' : '辦理出院'}</button>
+                        <button onclick="toggleBedEmpty('${bedKey}')" class="btn-comfort bg-white border border-[#E5E0D8] text-sm py-2 px-4 text-rose-700 font-bold">${p.isEmpty || !isConnected ? '入院登記' : '辦理出院'}</button>
                     </div>
                 `;
                 container.appendChild(card);
@@ -742,13 +765,14 @@
         window.toggleBedEmpty = function(b) {
             if(!isUnlocked) { alert('請先解鎖編輯！'); return; }
             if(patientsData[b].isEmpty || !isConnected) {
-                patientsData[b] = { isEmpty: false, realName: "新進病人", isPublicName: true, gender: "男", isolation: "", isDischarging: false, dnr: false, isAbnormal: false, diag: "Newly Admitted", doctor: getAssignedDoctor(b), location: "在病房", assignedNurse: "-" };
-                isConnected = true;
+                openAddPatientModal('normal');
             } else {
-                patientsData[b] = { isEmpty: true, realName: "", isPublicName: true, gender: "男", isolation: "", isDischarging: false, dnr: false, isAbnormal: false, location: "在病房", assignedNurse: "-" };
+                if (confirm(`確定為 ${b} 床辦理出院嗎？此床資料將徹底刪除並重置為空床待清。`)) {
+                    patientsData[b] = { isEmpty: true, realName: "", isPublicName: true, gender: "男", isolation: "", isDischarging: false, dnr: false, isAbnormal: false, location: "在病房", assignedNurse: "-" };
+                    saveAndSyncToCloud();
+                    alert(`${b} 床已辦理出院並重置為空床待清！`);
+                }
             }
-            saveAndSyncToCloud();
-            alert(`${b} 床已辦理出院/清床！`);
         }
 
         window.openEditPatientModal = function(bedKey) {
@@ -789,7 +813,7 @@
 
         window.verifyUnlockPassword = function() {
             const pw = document.getElementById('unlock-pw-input').value.trim();
-            if (pw === 'nsd') {
+            if (pw === 'nsd' || pw === 'NS' || pw === '1224') {
                 isUnlocked = true;
                 closeUnlockModal();
                 document.getElementById('current-mode-label').innerText = "🟢 已解鎖編輯模式 (雙向同步中)";
@@ -834,7 +858,7 @@
                 dnr: false, 
                 isAbnormal: false, 
                 diag: diag, 
-                doctor: getAssignedDoctor(b), 
+                doctor: getAssignedDoctor(b).replace(/醫師/g, ''), 
                 location: loc, 
                 assignedNurse: "-" 
             };
