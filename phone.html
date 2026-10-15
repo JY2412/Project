@@ -671,7 +671,7 @@
                 </div>
                 <div class="text-[11px] text-slate-600 font-medium bg-slate-100 p-2 rounded-lg border border-slate-200 flex justify-between items-center">
                     <span>請選擇護理師或Leader，並快速選取或清除床位：</span>
-                    <button onclick="clearAllNurseBeds()" class="bg-rose-500 hover:bg-rose-600 text-white font-bold px-2 py-1 rounded text-[10px] transition">清除全部選擇</button>
+                    <button onclick="clearAllNurseBeds()" class="bg-rose-500 hover:bg-rose-600 text-white font-bold px-2 py-1 rounded text-[10px] transition">清除全部</button>
                 </div>
                 <div class="space-y-2">
                     <label class="text-xs font-bold text-slate-700">選擇護理人員 / Leader：</label>
@@ -1285,7 +1285,9 @@
         window.loadNurseBedSelection = function() {
             const selectEl = document.getElementById('schedule-nurse-select');
             
-            // 動態從最新 userDatabase 載入所有護理人員與 Leader
+            // 保持原本選取的護理師（如果有的話）
+            const previousSelectedNurse = selectEl.value;
+
             selectEl.innerHTML = '';
             Object.keys(userDatabase).forEach(empId => {
                 let u = userDatabase[empId];
@@ -1296,6 +1298,10 @@
                     selectEl.appendChild(opt);
                 }
             });
+
+            if (previousSelectedNurse && [...selectEl.options].some(o => o.value === previousSelectedNurse)) {
+                selectEl.value = previousSelectedNurse;
+            }
 
             const nurseName = selectEl.value;
             if (!nurseName) return;
@@ -1343,7 +1349,11 @@
             const chks = document.querySelectorAll('.schedule-bed-chk');
             let selectedCount = 0;
             chks.forEach((chk) => {
-                if (!chk.checked && selectedCount < count) {
+                // 排除空床 (檢查床位資料是否為 isEmpty)
+                const bedKey = chk.value;
+                const isBedEmpty = patientsData[bedKey] && patientsData[bedKey].isEmpty;
+
+                if (!isBedEmpty && !chk.checked && selectedCount < count) {
                     chk.checked = true;
                     selectedCount++;
                 }
@@ -1351,12 +1361,13 @@
         };
 
         window.clearAllNurseBeds = function() {
-            const nurseName = document.getElementById('schedule-nurse-select').value;
-            nurseBedAssignments[nurseName] = [];
-            loadNurseBedSelection();
-            syncNurseAssignments();
-            saveToCloud();
-            alert(`已清除【${nurseName}】所有選取床位！`);
+            if (confirm('確定要清除全病房所有護理師的床位排班嗎？')) {
+                nurseBedAssignments = {};
+                loadNurseBedSelection();
+                syncNurseAssignments();
+                saveToCloud();
+                alert('已清除所有護理人員的排班指派！');
+            }
         };
 
         window.saveNurseSchedule = function() {
