@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>專題_亞東紀念醫院 手機版醫療照護系統(雲端)</title>
+    <title>亞東紀念醫院 手機版醫療照護系統 (雲端即時同步版)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&display=swap');
@@ -670,11 +670,11 @@
                     <button onclick="closeNSAdminModal()" class="text-slate-400 hover:text-slate-600 font-bold text-base">✕</button>
                 </div>
                 <div class="text-[11px] text-slate-600 font-medium bg-slate-100 p-2 rounded-lg border border-slate-200 flex justify-between items-center">
-                    <span>請選擇護理師，並快速選取或清除床位：</span>
+                    <span>請選擇護理師或Leader，並快速選取或清除床位：</span>
                     <button onclick="clearAllNurseBeds()" class="bg-rose-500 hover:bg-rose-600 text-white font-bold px-2 py-1 rounded text-[10px] transition">清除全部選擇</button>
                 </div>
                 <div class="space-y-2">
-                    <label class="text-xs font-bold text-slate-700">選擇護理師：</label>
+                    <label class="text-xs font-bold text-slate-700">選擇護理人員 / Leader：</label>
                     <select id="schedule-nurse-select" onchange="loadNurseBedSelection()" class="w-full input-bg h-9 px-2 rounded text-xs font-bold text-slate-800"></select>
                 </div>
                 <div class="flex justify-between items-center text-xs font-bold text-slate-700">
@@ -716,7 +716,7 @@
         <div id="jia-admin-modal" class="hidden absolute inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-3">
             <div class="bg-white w-full max-w-[320px] p-4 rounded-2xl shadow-2xl space-y-3 border border-slate-200 flex flex-col max-h-[92vh]">
                 <div class="flex justify-between items-center border-b pb-2">
-                    <span class="font-bold text-sm text-slate-800">管理員：劉家裕</span>
+                    <span class="font-bold text-sm text-slate-800">管理員：劉家裕 (Leader/護理長)</span>
                     <button onclick="closeJiaAdminModal()" class="text-slate-400 hover:text-slate-600 font-bold text-base">✕</button>
                 </div>
                 
@@ -1147,11 +1147,11 @@
                         const rangeStr = `${assignedBeds[0]} ~ ${assignedBeds[assignedBeds.length - 1]}`;
                         const header = document.createElement('div');
                         header.className = 'text-xs font-bold text-teal-800 bg-teal-50 px-3 py-2 rounded-lg border border-teal-200 mt-2 flex justify-between items-center shadow-2xs';
-                        header.innerHTML = `<span>護理師：${nurseName}</span><span class="text-[11px] text-slate-600">${rangeStr} (共${assignedBeds.length}床)</span>`;
+                        header.innerHTML = `<span>護理人員：${nurseName}</span><span class="text-[11px] text-slate-600">${rangeStr} (共${assignedBeds.length}床)</span>`;
                         container.appendChild(header);
                     });
                     if (container.children.length === 0) {
-                        container.innerHTML = '<div class="text-center text-slate-400 text-xs py-8">目前無任何護理師排班指派紀錄</div>';
+                        container.innerHTML = '<div class="text-center text-slate-400 text-xs py-8">目前無任何護理人員排班指派紀錄</div>';
                     }
                 } else {
                     const myAssigned = (currentUser && nurseBedAssignments[currentUser.name]) || [];
@@ -1285,11 +1285,11 @@
         window.loadNurseBedSelection = function() {
             const selectEl = document.getElementById('schedule-nurse-select');
             
-            // 如果下拉選單尚未填入人名，先進行初始化填充
+            // 下拉選單初始化填充（同時涵蓋護理師 nurse 與護理長/Leader admin，如 Jia）
             if (selectEl.options.length === 0) {
                 Object.keys(userDatabase).forEach(empId => {
                     let u = userDatabase[empId];
-                    if (u.role === 'nurse') {
+                    if (u.role === 'nurse' || u.role === 'admin') {
                         let opt = document.createElement('option');
                         opt.value = u.name;
                         opt.innerText = `${u.name} (員編:${empId})`;
@@ -1363,7 +1363,7 @@
         window.saveNurseSchedule = function() {
             const nurseName = document.getElementById('schedule-nurse-select').value;
             const chks = document.querySelectorAll('.schedule-bed-chk:checked');
-            if (chks.length > 7) { alert('每位護理師最多只能負責 7 個病人！'); return; }
+            if (chks.length > 7) { alert('每位護理人員最多只能負責 7 個病人！'); return; }
 
             let newBeds = [];
             chks.forEach(chk => newBeds.push(chk.value));
@@ -1453,18 +1453,18 @@
 
             syncNurseAssignments();
             saveToCloud();
-            alert(`✅ 員編 [${empId}] 之護理師資料已更新成功！`);
+            alert(`✅ 員編 [${empId}] 之護理人員資料已更新成功！`);
             renderNurseManagerList();
         };
 
         window.deleteNurse = function(empId) {
             let nurseName = userDatabase[empId].name;
-            if (confirm(`確定要刪除護理師【${nurseName} (員編:${empId})】的資料嗎？此操作代表該護理師離職並移除帳號。`)) {
+            if (confirm(`確定要刪除護理人員【${nurseName} (員編:${empId})】的資料嗎？此操作代表該人員離職並移除帳號。`)) {
                 delete userDatabase[empId];
                 if (nurseBedAssignments[nurseName]) delete nurseBedAssignments[nurseName];
                 syncNurseAssignments();
                 saveToCloud();
-                alert(`🗑️ 已成功刪除護理師 ${nurseName} 的帳號！`);
+                alert(`🗑️ 已成功刪除人員 ${nurseName} 的帳號！`);
                 renderNurseManagerList();
             }
         };
@@ -2205,7 +2205,7 @@
 
         window.openNurseModal = function(num) {
             currentActiveNurse = num;
-            document.getElementById('modal-title').innerText = `護理師${num} 身分核對`;
+            document.getElementById('modal-title').innerText = `護理人員${num} 身分核對`;
             document.getElementById('nurse-id-input').value = '';
             document.getElementById('nurse-pw-input').value = '';
             document.getElementById('modal-err').classList.add('hidden');
@@ -2220,11 +2220,11 @@
                 const nName = userDatabase[id].name;
                 
                 if (currentActiveNurse === 2 && bloodVerifiedNurse1 === nName) {
-                    alert('⚠️ 輸血安全防呆警告：護理師二不能與護理師一為同一人！');
+                    alert('⚠️ 輸血安全防呆警告：護理人員二不能與護理人員一為同一人！');
                     return;
                 }
                 if (currentActiveNurse === 1 && bloodVerifiedNurse2 === nName) {
-                    alert('⚠️ 輸血安全防呆警告：護理師一不能與護理師二為同一人！');
+                    alert('⚠️ 輸血安全防呆警告：護理人員一不能與護理人員二為同一人！');
                     return;
                 }
 
@@ -2243,11 +2243,11 @@
 
         window.saveBloodRecord = function() {
             if (!bloodVerifiedNurse1 || !bloodVerifiedNurse2) {
-                alert('❌ 輸血作業必須由「兩位不同」的護理師完成雙重核對！');
+                alert('❌ 輸血作業必須由「兩位不同」的護理人員完成雙重核對！');
                 return;
             }
             if (bloodVerifiedNurse1 === bloodVerifiedNurse2) {
-                alert('❌ 輸血安全防呆：兩位護理師不能為同一人！');
+                alert('❌ 輸血安全防呆：兩位核對人員不能為同一人！');
                 return;
             }
 
