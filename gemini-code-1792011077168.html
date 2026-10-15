@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>亞東紀念醫院 - 11G 護理站電子白板 (臨床最終修正版)</title>
+    <title>亞東紀念醫院 - 11G 護理站電子白板 (34床完整讀取版)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
@@ -174,7 +174,7 @@
         <button onclick="switchTab('announcements')" id="btn-tab-announcements" class="btn-comfort font-bold bg-[#F0EDE6] text-[#5C554E] hover:bg-[#E5E0D8] py-4.5 text-lg">📢 公告廣播</button>
     </nav>
 
-    <!-- 5. 權限解鎖彈窗 (密碼固定為 nsd) -->
+    <!-- 5. 權限解鎖彈窗 (密碼 nsd) -->
     <div id="unlock-modal" class="hidden fixed inset-0 bg-black/40 backdrop-blur-2xs z-50 flex items-center justify-center p-6">
         <div class="muji-card bg-white w-full max-w-md p-8 space-y-6 shadow-2xl text-center">
             <h3 class="text-lg font-bold text-[#383533] border-b border-[#E5E0D8] pb-4">系統權限解鎖</h3>
@@ -278,33 +278,58 @@
         setInterval(updateWhiteboardClock, 1000);
         updateWhiteboardClock();
 
+        // 智慧解析位置（支援字串或物件形式）
+        function parseLocationString(locObj) {
+            if (!locObj) return "病房";
+            if (typeof locObj === 'string') return locObj;
+            if (typeof locObj === 'object') {
+                return locObj.name || locObj.location || locObj.title || locObj.text || JSON.stringify(locObj);
+            }
+            return String(locObj);
+        }
+
+        // 完全讀取並保留雲端資料，不強行覆蓋
         function sanitizePatientsData(rawPatients) {
             let sanitized = {};
-            for (let room = 1; room <= 10; room++) {
-                let roomStr = String(room).padStart(2, '0');
-                for (let b = 1; b <= 2; b++) {
-                    let bedKey = `${roomStr}-${b}`;
-                    if (rawPatients && rawPatients[bedKey]) {
-                        let p = rawPatients[bedKey];
-                        sanitized[bedKey] = {
-                            isEmpty: !!p.isEmpty,
-                            realName: p.realName || (p.isEmpty ? "" : "新病人"),
-                            isPublicName: p.isPublicName !== false,
-                            gender: p.gender || "男",
-                            isolation: p.isolation || "",
-                            isDischarging: !!p.isDischarging,
-                            dnr: !!p.dnr,
-                            isAbnormal: !!p.isAbnormal,
-                            diag: p.diag || "一般照護",
-                            doctor: p.doctor || "主治醫師",
-                            location: p.location || "病房",
-                            assignedNurse: p.assignedNurse || "-"
-                        };
-                    } else {
-                        sanitized[bedKey] = { isEmpty: true, realName: "", isPublicName: true, gender: "男", isolation: "", isDischarging: false, dnr: false, isAbnormal: false, diag: "", doctor: "", location: "病房", assignedNurse: "-" };
-                    }
+            let allBedKeys = new Set();
+
+            // 若雲端有資料，直接以雲端的所有床位為主
+            if (rawPatients && typeof rawPatients === 'object') {
+                Object.keys(rawPatients).forEach(k => allBedKeys.add(k));
+            }
+
+            // 如果雲端完全沒有資料，才建立預設空結構
+            if (allBedKeys.size === 0) {
+                for (let room = 1; room <= 17; room++) {
+                    let roomStr = String(room).padStart(2, '0');
+                    allBedKeys.add(`${roomStr}-1`);
+                    allBedKeys.add(`${roomStr}-2`);
                 }
             }
+
+            Array.from(allBedKeys).sort().forEach(bedKey => {
+                let p = (rawPatients && rawPatients[bedKey]) ? rawPatients[bedKey] : {};
+                
+                // 優先抓取雲端上各種可能的姓名與屬性欄位，保留原貌
+                let pName = p.realName || p.name || p.patientName || p.realname || "";
+                let isBedEmpty = (p.isEmpty !== undefined) ? !!p.isEmpty : (pName === "");
+
+                sanitized[bedKey] = {
+                    isEmpty: isBedEmpty,
+                    realName: pName,
+                    isPublicName: p.isPublicName !== false,
+                    gender: p.gender || "男",
+                    isolation: p.isolation || "",
+                    isDischarging: !!p.isDischarging,
+                    dnr: !!p.dnr,
+                    isAbnormal: !!p.isAbnormal,
+                    diag: p.diag || p.diagnosis || "一般照護",
+                    doctor: p.doctor || "主治醫師",
+                    location: parseLocationString(p.location),
+                    assignedNurse: p.assignedNurse || "-"
+                };
+            });
+
             return sanitized;
         }
 
@@ -364,7 +389,7 @@
 
         function loadUnconnectedState() {
             let data = {};
-            for (let room = 1; room <= 10; room++) {
+            for (let room = 1; room <= 17; room++) {
                 let roomStr = String(room).padStart(2, '0');
                 for (let b = 1; b <= 2; b++) {
                     let bedKey = `${roomStr}-${b}`;
@@ -506,7 +531,7 @@
                     let leftColorBarClass = !isConnected ? 'bg-slate-300' : ((p.gender === '女') ? 'bg-rose-400' : 'bg-sky-400');
                     let cardStyleClass = p.isAbnormal ? 'muji-card muji-card-abnormal p-6 flex justify-between h-52 relative overflow-hidden' : 'muji-card p-6 flex justify-between h-52 relative overflow-hidden bg-white';
 
-                    let displayName = (p.isPublicName !== false) ? (p.realName || '未命名') : 'ＯＯＯ';
+                    let displayName = (p.isPublicName !== false) ? (p.realName || '無姓名') : 'ＯＯＯ';
 
                     let tagsHtml = '<div class="flex flex-wrap gap-1.5 items-center mb-2">';
                     tagsHtml += `<span class="bg-[#F0EDE6] text-[#5C554E] px-2 py-0.5 text-xs rounded-md font-bold">${p.gender}</span>`;
@@ -555,7 +580,6 @@
         window.filterTag = function(t) { currentFilterTag = t; currentFilterGender = null; renderBedGrid(); }
         window.resetBedFilter = function() { currentFilterStatus = 'all'; currentFilterGender = null; currentFilterTag = null; renderBedGrid(); }
 
-        // 護理排班頁面：只顯示有負責床位的護理師
         function renderScheduling() {
             const container = document.getElementById('scheduling-cards-container');
             if(!container) return;
@@ -571,7 +595,7 @@
             activeNurses.forEach(nurse => {
                 const beds = nurseBedAssignments[nurse];
                 const card = document.createElement('div');
-                card.className = "muji-card p-7 flex justify-between items-center text-base bg-white cursor-pointer hover:bg-[#F7F6F2]";
+                card.className = "muji-card p-7 flex justify-between items-center text-base bg-white cursor-pointer hover:bg-[#F0EDE6]";
                 card.onclick = () => { if(isUnlocked) openScheduleModal(nurse); else alert('請先點擊右上角「解鎖編輯」才能調整排班與責任床位！'); };
                 
                 card.innerHTML = `
@@ -645,9 +669,9 @@
                 const card = document.createElement('div');
                 card.className = "bg-[#F7F6F2] border border-[#E5E0D8] p-5 rounded-2xl flex justify-between items-center text-base shadow-xs";
                 
-                let nurseViewName = p.isEmpty || !isConnected ? '〔空床待清〕' : `${p.realName || '未命名'} (${p.gender})`;
+                let nurseViewName = p.isEmpty || !isConnected ? '〔空床待清〕' : `${p.realName || '無姓名'} (${p.gender})`;
                 let namePublicStatus = (p.isPublicName !== false) ? '公開' : '不公開';
-                let dischargingTag = p.isDischarging ? ' | 🔵 今辦明出' : '';
+                let dischargingTag = p.isDischarging ? ' | <span class="text-blue-600 font-bold">🔵 今辦明出</span>' : '';
 
                 card.innerHTML = `
                     <div class="space-y-1">
@@ -741,7 +765,7 @@
                 <option value="檢查中">檢查中</option>
             `;
 
-            document.getElementById('add-patient-modal').classList.remove('hidden');
+            document.getElementById('add-patient-modal').classList.add('hidden');
         }
         window.closeAddPatientModal = function() { document.getElementById('add-patient-modal').classList.add('hidden'); }
 
