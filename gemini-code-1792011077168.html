@@ -10,7 +10,7 @@
         body { font-family: 'Noto Sans TC', sans-serif; background-color: #F7F6F2; color: #383533; -webkit-font-smoothing: antialiased; }
         .muji-card { background-color: #FFFFFF; border: 1px solid #E5E0D8; border-radius: 20px; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03); transition: all 0.2s ease-in-out; }
         .muji-card-abnormal { border: 2px solid #8b5cf6 !important; background-color: #faf5ff !important; }
-        .btn-comfort { padding: 0.8rem 1.6rem; font-size: 1rem; border-radius: 14px; transition: all 0.15s ease; cursor: pointer; user-select: none; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; }
+        .btn-comfort { padding: 0.8rem 1.6rem; font-size: 1rem; border-radius: 14px; transition: all 0.15s ease; cursor: pointer; user-select: none; display: inline-flex; items-center; justify-content: center; font-weight: 700; }
         .btn-comfort:active { transform: scale(0.98); }
         .marquee-container { overflow: hidden; position: relative; width: 100%; display: flex; align-items: center; }
         .marquee-content { display: inline-block; white-space: nowrap !important; animation: scroll-marquee 30s linear infinite; }
@@ -115,7 +115,6 @@
                         <h2 class="text-xl font-bold text-[#383533]">病房管理控制台 (出入院 / 今辦明出 / 姓名與隱私設定 / 隔離 / DNR)</h2>
                         <p class="text-base text-[#8C827A] mt-2">解鎖權限後可維護全病房床位狀態、病人改名維護、今辦明出設定與直接點擊床位進行入院登記</p>
                     </div>
-                    <!-- 原本的兩顆按鈕已移除，改為富有美感的 MUJI 風格佔床率即時儀表板 -->
                     <div class="bg-[#F7F6F2] border border-[#E5E0D8] px-6 py-3.5 rounded-2xl flex items-center space-x-5 shadow-xs">
                         <div class="space-y-0.5 text-right">
                             <div class="text-xs font-bold text-[#8C827A]">11G 病房佔床率</div>
@@ -353,6 +352,7 @@
             return "在病房";
         }
 
+        // 關鍵修復：統一資料清洗邏輯，只要有名字就絕不判定為空床，徹底防封鎖 BUG
         function sanitizePatientsData(rawPatients) {
             let sanitized = {};
             let allBedKeys = new Set();
@@ -374,8 +374,13 @@
                 let rawName = p.realName || p.name || p.patientName || p.realname || "";
                 let cleanedName = cleanPatientName(rawName);
 
-                let isBedEmpty = (p.isEmpty !== undefined) ? !!p.isEmpty : (cleanedName === "");
-                if (cleanedName === "〔空床待清〕" || cleanedName === "空床待清" || !cleanedName) isBedEmpty = true;
+                // 🔥 核心修復：只要有名字，就「絕對不是空床」！
+                let isBedEmpty = false;
+                if (!cleanedName || cleanedName === "〔空床待清〕" || cleanedName === "空床待清") {
+                    isBedEmpty = true;
+                } else if (p.isEmpty === true && !p.realName && !p.name) {
+                    isBedEmpty = true;
+                }
 
                 let detectedGender = "男";
                 if (rawName.includes("(女)") || p.gender === "女" || p.gender === "女性") {
@@ -942,7 +947,7 @@
                 isPublicName: isPublic,
                 gender: gender, 
                 isolation: "", 
-                isDischarging: false,
+                isDischarging: false, 
                 dnr: false, 
                 isAbnormal: false, 
                 diag: diag || '一般照護', 
