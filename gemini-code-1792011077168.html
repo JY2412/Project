@@ -23,17 +23,16 @@
 </head>
 <body class="h-screen w-screen overflow-hidden flex flex-col justify-between select-none">
 
-    <!-- 1. 頂部標題列 (改用醫院官方 Logo) -->
+    <!-- 1. 頂部標題列 -->
     <header class="bg-white border-b border-[#E5E0D8] px-8 py-4 flex items-center justify-between shrink-0 shadow-xs z-10">
         <div class="flex items-center space-x-4">
             <img src="https://www.femh.org.tw/images/template/logo_g.svg" alt="亞東紀念醫院 Logo" class="h-10 object-contain">
             <span id="sync-status-dot" class="w-3.5 h-3.5 rounded-full bg-amber-500 animate-pulse" title="正在建立雲端連線..."></span>
             <h1 class="text-xl font-bold tracking-wide text-[#383533]">11G 護理站電子白板</h1>
-            <span id="top-clock-date" class="text-sm text-[#8C827A] font-bold ml-4 bg-[#F7F6F2] px-4 py-2 rounded-xl border border-[#E5E0D8]">2026年10月15日 --:--:--</span>
+            <span id="top-clock-date" class="text-sm text-[#8C827A] font-bold ml-4 bg-[#F7F6F2] px-4 py-2 rounded-xl border border-[#E5E0D8]">2026年10月16日 --:--:--</span>
         </div>
 
         <div class="flex items-center space-x-4">
-            <!-- 30秒美觀倒數計時器外框 -->
             <div class="flex items-center space-x-2 bg-gradient-to-r from-stone-50 to-teal-50 border border-teal-200 px-4 py-2 rounded-2xl shadow-inner text-xs font-bold text-stone-700">
                 <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-600 animate-ping"></span>
                 <span class="text-stone-600">雲端同步倒數：</span>
@@ -44,7 +43,7 @@
         </div>
     </header>
 
-    <!-- 頂部跑馬燈 (含急救分機999) -->
+    <!-- 頂部跑馬燈 -->
     <div class="bg-rose-50/90 border-b border-rose-200/80 px-8 py-3 flex items-center shrink-0">
         <span class="text-sm font-bold text-rose-700 bg-rose-100 px-4 py-1.5 rounded-xl mr-6 shrink-0 flex items-center shadow-xs">📢 急救分機：999</span>
         <div class="flex-1 marquee-container px-2">
@@ -180,7 +179,7 @@
         <button onclick="switchTab('announcements')" id="btn-tab-announcements" class="btn-comfort font-bold bg-[#F0EDE6] text-[#5C554E] hover:bg-[#E5E0D8] py-4.5 text-lg">📢 公告廣播</button>
     </nav>
 
-    <!-- 5. 權限解鎖彈窗 -->
+    <!-- 5. 權限解鎖彈窗 (密碼 nst) -->
     <div id="unlock-modal" class="hidden fixed inset-0 bg-black/40 backdrop-blur-2xs z-50 flex items-center justify-center p-6">
         <div class="muji-card bg-white w-full max-w-md p-8 space-y-6 shadow-2xl text-center">
             <h3 class="text-lg font-bold text-[#383533] border-b border-[#E5E0D8] pb-4">系統權限解鎖</h3>
@@ -302,7 +301,6 @@
         setInterval(updateWhiteboardClock, 1000);
         updateWhiteboardClock();
 
-        // 30秒美觀倒數計時器邏輯
         let countdownSec = 30;
         setInterval(() => {
             countdownSec--;
@@ -310,7 +308,7 @@
             if (timerEl) timerEl.innerText = countdownSec;
             if (countdownSec <= 0) {
                 countdownSec = 30;
-                initCloudSync(); // 每30秒自動跟雲端更新
+                initCloudSync();
             }
         }, 1000);
 
@@ -326,6 +324,7 @@
             if (typeof pObj.location === 'string' && !pObj.location.includes('{')) {
                 return pObj.location;
             }
+            if (pObj.transferTag) return pObj.transferTag;
             return "在病房";
         }
 
@@ -361,6 +360,11 @@
 
                 let cleanDoc = (p.doctor || getAssignedDoctor(bedKey)).replace(/醫師/g, '').trim();
 
+                let locStr = parseStatusString(p);
+                if (p.transferTag && !locStr.includes(p.transferTag)) {
+                    locStr = p.transferTag;
+                }
+
                 sanitized[bedKey] = {
                     isEmpty: isBedEmpty,
                     realName: cleanedName,
@@ -372,7 +376,7 @@
                     isAbnormal: !!p.isAbnormal,
                     diag: p.diag || p.diagnosis || "一般照護",
                     doctor: cleanDoc,
-                    location: parseStatusString(p),
+                    location: locStr,
                     assignedNurse: p.assignedNurse || "-"
                 };
             });
@@ -464,20 +468,33 @@
                     updatedPatientsDataForCloud[bKey] = {};
                 }
                 
-                updatedPatientsDataForCloud[bKey].isEmpty = p.isEmpty;
-                updatedPatientsDataForCloud[bKey].realName = p.realName;
-                updatedPatientsDataForCloud[bKey].name = `${bKey} ${p.realName} (${p.gender})`;
-                updatedPatientsDataForCloud[bKey].gender = p.gender;
-                updatedPatientsDataForCloud[bKey].isPublicName = p.isPublicName;
-                updatedPatientsDataForCloud[bKey].isolation = p.isolation;
-                updatedPatientsDataForCloud[bKey].isDischarging = p.isDischarging;
-                updatedPatientsDataForCloud[bKey].dnr = p.dnr;
-                updatedPatientsDataForCloud[bKey].isAbnormal = p.isAbnormal;
-                updatedPatientsDataForCloud[bKey].diag = p.diag;
-                updatedPatientsDataForCloud[bKey].doctor = p.doctor;
-                updatedPatientsDataForCloud[bKey].status = p.location;
-                updatedPatientsDataForCloud[bKey].assignedNurse = p.assignedNurse;
+                if (p.isEmpty) {
+                    updatedPatientsDataForCloud[bKey] = {
+                        isEmpty: true,
+                        realName: "",
+                        name: `${bKey} 〔空床待清〕`,
+                        diag: "",
+                        assignedNurse: "-",
+                        doctor: p.doctor
+                    };
+                } else {
+                    updatedPatientsDataForCloud[bKey].isEmpty = p.isEmpty;
+                    updatedPatientsDataForCloud[bKey].realName = p.realName;
+                    updatedPatientsDataForCloud[bKey].name = `${bKey} ${p.realName} (${p.gender})`;
+                    updatedPatientsDataForCloud[bKey].gender = p.gender;
+                    updatedPatientsDataForCloud[bKey].isPublicName = p.isPublicName;
+                    updatedPatientsDataForCloud[bKey].isolation = p.isolation;
+                    updatedPatientsDataForCloud[bKey].isDischarging = p.isDischarging;
+                    updatedPatientsDataForCloud[bKey].dnr = p.dnr;
+                    updatedPatientsDataForCloud[bKey].isAbnormal = p.isAbnormal;
+                    updatedPatientsDataForCloud[bKey].diag = p.diag;
+                    updatedPatientsDataForCloud[bKey].doctor = p.doctor;
+                    updatedPatientsDataForCloud[bKey].status = p.location;
+                    updatedPatientsDataForCloud[bKey].assignedNurse = p.assignedNurse;
+                }
             });
+
+            rawCloudPatientsData = updatedPatientsDataForCloud;
 
             const payload = {
                 patientsData: updatedPatientsDataForCloud,
@@ -534,7 +551,7 @@
             const jh = activeNurses[5] || '-';
 
             container.innerHTML = `
-                <div>• 指揮班／指揮官：${commander !== '-' ? '護理師 ' + commander : '-'}</div>
+                <div>• 指揮班／指揮官：${commander !== '-' ? commander : '-'}</div>
                 <div>• 通報班：${tb}</div>
                 <div>• 滅火班：${mh1}${mh2 !== '-' ? '、' + mh2 : ''}</div>
                 <div>• 避難引導班：${by}</div>
@@ -575,7 +592,7 @@
                     occ++; 
                     if (p.isolation) iso++; 
                     if (p.isDischarging) dischargingCount++;
-                    if (p.location === '急診' || p.location === 'ICU') icuCount++;
+                    if (p.location === '急診' || p.location === 'ICU' || p.location.includes('轉入')) icuCount++;
                     if (p.isAbnormal) ewCount++;
                 }
 
@@ -587,33 +604,33 @@
                 if (currentFilterTag === '接' && p.isolation !== '接') return;
                 if (currentFilterTag === '氣' && p.isolation !== '氣') return;
                 if (currentFilterTag === 'DNR' && !p.dnr) return;
-                if (currentFilterTag === 'ICU' && p.location !== '急診' && p.location !== 'ICU') return;
+                if (currentFilterTag === 'ICU' && p.location !== '急診' && p.location !== 'ICU' && !p.location.includes('轉入')) return;
                 if (currentFilterTag === 'EarlyWarning' && !p.isAbnormal) return;
 
                 const card = document.createElement('div');
 
                 if (p.isEmpty || !isConnected) {
-                    card.className = "muji-card p-6 flex flex-col justify-between h-52 relative overflow-hidden bg-white opacity-75";
+                    card.className = "muji-card p-6 flex flex-col justify-between h-56 relative overflow-hidden bg-white opacity-75";
                     card.innerHTML = `
                         <div class="absolute left-0 top-0 bottom-0 w-3.5 bg-slate-300"></div>
                         <div class="pl-4 w-full flex flex-col justify-between h-full">
-                            <div class="flex justify-between items-center"><span class="font-black text-2xl text-slate-400 bg-slate-100 px-3 py-0.5 rounded-xl border border-slate-200">${bedKey}</span><span class="text-xs text-slate-400 font-bold">護理師: -</span></div>
-                            <div class="text-center text-slate-400 text-sm font-bold py-4">〔空床待清〕</div>
-                            <div class="text-xs text-slate-400 text-right">-</div>
+                            <div class="flex justify-between items-center"><span class="font-black text-2xl text-stone-500 bg-stone-100 px-4 py-1 rounded-2xl border border-stone-200 shadow-xs">${bedKey}</span><span class="text-xs text-stone-400 font-bold">護理師: -</span></div>
+                            <div class="text-center text-stone-400 text-base font-bold py-6">〔空床待清〕</div>
+                            <div class="text-xs text-stone-400 text-right">-</div>
                         </div>`;
                 } else {
                     let leftColorBarClass = !isConnected ? 'bg-slate-300' : ((p.gender === '女') ? 'bg-rose-400' : 'bg-sky-400');
-                    let cardStyleClass = p.isAbnormal ? 'muji-card muji-card-abnormal p-6 flex flex-col justify-between h-52 relative overflow-hidden' : 'muji-card p-6 flex flex-col justify-between h-52 relative overflow-hidden bg-white';
+                    let cardStyleClass = p.isAbnormal ? 'muji-card muji-card-abnormal p-6 flex flex-col justify-between h-56 relative overflow-hidden' : 'muji-card p-6 flex flex-col justify-between h-56 relative overflow-hidden bg-white';
 
                     let displayName = (p.isPublicName !== false) ? (p.realName || '無姓名') : 'ＯＯＯ';
 
                     let tagsHtml = '<div class="flex flex-wrap gap-1.5 items-center mb-1">';
-                    tagsHtml += `<span class="bg-[#F0EDE6] text-[#5C554E] px-2 py-0.5 text-xs rounded-md font-bold">${p.gender}</span>`;
-                    if (p.isolation === '接') tagsHtml += `<span class="bg-rose-500 text-white px-2 py-0.5 text-xs rounded-md font-bold">接</span>`;
-                    else if (p.isolation === '氣') tagsHtml += `<span class="bg-blue-600 text-white px-2 py-0.5 text-xs rounded-md font-bold">氣</span>`;
-                    if (p.isDischarging) tagsHtml += `<span class="bg-blue-500 text-white px-2 py-0.5 text-xs rounded-md font-bold">今辦明出</span>`;
-                    if (p.dnr) tagsHtml += `<span class="bg-amber-600 text-white px-2 py-0.5 text-xs rounded-md font-bold">DNR</span>`;
-                    if (p.isAbnormal) tagsHtml += `<span class="bg-purple-600 text-white px-2 py-0.5 text-xs rounded-md font-bold">早期警示</span>`;
+                    tagsHtml += `<span class="bg-[#F0EDE6] text-[#5C554E] px-2.5 py-1 text-sm rounded-lg font-bold">${p.gender}</span>`;
+                    if (p.isolation === '接') tagsHtml += `<span class="bg-rose-500 text-white px-2.5 py-1 text-sm rounded-lg font-bold">接</span>`;
+                    else if (p.isolation === '氣') tagsHtml += `<span class="bg-blue-600 text-white px-2.5 py-1 text-sm rounded-lg font-bold">氣</span>`;
+                    if (p.isDischarging) tagsHtml += `<span class="bg-blue-500 text-white px-2.5 py-1 text-sm rounded-lg font-bold">今辦明出</span>`;
+                    if (p.dnr) tagsHtml += `<span class="bg-amber-600 text-white px-2.5 py-1 text-sm rounded-lg font-bold">DNR</span>`;
+                    if (p.isAbnormal) tagsHtml += `<span class="bg-purple-600 text-white px-2.5 py-1 text-sm rounded-lg font-bold">早期警示</span>`;
                     tagsHtml += '</div>';
 
                     card.className = cardStyleClass;
@@ -623,16 +640,15 @@
                             <div>
                                 <div class="flex justify-between items-center mb-1">
                                     <span class="font-bold text-sm text-[#383533]">${tagsHtml}</span>
-                                    <!-- 床號極度放大顯眼 -->
-                                    <span class="text-2xl font-black text-stone-900 bg-stone-100 px-3.5 py-0.5 rounded-xl border border-stone-300 shadow-2xs">${bedKey}</span>
+                                    <!-- 極度放大且精緻美觀的床號 -->
+                                    <span class="text-3xl font-black text-stone-900 bg-stone-100 px-4.5 py-1 rounded-2xl border border-stone-300 shadow-sm">${bedKey}</span>
                                 </div>
-                                <div class="font-bold text-base text-[#383533] truncate mt-1">${displayName}</div>
-                                <div class="text-xs text-[#8C827A] truncate mt-0.5">診斷：${p.diag || '一般照護'}</div>
-                                <div class="text-xs text-[#5C554E] truncate mt-0.5">狀態：<span class="font-bold text-teal-800">${p.location || '在病房'}</span></div>
+                                <div class="font-bold text-lg text-[#383533] truncate mt-1">${displayName}</div>
+                                <div class="text-sm text-[#8C827A] truncate mt-1">診斷：${p.diag || '一般照護'}</div>
+                                <div class="text-sm text-[#5C554E] truncate mt-1">狀態：<span class="font-bold text-teal-800">${p.location || '在病房'}</span></div>
                             </div>
-                            <div class="pt-2 border-t border-[#E5E0D8] flex justify-between items-center text-xs text-[#786759]">
+                            <div class="pt-2.5 border-t border-[#E5E0D8] flex justify-between items-center text-sm text-[#786759]">
                                 <span class="text-teal-800 font-bold">護理師: ${p.assignedNurse}</span>
-                                <!-- 完全刪除「醫師」二字 -->
                                 <span class="text-teal-700 font-bold">${p.doctor}</span>
                             </div>
                         </div>
@@ -675,7 +691,8 @@
                 
                 card.innerHTML = `
                     <div>
-                        <div class="font-bold text-lg text-[#383533]">👩‍⚕️ 護理師：${nurse}</div>
+                        <!-- 移除了護理師前面的 emoji -->
+                        <div class="font-bold text-lg text-[#383533]">護理師：${nurse}</div>
                         <div class="text-sm text-[#8C827A] mt-1">點擊此卡片可修改該護理師負責的床位，病床總覽與雲端將即時雙向連動</div>
                     </div>
                     <div class="font-bold text-teal-800 text-lg bg-[#F7F6F2] px-6 py-3 rounded-2xl border border-[#E5E0D8]">${beds.join(', ')} (${beds.length} 床)</div>
@@ -744,34 +761,41 @@
                 const card = document.createElement('div');
                 card.className = "bg-[#F7F6F2] border border-[#E5E0D8] p-5 rounded-2xl flex justify-between items-center text-base shadow-xs";
                 
-                let nurseViewName = p.isEmpty || !isConnected ? '〔空床待清〕' : `${p.realName || '未命名'} (${p.gender})`;
-                let namePublicStatus = (p.isPublicName !== false) ? '公開' : '不公開';
-                let dischargingTag = p.isDischarging ? ' | <span class="text-blue-600 font-bold">🔵 今辦明出</span>' : '';
+                if (p.isEmpty || !isConnected) {
+                    card.innerHTML = `
+                        <div class="space-y-1">
+                            <div class="font-bold text-slate-400">${bedKey} - 〔空床待清〕</div>
+                            <div class="text-xs text-slate-400">目前無病人資料</div>
+                        </div>
+                        <div class="space-x-2">
+                            <button onclick="openAddPatientModal('normal')" class="btn-comfort bg-white border border-[#E5E0D8] text-sm py-2 px-4 text-teal-800 font-bold">入院登記</button>
+                        </div>
+                    `;
+                } else {
+                    let namePublicStatus = (p.isPublicName !== false) ? '公開' : '不公開';
+                    let dischargingTag = p.isDischarging ? ' | <span class="text-blue-600 font-bold">🔵 今辦明出</span>' : '';
 
-                card.innerHTML = `
-                    <div class="space-y-1">
-                        <div class="font-bold text-slate-800">${bedKey} - ${nurseViewName}</div>
-                        <div class="text-xs text-slate-500">真實姓名: <span class="font-bold text-teal-800">${p.realName || '-'}</span> | 狀態: ${namePublicStatus}${dischargingTag} | 護理師: ${p.assignedNurse}</div>
-                    </div>
-                    <div class="space-x-2">
-                        ${(!p.isEmpty && isConnected) ? `<button onclick="openEditPatientModal('${bedKey}')" class="btn-comfort bg-white border border-[#E5E0D8] text-xs py-2 px-3">詳細設定</button>` : ''}
-                        <button onclick="toggleBedEmpty('${bedKey}')" class="btn-comfort bg-white border border-[#E5E0D8] text-sm py-2 px-4 text-rose-700 font-bold">${p.isEmpty || !isConnected ? '入院登記' : '辦理出院'}</button>
-                    </div>
-                `;
+                    card.innerHTML = `
+                        <div class="space-y-1">
+                            <div class="font-bold text-slate-800">${bedKey} - ${p.realName} (${p.gender})</div>
+                            <div class="text-xs text-slate-500">真實姓名: <span class="font-bold text-teal-800">${p.realName}</span> | 狀態: ${namePublicStatus}${dischargingTag} | 護理師: ${p.assignedNurse}</div>
+                        </div>
+                        <div class="space-x-2">
+                            <button onclick="openEditPatientModal('${bedKey}')" class="btn-comfort bg-white border border-[#E5E0D8] text-xs py-2 px-3">詳細設定</button>
+                            <button onclick="dischargeBed('${bedKey}')" class="btn-comfort bg-white border border-[#E5E0D8] text-sm py-2 px-4 text-rose-700 font-bold">辦理出院</button>
+                        </div>
+                    `;
+                }
                 container.appendChild(card);
             });
         }
 
-        window.toggleBedEmpty = function(b) {
+        window.dischargeBed = function(b) {
             if(!isUnlocked) { alert('請先解鎖編輯！'); return; }
-            if(patientsData[b].isEmpty || !isConnected) {
-                openAddPatientModal('normal');
-            } else {
-                if (confirm(`確定為 ${b} 床辦理出院嗎？此床資料將徹底刪除並重置為空床待清。`)) {
-                    patientsData[b] = { isEmpty: true, realName: "", isPublicName: true, gender: "男", isolation: "", isDischarging: false, dnr: false, isAbnormal: false, location: "在病房", assignedNurse: "-" };
-                    saveAndSyncToCloud();
-                    alert(`${b} 床已辦理出院並重置為空床待清！`);
-                }
+            if (confirm(`確定為 ${b} 床辦理出院嗎？此床資料將徹底刪除並重置為空床待清。`)) {
+                patientsData[b] = { isEmpty: true, realName: "", isPublicName: true, gender: "男", isolation: "", isDischarging: false, dnr: false, isAbnormal: false, location: "在病房", assignedNurse: "-" };
+                saveAndSyncToCloud();
+                alert(`${b} 床已辦理出院並徹底清除重置為空床待清！`);
             }
         }
 
@@ -813,7 +837,7 @@
 
         window.verifyUnlockPassword = function() {
             const pw = document.getElementById('unlock-pw-input').value.trim();
-            if (pw === 'nsd' || pw === 'NS' || pw === '1224') {
+            if (pw === 'nst') {
                 isUnlocked = true;
                 closeUnlockModal();
                 document.getElementById('current-mode-label').innerText = "🟢 已解鎖編輯模式 (雙向同步中)";
