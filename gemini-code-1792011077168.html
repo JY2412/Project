@@ -193,7 +193,7 @@
         </div>
     </div>
 
-    <!-- 6. 新增入住彈窗 (含性別選項) -->
+    <!-- 6. 新增入住彈窗 (含性別與主治醫師選擇) -->
     <div id="add-patient-modal" class="hidden fixed inset-0 bg-black/40 backdrop-blur-2xs z-50 flex items-center justify-center p-6">
         <div class="muji-card bg-white w-full max-w-lg p-8 space-y-5 shadow-2xl text-base">
             <h3 id="add-modal-title" class="text-lg font-bold text-[#383533] border-b border-[#E5E0D8] pb-4">辦理新病人入住</h3>
@@ -207,6 +207,10 @@
                     <option value="女">女性</option>
                 </select>
             </div>
+            <div>
+                <label class="font-bold text-[#5C554E]">主治醫師：</label>
+                <select id="add-doctor-select" class="w-full p-4 bg-[#F7F6F2] border border-[#E5E0D8] rounded-xl mt-2 outline-none font-bold"></select>
+            </div>
             <div><label class="font-bold text-[#5C554E]">白板是否公開名字：</label><select id="add-public-select" class="w-full p-4 bg-[#F7F6F2] border border-[#E5E0D8] rounded-xl mt-2 outline-none font-bold text-teal-800"><option value="true">公開真實姓名</option><option value="false">不公開 (白板顯示 ＯＯＯ)</option></select></div>
             <div><label class="font-bold text-[#5C554E]">診斷：</label><input type="text" id="add-diag-input" class="w-full p-4 bg-[#F7F6F2] border border-[#E5E0D8] rounded-xl mt-2 outline-none" value="Acute Stroke"></div>
             <div><label class="font-bold text-[#5C554E]">病人動態狀態：</label><select id="add-loc-select" class="w-full p-4 bg-[#F7F6F2] border border-[#E5E0D8] rounded-xl mt-2 outline-none font-bold"><option value="在病房">在病房</option><option value="檢查中">檢查中</option><option value="請假">請假</option><option value="急診轉入">急診轉入</option><option value="ICU轉入">ICU轉入</option></select></div>
@@ -217,12 +221,16 @@
         </div>
     </div>
 
-    <!-- 7. 病人詳細編輯與防護設定彈窗 -->
+    <!-- 7. 病人詳細編輯與防護設定彈窗 (含主治醫師選單) -->
     <div id="edit-patient-modal" class="hidden fixed inset-0 bg-black/40 backdrop-blur-2xs z-50 flex items-center justify-center p-6">
         <div class="muji-card bg-white w-full max-w-lg p-8 space-y-5 shadow-2xl text-base">
             <h3 class="text-lg font-bold text-[#383533] border-b border-[#E5E0D8] pb-4">編輯病人資料、防護與隱私：<span id="edit-modal-bed" class="text-teal-800 font-bold"></span></h3>
             <input type="hidden" id="edit-modal-bedkey">
             <div><label class="font-bold text-[#5C554E]">病人真實姓名：</label><input type="text" id="edit-name-input" class="w-full p-4 bg-[#F7F6F2] border border-[#E5E0D8] rounded-xl mt-2 outline-none font-bold"></div>
+            <div>
+                <label class="font-bold text-[#5C554E]">主治醫師：</label>
+                <select id="edit-doctor-select" class="w-full p-4 bg-[#F7F6F2] border border-[#E5E0D8] rounded-xl mt-2 outline-none font-bold"></select>
+            </div>
             <div><label class="font-bold text-[#5C554E]">病人診斷：</label><input type="text" id="edit-diag-input" class="w-full p-4 bg-[#F7F6F2] border border-[#E5E0D8] rounded-xl mt-2 outline-none font-bold"></div>
             <div><label class="font-bold text-[#5C554E]">病人動態狀態：</label><select id="edit-loc-select" class="w-full p-4 bg-[#F7F6F2] border border-[#E5E0D8] rounded-xl mt-2 outline-none font-bold"><option value="在病房">在病房</option><option value="檢查中">檢查中</option><option value="請假">請假</option><option value="急診轉入">急診轉入</option><option value="ICU轉入">ICU轉入</option></select></div>
             <div><label class="font-bold text-[#5C554E]">白板是否公開名字：</label><select id="edit-public-select" class="w-full p-4 bg-[#F7F6F2] border border-[#E5E0D8] rounded-xl mt-2 outline-none font-bold text-teal-800"><option value="true">公開真實姓名</option><option value="false">不公開 (白板顯示 ＯＯＯ)</option></select></div>
@@ -284,6 +292,21 @@
         let isConnected = false;
 
         const doctorList = ["陳大鈞", "林哲宇", "張志豪", "黃建勳", "許智勝", "鄭博文", "王立峰"];
+
+        function populateDoctorSelects(selectedDoc = "") {
+            ['add-doctor-select', 'edit-doctor-select'].forEach(id => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                el.innerHTML = '';
+                doctorList.forEach(doc => {
+                    const opt = document.createElement('option');
+                    opt.value = doc;
+                    opt.text = doc;
+                    if (doc === selectedDoc) opt.selected = true;
+                    el.appendChild(opt);
+                });
+            });
+        }
 
         function getAssignedDoctor(bedKey) {
             const numMatch = bedKey.match(/\d+/);
@@ -635,6 +658,7 @@
                     if (p.isDischarging) tagsHtml += `<span class="bg-blue-500 text-white px-2.5 py-1 text-sm rounded-lg font-bold">今辦明出</span>`;
                     if (p.dnr) tagsHtml += `<span class="bg-amber-600 text-white px-2.5 py-1 text-sm rounded-lg font-bold">DNR</span>`;
                     if (p.isAbnormal) tagsHtml += `<span class="bg-purple-600 text-white px-2.5 py-1 text-sm rounded-lg font-bold">早期警示</span>`;
+                    if (p.location && p.location.includes('轉入')) tagsHtml += `<span class="bg-orange-600 text-white px-2.5 py-1 text-sm rounded-lg font-bold">${p.location}</span>`;
                     tagsHtml += '</div>';
 
                     card.className = cardStyleClass;
@@ -780,7 +804,7 @@
                     card.innerHTML = `
                         <div class="space-y-1">
                             <div class="font-bold text-slate-800">${bedKey} - ${p.realName} (${p.gender})</div>
-                            <div class="text-xs text-slate-500">真實姓名: <span class="font-bold text-teal-800">${p.realName}</span> | 診斷: ${p.diag || '一般照護'} | 狀態: ${namePublicStatus}${dischargingTag} | 護理師: ${p.assignedNurse}</div>
+                            <div class="text-xs text-slate-500">主治: <span class="font-bold text-stone-700">${p.doctor}</span> | 真實姓名: <span class="font-bold text-teal-800">${p.realName}</span> | 診斷: ${p.diag || '一般照護'} | 狀態: ${namePublicStatus}${dischargingTag} | 護理師: ${p.assignedNurse}</div>
                         </div>
                         <div class="space-x-2">
                             <button onclick="openEditPatientModal('${bedKey}')" class="btn-comfort bg-white border border-[#E5E0D8] text-xs py-2 px-3">詳細設定</button>
@@ -796,6 +820,7 @@
             if(!isUnlocked) { alert('請先解鎖編輯！'); return; }
             if (confirm(`確定為 ${b} 床辦理出院嗎？此床資料將徹底清除並同步至雲端。`)) {
                 patientsData[b] = { isEmpty: true, realName: "", isPublicName: true, gender: "男", isolation: "", isDischarging: false, dnr: false, isAbnormal: false, diag: "", location: "在病房", assignedNurse: "-" };
+                
                 if (rawCloudPatientsData && rawCloudPatientsData[b]) {
                     rawCloudPatientsData[b] = {
                         isEmpty: true,
@@ -806,7 +831,7 @@
                         status: "在病房",
                         location: "在病房",
                         assignedNurse: "-",
-                        doctor: patientsData[b].doctor,
+                        doctor: getAssignedDoctor(b),
                         isolation: "",
                         isDischarging: false,
                         dnr: false,
@@ -830,6 +855,8 @@
             document.getElementById('edit-iso-select').value = p.isolation || '';
             document.getElementById('edit-discharging-select').value = p.isDischarging ? 'true' : 'false';
             document.getElementById('edit-dnr-select').value = p.dnr ? 'true' : 'false';
+            
+            populateDoctorSelects(p.doctor || getAssignedDoctor(bedKey));
             document.getElementById('edit-patient-modal').classList.remove('hidden');
         }
         window.closeEditPatientModal = function() { document.getElementById('edit-patient-modal').classList.add('hidden'); }
@@ -838,11 +865,13 @@
             const b = document.getElementById('edit-modal-bedkey').value;
             const newName = document.getElementById('edit-name-input').value.trim();
             const newDiag = document.getElementById('edit-diag-input').value.trim();
+            const newDoc = document.getElementById('edit-doctor-select').value;
             if(!newName) { alert('病人姓名不得為空！'); return; }
 
             if(patientsData[b]) {
                 patientsData[b].realName = newName;
                 patientsData[b].diag = newDiag || '一般照護';
+                patientsData[b].doctor = newDoc;
                 patientsData[b].location = document.getElementById('edit-loc-select').value;
                 patientsData[b].isPublicName = (document.getElementById('edit-public-select').value === 'true');
                 patientsData[b].isolation = document.getElementById('edit-iso-select').value;
@@ -874,12 +903,20 @@
             document.getElementById('add-patient-type').value = type;
             document.getElementById('add-modal-title').innerText = (type === 'transfer') ? '🚨 急診 / ICU 轉入辦理' : '➕ 一般入院辦理';
             
+            // 如果是 ICU 轉入，將預設動態狀態帶入 ICU轉入
+            if (type === 'transfer') {
+                document.getElementById('add-loc-select').value = 'ICU轉入';
+            } else {
+                document.getElementById('add-loc-select').value = '在病房';
+            }
+
             const selectBed = document.getElementById('add-bed-select');
             selectBed.innerHTML = '';
             Object.keys(patientsData).sort().forEach(b => {
                 if(patientsData[b].isEmpty || !isConnected) selectBed.innerHTML += `<option value="${b}">${b} (空床)</option>`;
             });
 
+            populateDoctorSelects();
             document.getElementById('add-patient-modal').classList.remove('hidden');
         }
         window.closeAddPatientModal = function() { document.getElementById('add-patient-modal').classList.add('hidden'); }
@@ -888,6 +925,7 @@
             const b = document.getElementById('add-bed-select').value;
             const name = document.getElementById('add-name-input').value.trim();
             const gender = document.getElementById('add-gender-select').value;
+            const doc = document.getElementById('add-doctor-select').value;
             const isPublic = (document.getElementById('add-public-select').value === 'true');
             const diag = document.getElementById('add-diag-input').value.trim();
             const loc = document.getElementById('add-loc-select').value;
@@ -904,7 +942,7 @@
                 dnr: false, 
                 isAbnormal: false, 
                 diag: diag || '一般照護', 
-                doctor: getAssignedDoctor(b).replace(/醫師/g, ''), 
+                doctor: doc, 
                 location: loc, 
                 assignedNurse: "-" 
             };
@@ -915,7 +953,7 @@
 
         window.publishBroadcast = function() {
             const rawTxt = document.getElementById('broadcast-text-input').value.trim();
-            const txt = rawTxt.replace(/[\r\n]+/g, ' '); // 強制移除換行，變為單行
+            const txt = rawTxt.replace(/[\r\n]+/g, ' '); // 強制移除所有換行，絕對變成單行
             if(!txt) { alert('請輸入公告內容！'); return; }
             const newAnn = { id: Date.now(), text: txt, time: new Date().toLocaleTimeString() };
             marqueeHistory.unshift(newAnn);
@@ -932,7 +970,7 @@
             if(!list) return;
             list.innerHTML = '';
             if(marqueeHistory.length === 0) {
-                list.innerHTML = `<div class="text-xs text-slate-400">目前無歷史公告紀錄</div>`;
+                list.innerHTML = `<div class="text-xs text-slate-400">./目前無歷史公告紀錄</div>`;
                 return;
             }
             marqueeHistory.forEach(item => {
