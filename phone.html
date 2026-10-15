@@ -924,12 +924,12 @@
                 patientsData = generateDefaultPatients();
                 userDatabase = defaultUserDatabase;
                 saveToCloud();
-                if (statusEl) { statusEl.innerText = "🟢 雲端初始化完成"; statusEl.className = "absolute top-1 right-2 text-[9px] font-bold text-emerald-600 z-30"; }
+                if (statusEl) { statusEl.innerText = "🟢 雲端"; statusEl.className = "absolute top-1 right-2 text-[9px] font-bold text-emerald-600 z-30"; }
             }
             syncNurseAssignments();
         }).catch((error) => {
             const statusEl = document.getElementById('cloud-sync-status');
-            if (statusEl) { statusEl.innerText = "🔴 雲端連線失敗(使用本地)"; statusEl.className = "absolute top-1 right-2 text-[9px] font-bold text-rose-600 z-30"; }
+            if (statusEl) { statusEl.innerText = "🔴 雲端連線失敗"; statusEl.className = "absolute top-1 right-2 text-[9px] font-bold text-rose-600 z-30"; }
             patientsData = JSON.parse(localStorage.getItem('femh_45beds_vFixed10')) || generateDefaultPatients();
             nurseBedAssignments = JSON.parse(localStorage.getItem('femh_nurse_schedule_vFixed10')) || {};
             userDatabase = JSON.parse(localStorage.getItem('femh_user_db_vFixed10')) || defaultUserDatabase;
