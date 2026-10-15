@@ -760,7 +760,7 @@
     <!-- Firebase SDK 引入與雲端即時同步邏輯 -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+        import { getDatabase, ref, set, onValue, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBe__9-uFJkSrN2m5_qldgS2UgtQzcb9EQ",
@@ -775,7 +775,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        let userDatabase = {
+        let defaultUserDatabase = {
             "NS": { password: "NS", name: "護理站", role: "ns_scheduler" },
             "Jia": { password: "1224", name: "劉家裕", role: "admin" },
             "101": { password: "101", name: "許Ｏ媃", role: "nurse" },
@@ -905,41 +905,49 @@
             return data;
         }
 
+        let userDatabase = JSON.parse(JSON.stringify(defaultUserDatabase));
         let patientsData = {};
         let nurseBedAssignments = {};
         let globalSharedMemo = "全病房交班注意事項：請落實三讀五對、洗手規範與生命徵象異常回報。";
 
-        // Firebase 即時資料同步監聽
-        onValue(ref(db, 'femh_cloud_db_v2'), (snapshot) => {
-            const cloudData = snapshot.val();
+        const dbRef = ref(db, 'femh_cloud_db_v3');
+        get(dbRef).then((snapshot) => {
             const statusEl = document.getElementById('cloud-sync-status');
+            const cloudData = snapshot.val();
             if (cloudData) {
                 patientsData = cloudData.patientsData || generateDefaultPatients();
                 nurseBedAssignments = cloudData.nurseBedAssignments || {};
-                userDatabase = cloudData.userDatabase || userDatabase;
+                userDatabase = cloudData.userDatabase || defaultUserDatabase;
                 globalSharedMemo = cloudData.globalSharedMemo || globalSharedMemo;
                 if (statusEl) { statusEl.innerText = "🟢 雲端同步正常"; statusEl.className = "absolute top-1 right-2 text-[9px] font-bold text-emerald-600 z-30"; }
             } else {
                 patientsData = generateDefaultPatients();
-                // 初始化預設護理師排班對應
-                Object.keys(userDatabase).forEach(k => {
-                    if (userDatabase[k].role === 'nurse') {
-                        let nName = userDatabase[k].name;
-                        if (!nurseBedAssignments[nName]) nurseBedAssignments[nName] = [];
-                    }
-                });
+                userDatabase = defaultUserDatabase;
                 saveToCloud();
                 if (statusEl) { statusEl.innerText = "🟢 雲端初始化完成"; statusEl.className = "absolute top-1 right-2 text-[9px] font-bold text-emerald-600 z-30"; }
             }
             syncNurseAssignments();
-            if (!document.getElementById('patient-list-view').classList.contains('hidden')) renderPatientList();
-        }, (error) => {
+        }).catch((error) => {
             const statusEl = document.getElementById('cloud-sync-status');
             if (statusEl) { statusEl.innerText = "🔴 雲端連線失敗(使用本地)"; statusEl.className = "absolute top-1 right-2 text-[9px] font-bold text-rose-600 z-30"; }
             patientsData = JSON.parse(localStorage.getItem('femh_45beds_vFixed10')) || generateDefaultPatients();
             nurseBedAssignments = JSON.parse(localStorage.getItem('femh_nurse_schedule_vFixed10')) || {};
+            userDatabase = JSON.parse(localStorage.getItem('femh_user_db_vFixed10')) || defaultUserDatabase;
             globalSharedMemo = localStorage.getItem('femh_shared_memo_vFixed10') || globalSharedMemo;
             syncNurseAssignments();
+        });
+
+        onValue(dbRef, (snapshot) => {
+            const cloudData = snapshot.val();
+            if (cloudData) {
+                patientsData = cloudData.patientsData || patientsData;
+                nurseBedAssignments = cloudData.nurseBedAssignments || nurseBedAssignments;
+                if (cloudData.userDatabase) userDatabase = cloudData.userDatabase;
+                globalSharedMemo = cloudData.globalSharedMemo || globalSharedMemo;
+                syncNurseAssignments();
+                if (!document.getElementById('patient-list-view').classList.contains('hidden')) renderPatientList();
+                if (!document.getElementById('nurse-manager-modal').classList.contains('hidden')) renderNurseManagerList();
+            }
         });
 
         function saveToCloud() {
@@ -950,10 +958,11 @@
                 globalSharedMemo: globalSharedMemo,
                 lastUpdated: new Date().toISOString()
             };
-            set(ref(db, 'femh_cloud_db_v2'), payload).catch(err => console.log('Cloud save err:', err));
+            set(dbRef, payload).catch(err => console.log('Cloud save err:', err));
             localStorage.setItem('femh_45beds_vFixed10', JSON.stringify(patientsData));
             localStorage.setItem('femh_shared_memo_vFixed10', globalSharedMemo);
             localStorage.setItem('femh_nurse_schedule_vFixed10', JSON.stringify(nurseBedAssignments));
+            localStorage.setItem('femh_user_db_vFixed10', JSON.stringify(userDatabase));
         }
 
         window.saveToLocalStorage = saveToCloud;
@@ -1277,7 +1286,6 @@
             const selectEl = document.getElementById('schedule-nurse-select');
             selectEl.innerHTML = '';
             
-            // 動態從 userDatabase 載入角色為 nurse 的護理師
             Object.keys(userDatabase).forEach(empId => {
                 let u = userDatabase[empId];
                 if (u.role === 'nurse') {
@@ -1356,7 +1364,7 @@
             closeNSAdminModal();
         };
 
-        // --- 新增：護理師管理功能 (NS帳號專屬) ---
+        // 護理師管理功能
         window.openNurseManagerModal = function() {
             renderNurseManagerList();
             document.getElementById('new-nurse-id').value = '';
@@ -1368,6 +1376,7 @@
 
         window.renderNurseManagerList = function() {
             const listContainer = document.getElementById('nurse-manager-list');
+            if (!listContainer) return;
             listContainer.innerHTML = '';
 
             Object.keys(userDatabase).forEach(empId => {
@@ -1425,7 +1434,6 @@
             userDatabase[empId].name = newName;
             userDatabase[empId].password = newPw;
 
-            // 如果名字有更改，同步更新排班陣列的Key
             if (oldName !== newName) {
                 if (nurseBedAssignments[oldName]) {
                     nurseBedAssignments[newName] = nurseBedAssignments[oldName];
@@ -1450,7 +1458,6 @@
                 renderNurseManagerList();
             }
         };
-        // ------------------------------------------
 
         window.openJiaAdminModal = function() {
             const container = document.getElementById('jia-admin-bed-list');
@@ -1620,7 +1627,7 @@
                             </div>
                         </label>
                         <span class="text-[10px] font-bold ${isSaved ? 'text-slate-400' : isWithinWindow ? 'text-teal-600' : 'text-rose-600'}">
-                            ${isSaved ? '已儲存(鎖定)' : isWithinWindow ? '可執行(±30分內)' : '未達時間窗'}
+                            ${isSaved ? '已儲存(鎖定)' : isWithinWindow ? '可執行' : '未達時間窗'}
                         </span>
                     </div>
                 `;
@@ -2226,11 +2233,11 @@
 
         window.saveBloodRecord = function() {
             if (!bloodVerifiedNurse1 || !bloodVerifiedNurse2) {
-                alert('❌ 輸血作業必須由「兩位不同」的護理師完成雙重核對！');
+                alert('輸血作業必須由「兩位不同」的護理師完成雙重核對！');
                 return;
             }
             if (bloodVerifiedNurse1 === bloodVerifiedNurse2) {
-                alert('❌ 輸血安全防呆：兩位護理師不能為同一人！');
+                alert('兩位護理師不能為同一人！');
                 return;
             }
 
@@ -2322,7 +2329,7 @@
 
         window.saveSignatureData = function() {
             if (!sigCanvas) return;
-            const cType = document.getElementById('consent-type-select'].value;
+            const cType = document.getElementById('consent-type-select').value;
             const p = patientsData[currentSelectedBed];
             if (!p.consents) p.consents = {};
             
