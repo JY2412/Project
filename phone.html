@@ -1363,7 +1363,7 @@
                 nurseBedAssignments = {};
                 loadNurseBedSelection();
                 syncNurseAssignments();
-                saveToCloud(); // 立即儲存並同步至雲端與 LocalStorage
+                saveToCloud();
                 alert('已清除所有護理人員的排班指派並完成儲存！');
             }
         };
@@ -1382,7 +1382,7 @@
             closeNSAdminModal();
         };
 
-        // 護理師管理功能
+        // 護理師管理功能 (已加入 saveToCloud 同步雲端)
         window.openNurseManagerModal = function() {
             renderNurseManagerList();
             document.getElementById('new-nurse-id').value = '';
@@ -1437,8 +1437,8 @@
             userDatabase[id] = { password: pw, name: name, role: "nurse" };
             if (!nurseBedAssignments[name]) nurseBedAssignments[name] = [];
 
-            saveToCloud();
-            alert(`✅ 成功新增護理師：${name} (員編: ${id})！`);
+            saveToCloud(); // 立即同步上傳到雲端與 LocalStorage
+            alert(`✅ 成功新增護理師：${name} (員編: ${id}) 並已同步至雲端！`);
             renderNurseManagerList();
         };
 
@@ -1460,8 +1460,8 @@
             }
 
             syncNurseAssignments();
-            saveToCloud();
-            alert(`✅ 員編 [${empId}] 之護理人員資料已更新成功！`);
+            saveToCloud(); // 立即同步上傳到雲端
+            alert(`✅ 員編 [${empId}] 之護理人員資料已更新成功並同步至雲端！`);
             renderNurseManagerList();
         };
 
@@ -1471,7 +1471,7 @@
                 delete userDatabase[empId];
                 if (nurseBedAssignments[nurseName]) delete nurseBedAssignments[nurseName];
                 syncNurseAssignments();
-                saveToCloud();
+                saveToCloud(); // 立即同步上傳到雲端
                 alert(`🗑️ 已成功刪除人員 ${nurseName} 的帳號！`);
                 renderNurseManagerList();
             }
