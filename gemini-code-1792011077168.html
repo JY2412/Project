@@ -113,11 +113,17 @@
                 <div class="flex justify-between items-center border-b border-[#E5E0D8] pb-5">
                     <div>
                         <h2 class="text-xl font-bold text-[#383533]">病房管理控制台 (出入院 / 今辦明出 / 姓名與隱私設定 / 隔離 / DNR)</h2>
-                        <p class="text-base text-[#8C827A] mt-2">解鎖權限後可維護全病房床位狀態、病人改名維護、今辦明出設定與急診/ICU轉入</p>
+                        <p class="text-base text-[#8C827A] mt-2">解鎖權限後可維護全病房床位狀態、病人改名維護、今辦明出設定與直接點擊床位進行入院登記</p>
                     </div>
-                    <div class="space-x-3">
-                        <button onclick="openAddPatientModal('transfer')" class="btn-comfort bg-purple-700 hover:bg-purple-800 text-white shadow-xs">🚨 急診/ICU 轉入</button>
-                        <button onclick="openAddPatientModal('normal')" class="btn-comfort bg-teal-700 hover:bg-teal-800 text-white shadow-xs">➕ 一般入院</button>
+                    <!-- 原本的兩顆按鈕已移除，改為富有美感的 MUJI 風格佔床率即時儀表板 -->
+                    <div class="bg-[#F7F6F2] border border-[#E5E0D8] px-6 py-3.5 rounded-2xl flex items-center space-x-5 shadow-xs">
+                        <div class="space-y-0.5 text-right">
+                            <div class="text-xs font-bold text-[#8C827A]">11G 病房佔床率</div>
+                            <div id="occupancy-rate-text" class="text-lg font-black text-teal-800">--%</div>
+                        </div>
+                        <div class="w-32 bg-stone-200 h-3.5 rounded-full overflow-hidden p-0.5 border border-stone-300">
+                            <div id="occupancy-rate-bar" class="bg-teal-700 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+                        </div>
                     </div>
                 </div>
                 <div id="secretary-bed-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
@@ -193,12 +199,11 @@
         </div>
     </div>
 
-    <!-- 6. 新增入住彈窗 (含性別與主治醫師選擇) -->
+    <!-- 6. 單一床位專屬入院登記彈窗 (含性別與主治醫師選擇) -->
     <div id="add-patient-modal" class="hidden fixed inset-0 bg-black/40 backdrop-blur-2xs z-50 flex items-center justify-center p-6">
         <div class="muji-card bg-white w-full max-w-lg p-8 space-y-5 shadow-2xl text-base">
-            <h3 id="add-modal-title" class="text-lg font-bold text-[#383533] border-b border-[#E5E0D8] pb-4">辦理新病人入住</h3>
-            <input type="hidden" id="add-patient-type" value="normal">
-            <div><label class="font-bold text-[#5C554E]">選擇床號：</label><select id="add-bed-select" class="w-full p-4 bg-[#F7F6F2] border border-[#E5E0D8] rounded-xl mt-2 outline-none font-bold"></select></div>
+            <h3 class="text-lg font-bold text-[#383533] border-b border-[#E5E0D8] pb-4">辦理病人入住登記：<span id="add-modal-bedlabel" class="text-teal-800 font-bold"></span></h3>
+            <input type="hidden" id="add-target-bedkey">
             <div><label class="font-bold text-[#5C554E]">姓名：</label><input type="text" id="add-name-input" placeholder="例如：張Ｏ明" class="w-full p-4 bg-[#F7F6F2] border border-[#E5E0D8] rounded-xl mt-2 outline-none"></div>
             <div>
                 <label class="font-bold text-[#5C554E]">性別：</label>
@@ -279,7 +284,7 @@
         const SYNC_DB_PATH = 'femh_cloud_db_v3';
         const dbRef = ref(db, SYNC_DB_PATH);
 
-        let rawCloudPatientsData = {};
+        let masterCloudData = {};
         let patientsData = {};
         let nurseBedAssignments = {};
         let marqueeHistory = [];
@@ -410,7 +415,7 @@
             get(dbRef).then((snapshot) => {
                 const cloudData = snapshot.val();
                 if (cloudData && cloudData.patientsData) {
-                    rawCloudPatientsData = cloudData.patientsData;
+                    masterCloudData = cloudData;
                     patientsData = sanitizePatientsData(cloudData.patientsData);
                     nurseBedAssignments = cloudData.nurseBedAssignments || {};
                     marqueeHistory = cloudData.marquee || [];
@@ -440,7 +445,7 @@
             onValue(dbRef, (snapshot) => {
                 const cloudData = snapshot.val();
                 if (cloudData && cloudData.patientsData) {
-                    rawCloudPatientsData = cloudData.patientsData;
+                    masterCloudData = cloudData;
                     patientsData = sanitizePatientsData(cloudData.patientsData);
                     nurseBedAssignments = cloudData.nurseBedAssignments || {};
                     marqueeHistory = cloudData.marquee || [];
@@ -478,16 +483,11 @@
         function saveAndSyncToCloud() {
             syncNurseAssignments();
             
-            let updatedPatientsDataForCloud = JSON.parse(JSON.stringify(rawCloudPatientsData || {}));
-            
+            let newCloudPatients = {};
             Object.keys(patientsData).forEach(bKey => {
                 const p = patientsData[bKey];
-                if (!updatedPatientsDataForCloud[bKey]) {
-                    updatedPatientsDataForCloud[bKey] = {};
-                }
-                
                 if (p.isEmpty) {
-                    updatedPatientsDataForCloud[bKey] = {
+                    newCloudPatients[bKey] = {
                         isEmpty: true,
                         realName: "",
                         name: "",
@@ -496,42 +496,39 @@
                         status: "在病房",
                         location: "在病房",
                         assignedNurse: "-",
-                        doctor: p.doctor,
+                        doctor: p.doctor || getAssignedDoctor(bKey),
                         isolation: "",
                         isDischarging: false,
                         dnr: false,
                         isAbnormal: false
                     };
                 } else {
-                    updatedPatientsDataForCloud[bKey].isEmpty = false;
-                    updatedPatientsDataForCloud[bKey].realName = p.realName;
-                    updatedPatientsDataForCloud[bKey].name = `${bKey} ${p.realName} (${p.gender})`;
-                    updatedPatientsDataForCloud[bKey].gender = p.gender;
-                    updatedPatientsDataForCloud[bKey].isPublicName = p.isPublicName;
-                    updatedPatientsDataForCloud[bKey].isolation = p.isolation;
-                    updatedPatientsDataForCloud[bKey].isDischarging = p.isDischarging;
-                    updatedPatientsDataForCloud[bKey].dnr = p.dnr;
-                    updatedPatientsDataForCloud[bKey].isAbnormal = p.isAbnormal;
-                    updatedPatientsDataForCloud[bKey].diag = p.diag;
-                    updatedPatientsDataForCloud[bKey].diagnosis = p.diag;
-                    updatedPatientsDataForCloud[bKey].doctor = p.doctor;
-                    updatedPatientsDataForCloud[bKey].status = p.location;
-                    updatedPatientsDataForCloud[bKey].location = p.location;
-                    updatedPatientsDataForCloud[bKey].assignedNurse = p.assignedNurse;
+                    newCloudPatients[bKey] = {
+                        isEmpty: false,
+                        realName: p.realName,
+                        name: `${bKey} ${p.realName} (${p.gender})`,
+                        gender: p.gender,
+                        isPublicName: p.isPublicName,
+                        isolation: p.isolation,
+                        isDischarging: p.isDischarging,
+                        dnr: p.dnr,
+                        isAbnormal: p.isAbnormal,
+                        diag: p.diag,
+                        diagnosis: p.diag,
+                        doctor: p.doctor,
+                        status: p.location,
+                        location: p.location,
+                        assignedNurse: p.assignedNurse
+                    };
                 }
             });
 
-            rawCloudPatientsData = updatedPatientsDataForCloud;
+            masterCloudData.patientsData = newCloudPatients;
+            masterCloudData.nurseBedAssignments = nurseBedAssignments;
+            masterCloudData.marquee = marqueeHistory;
+            masterCloudData.updatedAt = new Date().toISOString();
 
-            const payload = {
-                patientsData: updatedPatientsDataForCloud,
-                nurseBedAssignments: nurseBedAssignments,
-                userDatabase: cloudUserDatabase,
-                globalSharedMemo: globalSharedMemo,
-                marquee: marqueeHistory,
-                updatedAt: new Date().toISOString()
-            };
-            set(dbRef, payload).catch(err => console.log('Cloud save err:', err));
+            set(dbRef, masterCloudData).catch(err => console.log('Cloud save err:', err));
             renderBedGrid();
             renderScheduling();
             renderSecretary();
@@ -691,6 +688,13 @@
             document.getElementById('stat-iso').innerText = `${iso} 床`;
             document.getElementById('stat-icu').innerText = `${icuCount} 床`;
             document.getElementById('stat-ew').innerText = `${ewCount} 床`;
+
+            // 更新佔床率儀表板
+            const rate = total > 0 ? Math.round((occ / total) * 100) : 0;
+            const rateTextEl = document.getElementById('occupancy-rate-text');
+            const rateBarEl = document.getElementById('occupancy-rate-bar');
+            if (rateTextEl) rateTextEl.innerText = `${rate}% (${occ}/${total}床)`;
+            if (rateBarEl) rateBarEl.style.width = `${rate}%`;
         }
 
         window.filterBedStatus = function(s) { currentFilterStatus = s; currentFilterGender = null; currentFilterTag = null; renderBedGrid(); }
@@ -782,8 +786,13 @@
             const container = document.getElementById('secretary-bed-list');
             if(!container) return;
             container.innerHTML = '';
+            let total = 0, occ = 0;
+
             Object.keys(patientsData).sort().forEach(bedKey => {
                 const p = patientsData[bedKey];
+                total++;
+                if (!p.isEmpty && isConnected) occ++;
+
                 const card = document.createElement('div');
                 card.className = "bg-[#F7F6F2] border border-[#E5E0D8] p-5 rounded-2xl flex justify-between items-center text-base shadow-xs";
                 
@@ -794,7 +803,7 @@
                             <div class="text-xs text-slate-400">目前無病人資料</div>
                         </div>
                         <div class="space-x-2">
-                            <button onclick="openAddPatientModal('normal')" class="btn-comfort bg-white border border-[#E5E0D8] text-sm py-2 px-4 text-teal-800 font-bold">入院登記</button>
+                            <button onclick="openAddPatientModal('${bedKey}')" class="btn-comfort bg-white border border-[#E5E0D8] text-sm py-2 px-4 text-teal-800 font-bold">入院登記</button>
                         </div>
                     `;
                 } else {
@@ -814,30 +823,32 @@
                 }
                 container.appendChild(card);
             });
+
+            // 更新儀表板佔床率
+            const rate = total > 0 ? Math.round((occ / total) * 100) : 0;
+            const rateTextEl = document.getElementById('occupancy-rate-text');
+            const rateBarEl = document.getElementById('occupancy-rate-bar');
+            if (rateTextEl) rateTextEl.innerText = `${rate}% (${occ}/${total}床)`;
+            if (rateBarEl) rateBarEl.style.width = `${rate}%`;
         }
 
         window.dischargeBed = function(b) {
             if(!isUnlocked) { alert('請先解鎖編輯！'); return; }
             if (confirm(`確定為 ${b} 床辦理出院嗎？此床資料將徹底清除並同步至雲端。`)) {
-                patientsData[b] = { isEmpty: true, realName: "", isPublicName: true, gender: "男", isolation: "", isDischarging: false, dnr: false, isAbnormal: false, diag: "", location: "在病房", assignedNurse: "-" };
-                
-                if (rawCloudPatientsData && rawCloudPatientsData[b]) {
-                    rawCloudPatientsData[b] = {
-                        isEmpty: true,
-                        realName: "",
-                        name: "",
-                        diag: "",
-                        diagnosis: "",
-                        status: "在病房",
-                        location: "在病房",
-                        assignedNurse: "-",
-                        doctor: getAssignedDoctor(b),
-                        isolation: "",
-                        isDischarging: false,
-                        dnr: false,
-                        isAbnormal: false
-                    };
-                }
+                patientsData[b] = { 
+                    isEmpty: true, 
+                    realName: "", 
+                    isPublicName: true, 
+                    gender: "男", 
+                    isolation: "", 
+                    isDischarging: false, 
+                    dnr: false, 
+                    isAbnormal: false, 
+                    diag: "", 
+                    doctor: getAssignedDoctor(b),
+                    location: "在病房", 
+                    assignedNurse: "-" 
+                };
                 saveAndSyncToCloud();
                 alert(`${b} 床已辦理出院並徹底清除同步至雲端！`);
             }
@@ -869,6 +880,7 @@
             if(!newName) { alert('病人姓名不得為空！'); return; }
 
             if(patientsData[b]) {
+                patientsData[b].isEmpty = false;
                 patientsData[b].realName = newName;
                 patientsData[b].diag = newDiag || '一般照護';
                 patientsData[b].doctor = newDoc;
@@ -877,6 +889,7 @@
                 patientsData[b].isolation = document.getElementById('edit-iso-select').value;
                 patientsData[b].isDischarging = (document.getElementById('edit-discharging-select').value === 'true');
                 patientsData[b].dnr = (document.getElementById('edit-dnr-select').value === 'true');
+                
                 saveAndSyncToCloud();
                 closeEditPatientModal();
                 alert(`${b} 床病人資料與診斷已更新並同步至雲端！`);
@@ -898,31 +911,22 @@
             }
         }
 
-        window.openAddPatientModal = function(type) {
+        window.openAddPatientModal = function(bedKey) {
             if(!isUnlocked) { alert('請先解鎖編輯！'); return; }
-            document.getElementById('add-patient-type').value = type;
-            document.getElementById('add-modal-title').innerText = (type === 'transfer') ? '🚨 急診 / ICU 轉入辦理' : '➕ 一般入院辦理';
+            document.getElementById('add-target-bedkey').value = bedKey;
+            document.getElementById('add-modal-bedlabel').innerText = `${bedKey} 床`;
             
-            // 如果是 ICU 轉入，將預設動態狀態帶入 ICU轉入
-            if (type === 'transfer') {
-                document.getElementById('add-loc-select').value = 'ICU轉入';
-            } else {
-                document.getElementById('add-loc-select').value = '在病房';
-            }
-
-            const selectBed = document.getElementById('add-bed-select');
-            selectBed.innerHTML = '';
-            Object.keys(patientsData).sort().forEach(b => {
-                if(patientsData[b].isEmpty || !isConnected) selectBed.innerHTML += `<option value="${b}">${b} (空床)</option>`;
-            });
-
-            populateDoctorSelects();
+            document.getElementById('add-name-input').value = '';
+            document.getElementById('add-diag-input').value = 'Acute Stroke';
+            document.getElementById('add-loc-select').value = '在病房';
+            
+            populateDoctorSelects(getAssignedDoctor(bedKey));
             document.getElementById('add-patient-modal').classList.remove('hidden');
         }
         window.closeAddPatientModal = function() { document.getElementById('add-patient-modal').classList.add('hidden'); }
 
         window.saveNewPatient = function() {
-            const b = document.getElementById('add-bed-select').value;
+            const b = document.getElementById('add-target-bedkey').value;
             const name = document.getElementById('add-name-input').value.trim();
             const gender = document.getElementById('add-gender-select').value;
             const doc = document.getElementById('add-doctor-select').value;
@@ -953,7 +957,7 @@
 
         window.publishBroadcast = function() {
             const rawTxt = document.getElementById('broadcast-text-input').value.trim();
-            const txt = rawTxt.replace(/[\r\n]+/g, ' '); // 強制移除所有換行，絕對變成單行
+            const txt = rawTxt.replace(/[\r\n]+/g, ' '); 
             if(!txt) { alert('請輸入公告內容！'); return; }
             const newAnn = { id: Date.now(), text: txt, time: new Date().toLocaleTimeString() };
             marqueeHistory.unshift(newAnn);
@@ -970,7 +974,7 @@
             if(!list) return;
             list.innerHTML = '';
             if(marqueeHistory.length === 0) {
-                list.innerHTML = `<div class="text-xs text-slate-400">./目前無歷史公告紀錄</div>`;
+                list.innerHTML = `<div class="text-xs text-slate-400">目前無歷史公告紀錄</div>`;
                 return;
             }
             marqueeHistory.forEach(item => {
