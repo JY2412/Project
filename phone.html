@@ -1285,18 +1285,17 @@
         window.loadNurseBedSelection = function() {
             const selectEl = document.getElementById('schedule-nurse-select');
             
-            // 下拉選單初始化填充（同時涵蓋護理師 nurse 與護理長/Leader admin，如 Jia）
-            if (selectEl.options.length === 0) {
-                Object.keys(userDatabase).forEach(empId => {
-                    let u = userDatabase[empId];
-                    if (u.role === 'nurse' || u.role === 'admin') {
-                        let opt = document.createElement('option');
-                        opt.value = u.name;
-                        opt.innerText = `${u.name} (員編:${empId})`;
-                        selectEl.appendChild(opt);
-                    }
-                });
-            }
+            // 動態從最新 userDatabase 載入所有護理人員與 Leader
+            selectEl.innerHTML = '';
+            Object.keys(userDatabase).forEach(empId => {
+                let u = userDatabase[empId];
+                if (u.role === 'nurse' || u.role === 'admin') {
+                    let opt = document.createElement('option');
+                    opt.value = u.name;
+                    opt.innerText = `${u.name} (員編:${empId})`;
+                    selectEl.appendChild(opt);
+                }
+            });
 
             const nurseName = selectEl.value;
             if (!nurseName) return;
