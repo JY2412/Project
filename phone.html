@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>亞東紀念醫院 手機版醫療照護系統 (雲端即時同步版)</title>
+    <title>專題_亞東紀念醫院 手機醫療照護系統 (雲端)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&display=swap');
@@ -1285,7 +1285,6 @@
         window.loadNurseBedSelection = function() {
             const selectEl = document.getElementById('schedule-nurse-select');
             
-            // 保持原本選取的護理師（如果有的話）
             const previousSelectedNurse = selectEl.value;
 
             selectEl.innerHTML = '';
@@ -1349,7 +1348,6 @@
             const chks = document.querySelectorAll('.schedule-bed-chk');
             let selectedCount = 0;
             chks.forEach((chk) => {
-                // 排除空床 (檢查床位資料是否為 isEmpty)
                 const bedKey = chk.value;
                 const isBedEmpty = patientsData[bedKey] && patientsData[bedKey].isEmpty;
 
@@ -1365,8 +1363,8 @@
                 nurseBedAssignments = {};
                 loadNurseBedSelection();
                 syncNurseAssignments();
-                saveToCloud();
-                alert('已清除所有護理人員的排班指派！');
+                saveToCloud(); // 立即儲存並同步至雲端與 LocalStorage
+                alert('已清除所有護理人員的排班指派並完成儲存！');
             }
         };
 
