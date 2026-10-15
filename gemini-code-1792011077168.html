@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>亞東紀念醫院 - 11G 護理站電子白板</title>
+    <title>亞東紀念醫院 - 11G 護理站電子白板 (無印風雙向同步版)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
@@ -26,8 +26,8 @@
     <header class="bg-white border-b border-[#E5E0D8] px-8 py-4.5 flex items-center justify-between shrink-0 shadow-xs z-10">
         <div class="flex items-center space-x-4">
             <span id="sync-status-dot" class="w-4 h-4 rounded-full bg-emerald-500 animate-pulse" title="已與手機護理端即時連線"></span>
-            <h1 class="text-xl font-bold tracking-wide text-[#383533]">亞東紀念醫院 - 11G 護理站電子白板 (雙向同步版)</h1>
-            <span id="top-clock-date" class="text-sm text-[#8C827A] font-bold ml-4 bg-[#F7F6F2] px-4 py-2 rounded-xl border border-[#E5E0D8]">2026年10月15日 21:08:00</span>
+            <h1 class="text-xl font-bold tracking-wide text-[#383533]">亞東紀念醫院 - 11G 護理站電子白板 (無印風雙向同步版)</h1>
+            <span id="top-clock-date" class="text-sm text-[#8C827A] font-bold ml-4 bg-[#F7F6F2] px-4 py-2 rounded-xl border border-[#E5E0D8]">2026年10月15日 21:21:00</span>
         </div>
 
         <div class="flex items-center space-x-4">
@@ -284,12 +284,25 @@
         </div>
     </div>
 
-    <script>
-        // ==========================================
-        // 跨裝置 / 手機護理端 雙向連線同步機制 (LocalStorage Sync Bridge)
-        // ==========================================
-        const SYNC_STORAGE_KEY = "femh_11g_cloud_sync_data";
-        
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getDatabase, ref, set, onValue, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBe__9-uFJkSrN2m5_qldgS2UgtQzcb9EQ",
+            authDomain: "nursingapp-2c5eb.firebaseapp.com",
+            databaseURL: "https://nursingapp-2c5eb-default-rtdb.asia-southeast1.firebasedatabase.app/",
+            projectId: "nursingapp-2c5eb",
+            storageBucket: "nursingapp-2c5eb.firebasestorage.app",
+            messagingSenderId: "731250223633",
+            appId: "1:731250223633:web:c9a28e673e719fb3811fb0"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const SYNC_DB_PATH = 'femh_cloud_db_v3';
+        const dbRef = ref(db, SYNC_DB_PATH);
+
         let patientsData = {};
         let nurseBedAssignments = {};
         let currentFilterStatus = 'all';
@@ -298,43 +311,72 @@
         let isUnlocked = false;
         let marqueeHistory = [];
 
-        function initCloudSyncSystem() {
-            const remoteData = localStorage.getItem(SYNC_STORAGE_KEY);
-            if (remoteData) {
-                try {
-                    const parsed = JSON.parse(remoteData);
+        // 即時標準時間計時器 (與系統基準時間2026年同步)
+        function updateWhiteboardClock() {
+            const now = new Date();
+            const dateStr = `${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日`;
+            const timeStr = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
+            const clockEl = document.getElementById('top-clock-date');
+            if (clockEl) clockEl.innerText = `${dateStr} ${timeStr}`;
+        }
+        setInterval(updateWhiteboardClock, 1000);
+        updateWhiteboardClock();
+
+        // 初始化雲端資料庫連線與即時監聽
+        function initCloudSync() {
+            get(dbRef).then((snapshot) => {
+                const cloudData = snapshot.val();
+                if (cloudData) {
+                    patientsData = cloudData.patientsData || generateDefaultPatients();
+                    nurseBedAssignments = cloudData.nurseBedAssignments || getDefaultAssignments();
+                    marqueeHistory = cloudData.marquee || [{ id: 1, text: "11G 護理站電子白板運行中，已與手機護理系統完成雙向資料對接。", active: true }];
+                    document.getElementById('sync-status-dot').className = "w-4 h-4 rounded-full bg-emerald-500 animate-pulse";
+                } else {
+                    loadDefaultData();
+                }
+                syncNurseAssignments();
+                renderBedGrid();
+                renderSecretary();
+                renderMarqueeHistory();
+            }).catch(() => {
+                // 若雲端一時無法連線，退回 localStorage 確保本地與多頁面同步
+                const localData = localStorage.getItem('femh_11g_cloud_sync_data');
+                if (localData) {
+                    const parsed = JSON.parse(localData);
                     patientsData = parsed.patients;
                     nurseBedAssignments = parsed.schedule;
                     marqueeHistory = parsed.marquee || [];
-                } catch (e) {
+                } else {
                     loadDefaultData();
                 }
-            } else {
-                loadDefaultData();
-            }
-            syncNurseAssignments();
-            renderBedGrid();
-            renderSecretary();
-            renderMarqueeHistory();
+                syncNurseAssignments();
+                renderBedGrid();
+                renderSecretary();
+                renderMarqueeHistory();
+            });
+
+            // 實時監聽手機端或其它分頁的任何異動
+            onValue(dbRef, (snapshot) => {
+                const cloudData = snapshot.val();
+                if (cloudData) {
+                    patientsData = cloudData.patientsData || patientsData;
+                    nurseBedAssignments = cloudData.nurseBedAssignments || nurseBedAssignments;
+                    if (cloudData.marquee) marqueeHistory = cloudData.marquee;
+                    syncNurseAssignments();
+                    renderBedGrid();
+                    renderSecretary();
+                    renderMarqueeHistory();
+
+                    const dot = document.getElementById('sync-status-dot');
+                    dot.className = "w-4 h-4 rounded-full bg-blue-500 animate-ping";
+                    setTimeout(() => { dot.className = "w-4 h-4 rounded-full bg-emerald-500"; }, 1000);
+                }
+            });
         }
 
-        function loadDefaultData() {
-            patientsData = generateDefaultPatients();
-            nurseBedAssignments = {
-                "許Ｏ媃": ["01-1", "01-3", "02-1", "02-2", "03-2"], 
-                "劉Ｏ綺": ["04-1", "04-2", "05-1"], 
-                "游Ｏ妤": ["06-1", "06-2", "06-3"], 
-                "張Ｏ綺": ["07-1", "08-1", "08-2"], 
-                "張Ｏ蓉": ["09-1", "09-2", "09-3"], 
-                "葉映誠": []
-            };
-            marqueeHistory = [{ id: 1, text: "11G 護理站電子白板運行中，已與手機護理系統完成雙向資料對接。", active: true }];
-            saveAndSyncToCloud();
-        }
-
-        // 雙向廣播：當手機版或其他頁面修改時，白板即時自動重新渲染
+        // 同時支援 LocalStorage 跨頁面同步事件
         window.addEventListener('storage', (event) => {
-            if (event.key === SYNC_STORAGE_KEY && event.newValue) {
+            if (event.key === 'femh_11g_cloud_sync_data' && event.newValue) {
                 try {
                     const parsed = JSON.parse(event.newValue);
                     patientsData = parsed.patients;
@@ -344,35 +386,51 @@
                     renderBedGrid();
                     renderSecretary();
                     renderMarqueeHistory();
-                    
-                    // 顯示即時同步小動畫
-                    const dot = document.getElementById('sync-status-dot');
-                    dot.className = "w-4 h-4 rounded-full bg-blue-500 animate-ping";
-                    setTimeout(() => { dot.className = "w-4 h-4 rounded-full bg-emerald-500"; }, 1500);
-                } catch (e) {
-                    console.error("同步解析失敗", e);
-                }
+                } catch (e) { console.error(e); }
             }
         });
 
+        function loadDefaultData() {
+            patientsData = generateDefaultPatients();
+            nurseBedAssignments = getDefaultAssignments();
+            marqueeHistory = [{ id: 1, text: "11G 護理站電子白板運行中，已與手機護理系統完成雙向資料對接。", active: true }];
+            saveAndSyncToCloud();
+        }
+
+        function getDefaultAssignments() {
+            return {
+                "許Ｏ媃": ["01-1", "01-3", "02-1", "02-2", "03-2"], 
+                "劉Ｏ綺": ["04-1", "04-2", "05-1"], 
+                "游Ｏ妤": ["06-1", "06-2", "06-3"], 
+                "張Ｏ綺": ["07-1", "08-1", "08-2"], 
+                "張Ｏ蓉": ["09-1", "09-2", "09-3"], 
+                "葉映誠": []
+            };
+        }
+
         function saveAndSyncToCloud() {
             const payload = {
-                patients: patientsData,
-                schedule: nurseBedAssignments,
+                patientsData: patientsData,
+                nurseBedAssignments: nurseBedAssignments,
                 marquee: marqueeHistory,
                 updatedAt: new Date().toISOString()
             };
-            localStorage.setItem(SYNC_STORAGE_KEY, JSON.stringify(payload));
+            set(dbRef, payload).catch(err => console.log('Cloud sync err:', err));
+            localStorage.setItem('femh_11g_cloud_sync_data', JSON.stringify({
+                patients: patientsData,
+                schedule: nurseBedAssignments,
+                marquee: marqueeHistory
+            }));
             renderBedGrid();
         }
 
-        function forceSyncWithMobileApp() {
-            initCloudSyncSystem();
+        window.forceSyncWithMobileApp = function() {
+            initCloudSync();
             const dot = document.getElementById('sync-status-dot');
             dot.className = "w-4 h-4 rounded-full bg-teal-500 animate-bounce";
             setTimeout(() => { dot.className = "w-4 h-4 rounded-full bg-emerald-500"; }, 2000);
-            alert("📱 已成功與手機護理端強制同步最新資料！");
-        }
+            alert("📱 已成功與手機護理系統強制同步最新資料！");
+        };
 
         function generateDefaultPatients() {
             let data = {};
@@ -415,7 +473,7 @@
             });
         }
 
-        function switchTab(tab) {
+        window.switchTab = function(tab) {
             ['matrix', 'scheduling', 'alarms', 'secretary', 'announcements'].forEach(t => {
                 document.getElementById(`tab-content-${t}`).classList.add('hidden');
                 const btn = document.getElementById(`btn-tab-${t}`);
@@ -429,9 +487,9 @@
             else if (tab === 'scheduling') renderScheduling();
             else if (tab === 'secretary') renderSecretary();
             else if (tab === 'announcements') renderMarqueeHistory();
-        }
+        };
 
-        // 渲染病床總覽網格 (解決隔離與 DNR 擠成一坨：改用 flex flex-wrap gap-1.5 獨立排版)
+        // 渲染病床總覽 (隔離與 DNR 標籤獨立 Flex 排版，絕對不擠成一團)
         function renderBedGrid() {
             const grid = document.getElementById('bed-grid');
             if(!grid) return;
@@ -467,7 +525,7 @@
                 if (p.isEmpty) {
                     card.innerHTML = `<div class="font-bold text-slate-400 text-base w-full"><div class="flex justify-between"><span>${bedKey}</span></div><div class="text-center text-slate-400 text-base py-16">${displayName}</div></div>`;
                 } else {
-                    // 標籤獨立排版，使用 flex-wrap 與 gap 避免擠成一坨
+                    // 標籤獨立排版，使用 flex-wrap 與 gap 避免擠成一團
                     let tagsHtml = '<div class="flex flex-wrap gap-1.5 items-center mb-2">';
                     if (p.isolation === '接') tagsHtml += `<span class="bg-rose-500 text-white px-2.5 py-0.5 text-xs rounded-md font-bold">接</span>`;
                     else if (p.isolation === '氣') tagsHtml += `<span class="bg-blue-600 text-white px-2.5 py-0.5 text-xs rounded-md font-bold">氣</span>`;
@@ -479,7 +537,7 @@
 
                     let leftColorBarClass = p.gender === '女' ? 'bg-rose-500' : 'bg-sky-500';
                     let bedStatusText = p.isLeave ? '<span class="text-amber-700 font-bold">請假中</span>' : '<span class="text-teal-700 font-bold">在病房</span>';
-                    let locText = p.isLeave ? '讀取中...' : (p.location || '在病房');
+                    let locText = p.isLeave ? '請假外出' : (p.location || '在病房');
 
                     card.innerHTML = `
                         <div class="absolute left-0 top-0 bottom-0 w-3.5 ${leftColorBarClass}"></div>
@@ -512,10 +570,10 @@
             document.getElementById('stat-trans').innerText = `${trans} 人`;
         }
 
-        function filterBedStatus(s) { currentFilterStatus = s; currentFilterGender = null; currentFilterTag = null; renderBedGrid(); }
-        function filterGender(g) { currentFilterGender = g; currentFilterTag = null; renderBedGrid(); }
-        function filterTag(t) { currentFilterTag = t; currentFilterGender = null; renderBedGrid(); }
-        function resetBedFilter() { currentFilterStatus = 'all'; currentFilterGender = null; currentFilterTag = null; renderBedGrid(); }
+        window.filterBedStatus = function(s) { currentFilterStatus = s; currentFilterGender = null; currentFilterTag = null; renderBedGrid(); }
+        window.filterGender = function(g) { currentFilterGender = g; currentFilterTag = null; renderBedGrid(); }
+        window.filterTag = function(t) { currentFilterTag = t; currentFilterGender = null; renderBedGrid(); }
+        window.resetBedFilter = function() { currentFilterStatus = 'all'; currentFilterGender = null; currentFilterTag = null; renderBedGrid(); }
 
         function renderScheduling() {
             const container = document.getElementById('scheduling-cards-container');
@@ -544,9 +602,9 @@
             document.getElementById('sched-beds-input').value = (nurseBedAssignments[nurse] || []).join(', ');
             document.getElementById('edit-schedule-modal').classList.remove('hidden');
         }
-        function closeScheduleModal() { document.getElementById('edit-schedule-modal').classList.add('hidden'); }
+        window.closeScheduleModal = function() { document.getElementById('edit-schedule-modal').classList.add('hidden'); }
 
-        function saveScheduleEdit() {
+        window.saveScheduleEdit = function() {
             const nurse = document.getElementById('sched-modal-nursename').value;
             const inputVal = document.getElementById('sched-beds-input').value.trim();
             const newBeds = inputVal ? inputVal.split(',').map(s => s.trim()).filter(s => s) : [];
@@ -581,7 +639,7 @@
             });
         }
 
-        function dischargePatient(b) {
+        window.dischargePatient = function(b) {
             if(!isUnlocked) { alert('請先解鎖編輯！'); return; }
             patientsData[b] = { isEmpty: true, name: `${b} 〔空床待清〕`, realName: "", isPrivate: false, isDischarge: false, isTransfer: false, isLeave: false, isolation: "", dnr: false, isAbnormal: false, diag: "", doctor: "", location: "在病房", vitals: [] };
             saveAndSyncToCloud();
@@ -589,7 +647,7 @@
             alert(`${b} 床已辦理出院並同步至全系統`);
         }
 
-        function openAddPatientModal() {
+        window.openAddPatientModal = function() {
             if(!isUnlocked) { alert('請先解鎖編輯！'); return; }
             const select = document.getElementById('add-bed-select');
             select.innerHTML = '';
@@ -598,9 +656,9 @@
             });
             document.getElementById('add-patient-modal').classList.remove('hidden');
         }
-        function closeAddPatientModal() { document.getElementById('add-patient-modal').classList.add('hidden'); }
+        window.closeAddPatientModal = function() { document.getElementById('add-patient-modal').classList.add('hidden'); }
 
-        function saveNewPatient() {
+        window.saveNewPatient = function() {
             const b = document.getElementById('add-bed-select').value;
             const name = document.getElementById('add-name-input').value.trim();
             if(!name) { alert('請輸入姓名！'); return; }
@@ -611,7 +669,7 @@
             alert(`已成功辦理 ${b} 床入住並同步雲端！`);
         }
 
-        function openEditPatientModal(bedKey) {
+        window.openEditPatientModal = function(bedKey) {
             if(!isUnlocked) { alert('請先解鎖編輯！'); return; }
             const p = patientsData[bedKey];
             document.getElementById('edit-modal-bed').innerText = bedKey;
@@ -624,9 +682,9 @@
             document.getElementById('edit-dnr-select').value = p.dnr ? 'true' : 'false';
             document.getElementById('edit-patient-modal').classList.remove('hidden');
         }
-        function closeEditPatientModal() { document.getElementById('edit-patient-modal').classList.add('hidden'); }
+        window.closeEditPatientModal = function() { document.getElementById('edit-patient-modal').classList.add('hidden'); }
 
-        function saveEditedPatient() {
+        window.saveEditedPatient = function() {
             const b = document.getElementById('edit-modal-bedkey').value;
             if(patientsData[b]) {
                 patientsData[b].diag = document.getElementById('edit-diag-input').value.trim();
@@ -642,7 +700,7 @@
             }
         }
 
-        function publishBroadcast() {
+        window.publishBroadcast = function() {
             const txt = document.getElementById('broadcast-text-input').value.trim();
             if(!txt) { alert('請輸入公告內容！'); return; }
             marqueeHistory.unshift({ id: Date.now(), text: txt, active: true });
@@ -670,16 +728,16 @@
             });
         }
 
-        function deleteMarquee(id) {
+        window.deleteMarquee = function(id) {
             marqueeHistory = marqueeHistory.filter(i => i.id !== id);
             saveAndSyncToCloud();
             renderMarqueeHistory();
         }
 
-        function openUnlockModal() { document.getElementById('unlock-modal').classList.remove('hidden'); }
-        function closeUnlockModal() { document.getElementById('unlock-modal').classList.add('hidden'); }
+        window.openUnlockModal = function() { document.getElementById('unlock-modal').classList.remove('hidden'); }
+        window.closeUnlockModal = function() { document.getElementById('unlock-modal').classList.add('hidden'); }
 
-        function verifyUnlockPassword() {
+        window.verifyUnlockPassword = function() {
             const pw = document.getElementById('unlock-pw-input').value.trim();
             if (pw === 'NS' || pw === '1224' || pw === 'nst') {
                 isUnlocked = true;
@@ -691,8 +749,8 @@
             }
         }
 
-        // 啟動系統並載入初始雲端同步資料
-        initCloudSyncSystem();
+        // 啟動系統
+        initCloudSync();
     </script>
 </body>
 </html>
