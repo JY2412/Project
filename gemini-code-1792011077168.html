@@ -13,7 +13,7 @@
         .btn-comfort { padding: 0.8rem 1.6rem; font-size: 1rem; border-radius: 14px; transition: all 0.15s ease; cursor: pointer; user-select: none; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; }
         .btn-comfort:active { transform: scale(0.98); }
         .marquee-container { overflow: hidden; position: relative; width: 100%; display: flex; align-items: center; }
-        .marquee-content { display: inline-block; white-space: nowrap; animation: scroll-marquee 30s linear infinite; }
+        .marquee-content { display: inline-block; white-space: nowrap !important; animation: scroll-marquee 30s linear infinite; }
         @keyframes scroll-marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
         ::-webkit-scrollbar { width: 10px; height: 10px; }
         ::-webkit-scrollbar-track { background: #F7F6F2; }
@@ -43,11 +43,11 @@
         </div>
     </header>
 
-    <!-- 頂部跑馬燈 -->
+    <!-- 頂部跑馬燈 (強制單行) -->
     <div class="bg-rose-50/90 border-b border-rose-200/80 px-8 py-3 flex items-center shrink-0">
         <span class="text-sm font-bold text-rose-700 bg-rose-100 px-4 py-1.5 rounded-xl mr-6 shrink-0 flex items-center shadow-xs">📢 急救分機：999</span>
         <div class="flex-1 marquee-container px-2">
-            <div id="dynamic-marquee" class="marquee-content text-sm font-bold text-rose-800">
+            <div id="dynamic-marquee" class="marquee-content text-sm font-bold text-rose-800 whitespace-nowrap overflow-hidden">
                 11G 護理站電子白板系統初始化中，等待雲端連線與資料同步...
             </div>
         </div>
@@ -209,7 +209,7 @@
             </div>
             <div><label class="font-bold text-[#5C554E]">白板是否公開名字：</label><select id="add-public-select" class="w-full p-4 bg-[#F7F6F2] border border-[#E5E0D8] rounded-xl mt-2 outline-none font-bold text-teal-800"><option value="true">公開真實姓名</option><option value="false">不公開 (白板顯示 ＯＯＯ)</option></select></div>
             <div><label class="font-bold text-[#5C554E]">診斷：</label><input type="text" id="add-diag-input" class="w-full p-4 bg-[#F7F6F2] border border-[#E5E0D8] rounded-xl mt-2 outline-none" value="Acute Stroke"></div>
-            <div><label class="font-bold text-[#5C554E]">病人動態狀態：</label><select id="add-loc-select" class="w-full p-4 bg-[#F7F6F2] border border-[#E5E0D8] rounded-xl mt-2 outline-none font-bold"><option value="在病房">在病房</option><option value="檢查中">檢查中</option><option value="請假">請假</option><option value="急診">急診轉入</option><option value="ICU">ICU轉入</option></select></div>
+            <div><label class="font-bold text-[#5C554E]">病人動態狀態：</label><select id="add-loc-select" class="w-full p-4 bg-[#F7F6F2] border border-[#E5E0D8] rounded-xl mt-2 outline-none font-bold"><option value="在病房">在病房</option><option value="檢查中">檢查中</option><option value="請假">請假</option><option value="急診轉入">急診轉入</option><option value="ICU轉入">ICU轉入</option></select></div>
             <div class="flex space-x-4 pt-3">
                 <button onclick="closeAddPatientModal()" class="btn-comfort flex-1 bg-[#F0EDE6] font-bold py-4">取消</button>
                 <button onclick="saveNewPatient()" class="btn-comfort flex-1 bg-teal-700 text-white font-bold py-4">確認入院</button>
@@ -223,7 +223,8 @@
             <h3 class="text-lg font-bold text-[#383533] border-b border-[#E5E0D8] pb-4">編輯病人資料、防護與隱私：<span id="edit-modal-bed" class="text-teal-800 font-bold"></span></h3>
             <input type="hidden" id="edit-modal-bedkey">
             <div><label class="font-bold text-[#5C554E]">病人真實姓名：</label><input type="text" id="edit-name-input" class="w-full p-4 bg-[#F7F6F2] border border-[#E5E0D8] rounded-xl mt-2 outline-none font-bold"></div>
-            <div><label class="font-bold text-[#5C554E]">病人動態狀態：</label><select id="edit-loc-select" class="w-full p-4 bg-[#F7F6F2] border border-[#E5E0D8] rounded-xl mt-2 outline-none font-bold"><option value="在病房">在病房</option><option value="檢查中">檢查中</option><option value="請假">請假</option><option value="急診">急診轉入</option><option value="ICU">ICU轉入</option></select></div>
+            <div><label class="font-bold text-[#5C554E]">病人診斷：</label><input type="text" id="edit-diag-input" class="w-full p-4 bg-[#F7F6F2] border border-[#E5E0D8] rounded-xl mt-2 outline-none font-bold"></div>
+            <div><label class="font-bold text-[#5C554E]">病人動態狀態：</label><select id="edit-loc-select" class="w-full p-4 bg-[#F7F6F2] border border-[#E5E0D8] rounded-xl mt-2 outline-none font-bold"><option value="在病房">在病房</option><option value="檢查中">檢查中</option><option value="請假">請假</option><option value="急診轉入">急診轉入</option><option value="ICU轉入">ICU轉入</option></select></div>
             <div><label class="font-bold text-[#5C554E]">白板是否公開名字：</label><select id="edit-public-select" class="w-full p-4 bg-[#F7F6F2] border border-[#E5E0D8] rounded-xl mt-2 outline-none font-bold text-teal-800"><option value="true">公開真實姓名</option><option value="false">不公開 (白板顯示 ＯＯＯ)</option></select></div>
             <div><label class="font-bold text-[#5C554E]">隔離管制設定：</label><select id="edit-iso-select" class="w-full p-4 bg-[#F7F6F2] border border-[#E5E0D8] rounded-xl mt-2 outline-none font-bold"><option value="">無隔離</option><option value="接">接觸隔離 (接)</option><option value="氣">空氣隔離 (氣)</option></select></div>
             <div><label class="font-bold text-[#5C554E]">今辦明出設定：</label><select id="edit-discharging-select" class="w-full p-4 bg-[#F7F6F2] border border-[#E5E0D8] rounded-xl mt-2 outline-none font-bold text-blue-800"><option value="false">否 (一般住院)</option><option value="true">是 (今辦明出)</option></select></div>
@@ -319,12 +320,8 @@
 
         function parseStatusString(pObj) {
             if (!pObj) return "在病房";
-            let statusVal = pObj.status || pObj.patientStatus || pObj.userStatus;
+            let statusVal = pObj.status || pObj.patientStatus || pObj.userStatus || pObj.location || pObj.transferTag;
             if (typeof statusVal === 'string' && statusVal.length < 20) return statusVal;
-            if (typeof pObj.location === 'string' && !pObj.location.includes('{')) {
-                return pObj.location;
-            }
-            if (pObj.transferTag) return pObj.transferTag;
             return "在病房";
         }
 
@@ -349,6 +346,9 @@
                 let rawName = p.realName || p.name || p.patientName || p.realname || "";
                 let cleanedName = cleanPatientName(rawName);
 
+                let isBedEmpty = (p.isEmpty !== undefined) ? !!p.isEmpty : (cleanedName === "");
+                if (cleanedName === "〔空床待清〕" || cleanedName === "空床待清" || !cleanedName) isBedEmpty = true;
+
                 let detectedGender = "男";
                 if (rawName.includes("(女)") || p.gender === "女" || p.gender === "女性") {
                     detectedGender = "女";
@@ -356,25 +356,20 @@
                     detectedGender = "男";
                 }
 
-                let isBedEmpty = (p.isEmpty !== undefined) ? !!p.isEmpty : (cleanedName === "");
-
                 let cleanDoc = (p.doctor || getAssignedDoctor(bedKey)).replace(/醫師/g, '').trim();
-
+                let diagVal = p.diag || p.diagnosis || "一般照護";
                 let locStr = parseStatusString(p);
-                if (p.transferTag && !locStr.includes(p.transferTag)) {
-                    locStr = p.transferTag;
-                }
 
                 sanitized[bedKey] = {
                     isEmpty: isBedEmpty,
-                    realName: cleanedName,
+                    realName: isBedEmpty ? "" : cleanedName,
                     isPublicName: p.isPublicName !== false,
                     gender: detectedGender,
                     isolation: p.isolation || "",
                     isDischarging: !!p.isDischarging,
                     dnr: !!p.dnr,
                     isAbnormal: !!p.isAbnormal,
-                    diag: p.diag || p.diagnosis || "一般照護",
+                    diag: diagVal,
                     doctor: cleanDoc,
                     location: locStr,
                     assignedNurse: p.assignedNurse || "-"
@@ -472,13 +467,20 @@
                     updatedPatientsDataForCloud[bKey] = {
                         isEmpty: true,
                         realName: "",
-                        name: `${bKey} 〔空床待清〕`,
+                        name: "",
                         diag: "",
+                        diagnosis: "",
+                        status: "在病房",
+                        location: "在病房",
                         assignedNurse: "-",
-                        doctor: p.doctor
+                        doctor: p.doctor,
+                        isolation: "",
+                        isDischarging: false,
+                        dnr: false,
+                        isAbnormal: false
                     };
                 } else {
-                    updatedPatientsDataForCloud[bKey].isEmpty = p.isEmpty;
+                    updatedPatientsDataForCloud[bKey].isEmpty = false;
                     updatedPatientsDataForCloud[bKey].realName = p.realName;
                     updatedPatientsDataForCloud[bKey].name = `${bKey} ${p.realName} (${p.gender})`;
                     updatedPatientsDataForCloud[bKey].gender = p.gender;
@@ -488,8 +490,10 @@
                     updatedPatientsDataForCloud[bKey].dnr = p.dnr;
                     updatedPatientsDataForCloud[bKey].isAbnormal = p.isAbnormal;
                     updatedPatientsDataForCloud[bKey].diag = p.diag;
+                    updatedPatientsDataForCloud[bKey].diagnosis = p.diag;
                     updatedPatientsDataForCloud[bKey].doctor = p.doctor;
                     updatedPatientsDataForCloud[bKey].status = p.location;
+                    updatedPatientsDataForCloud[bKey].location = p.location;
                     updatedPatientsDataForCloud[bKey].assignedNurse = p.assignedNurse;
                 }
             });
@@ -640,7 +644,6 @@
                             <div>
                                 <div class="flex justify-between items-center mb-1">
                                     <span class="font-bold text-sm text-[#383533]">${tagsHtml}</span>
-                                    <!-- 極度放大且精緻美觀的床號 -->
                                     <span class="text-3xl font-black text-stone-900 bg-stone-100 px-4.5 py-1 rounded-2xl border border-stone-300 shadow-sm">${bedKey}</span>
                                 </div>
                                 <div class="font-bold text-lg text-[#383533] truncate mt-1">${displayName}</div>
@@ -691,7 +694,6 @@
                 
                 card.innerHTML = `
                     <div>
-                        <!-- 移除了護理師前面的 emoji -->
                         <div class="font-bold text-lg text-[#383533]">護理師：${nurse}</div>
                         <div class="text-sm text-[#8C827A] mt-1">點擊此卡片可修改該護理師負責的床位，病床總覽與雲端將即時雙向連動</div>
                     </div>
@@ -778,7 +780,7 @@
                     card.innerHTML = `
                         <div class="space-y-1">
                             <div class="font-bold text-slate-800">${bedKey} - ${p.realName} (${p.gender})</div>
-                            <div class="text-xs text-slate-500">真實姓名: <span class="font-bold text-teal-800">${p.realName}</span> | 狀態: ${namePublicStatus}${dischargingTag} | 護理師: ${p.assignedNurse}</div>
+                            <div class="text-xs text-slate-500">真實姓名: <span class="font-bold text-teal-800">${p.realName}</span> | 診斷: ${p.diag || '一般照護'} | 狀態: ${namePublicStatus}${dischargingTag} | 護理師: ${p.assignedNurse}</div>
                         </div>
                         <div class="space-x-2">
                             <button onclick="openEditPatientModal('${bedKey}')" class="btn-comfort bg-white border border-[#E5E0D8] text-xs py-2 px-3">詳細設定</button>
@@ -792,10 +794,10 @@
 
         window.dischargeBed = function(b) {
             if(!isUnlocked) { alert('請先解鎖編輯！'); return; }
-            if (confirm(`確定為 ${b} 床辦理出院嗎？此床資料將徹底刪除並重置為空床待清。`)) {
-                patientsData[b] = { isEmpty: true, realName: "", isPublicName: true, gender: "男", isolation: "", isDischarging: false, dnr: false, isAbnormal: false, location: "在病房", assignedNurse: "-" };
+            if (confirm(`確定為 ${b} 床辦理出院嗎？此床資料將徹底刪除並同步至雲端。`)) {
+                patientsData[b] = { isEmpty: true, realName: "", isPublicName: true, gender: "男", isolation: "", isDischarging: false, dnr: false, isAbnormal: false, diag: "", location: "在病房", assignedNurse: "-" };
                 saveAndSyncToCloud();
-                alert(`${b} 床已辦理出院並徹底清除重置為空床待清！`);
+                alert(`${b} 床已辦理出院並徹底清除同步至雲端！`);
             }
         }
 
@@ -805,6 +807,7 @@
             document.getElementById('edit-modal-bed').innerText = bedKey;
             document.getElementById('edit-modal-bedkey').value = bedKey;
             document.getElementById('edit-name-input').value = p.realName || '';
+            document.getElementById('edit-diag-input').value = p.diag || '';
             document.getElementById('edit-loc-select').value = p.location || '在病房';
             document.getElementById('edit-public-select').value = (p.isPublicName !== false) ? 'true' : 'false';
             document.getElementById('edit-iso-select').value = p.isolation || '';
@@ -817,10 +820,12 @@
         window.saveEditedPatient = function() {
             const b = document.getElementById('edit-modal-bedkey').value;
             const newName = document.getElementById('edit-name-input').value.trim();
+            const newDiag = document.getElementById('edit-diag-input').value.trim();
             if(!newName) { alert('病人姓名不得為空！'); return; }
 
             if(patientsData[b]) {
                 patientsData[b].realName = newName;
+                patientsData[b].diag = newDiag || '一般照護';
                 patientsData[b].location = document.getElementById('edit-loc-select').value;
                 patientsData[b].isPublicName = (document.getElementById('edit-public-select').value === 'true');
                 patientsData[b].isolation = document.getElementById('edit-iso-select').value;
@@ -828,7 +833,7 @@
                 patientsData[b].dnr = (document.getElementById('edit-dnr-select').value === 'true');
                 saveAndSyncToCloud();
                 closeEditPatientModal();
-                alert(`${b} 床病人資料已更新！`);
+                alert(`${b} 床病人資料與診斷已更新並同步至雲端！`);
             }
         }
 
@@ -881,18 +886,19 @@
                 isDischarging: false,
                 dnr: false, 
                 isAbnormal: false, 
-                diag: diag, 
+                diag: diag || '一般照護', 
                 doctor: getAssignedDoctor(b).replace(/醫師/g, ''), 
                 location: loc, 
                 assignedNurse: "-" 
             };
             saveAndSyncToCloud();
             closeAddPatientModal();
-            alert(`已成功辦理 ${b} 床入住！`);
+            alert(`已成功辦理 ${b} 床入住並同步至雲端！`);
         }
 
         window.publishBroadcast = function() {
-            const txt = document.getElementById('broadcast-text-input').value.trim();
+            const rawTxt = document.getElementById('broadcast-text-input').value.trim();
+            const txt = rawTxt.replace(/[\r\n]+/g, ' '); // 強制移除換行，變為單行
             if(!txt) { alert('請輸入公告內容！'); return; }
             const newAnn = { id: Date.now(), text: txt, time: new Date().toLocaleTimeString() };
             marqueeHistory.unshift(newAnn);
@@ -901,7 +907,7 @@
             document.getElementById('dynamic-marquee').innerText = txt;
             document.getElementById('broadcast-text-input').value = '';
             saveAndSyncToCloud();
-            alert('📢 公告已發布並推播至跑馬燈！');
+            alert('📢 公告已發布並強制單行推播至跑馬燈！');
         }
 
         function renderMarqueeHistory() {
@@ -909,7 +915,7 @@
             if(!list) return;
             list.innerHTML = '';
             if(marqueeHistory.length === 0) {
-                list.innerHTML = `<div class="text-xs text-slate-400">目前尚無歷史公告紀錄</div>`;
+                list.innerHTML = `<div class="text-xs text-slate-400">目前無歷史公告紀錄</div>`;
                 return;
             }
             marqueeHistory.forEach(item => {
@@ -926,7 +932,7 @@
         window.replayMarquee = function(encodedText) {
             const txt = decodeURIComponent(encodedText);
             document.getElementById('dynamic-marquee').innerText = txt;
-            alert(`📢 已將公告重新推播至頂部跑馬燈：\n${txt}`);
+            alert(`📢 已將公告重新單行推播至頂部跑馬燈：\n${txt}`);
         }
 
         initCloudSync();
