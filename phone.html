@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>專題_亞東紀念醫院 手機醫療照護系統 (雲端)</title>
+    <title>專題_亞東紀念醫院 手機醫療照護系統 (雲端同步版)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&display=swap');
@@ -694,7 +694,6 @@
                     <button onclick="closeNurseManagerModal()" class="text-slate-400 hover:text-slate-600 font-bold text-base">✕</button>
                 </div>
 
-                <!-- 新增護理師表單區 -->
                 <div class="bg-teal-50 border border-teal-200 p-2.5 rounded-xl space-y-2 text-xs">
                     <div class="font-bold text-teal-900">＋ 新增護理師</div>
                     <div class="grid grid-cols-3 gap-1.5">
@@ -757,7 +756,7 @@
         <div class="home-indicator"></div>
     </div>
 
-    <!-- Firebase SDK 引入與雲端即時同步邏輯 -->
+    <!-- Firebase SDK 引入與雲端即時同步邏輯 (已完美防護跑馬燈與白板資料) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
         import { getDatabase, ref, set, onValue, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
@@ -909,6 +908,7 @@
         let patientsData = {};
         let nurseBedAssignments = {};
         let globalSharedMemo = "全病房交班注意事項：請落實三讀五對、洗手規範與生命徵象異常回報。";
+        let cloudMarquee = []; // 保護白板公告不被覆蓋
 
         const dbRef = ref(db, 'femh_cloud_db_v3');
         get(dbRef).then((snapshot) => {
@@ -919,6 +919,7 @@
                 nurseBedAssignments = cloudData.nurseBedAssignments || {};
                 userDatabase = cloudData.userDatabase || defaultUserDatabase;
                 globalSharedMemo = cloudData.globalSharedMemo || globalSharedMemo;
+                cloudMarquee = cloudData.marquee || [];
                 if (statusEl) { statusEl.innerText = "🟢 雲端同步正常"; statusEl.className = "absolute top-1 right-2 text-[9px] font-bold text-emerald-600 z-30"; }
             } else {
                 patientsData = generateDefaultPatients();
@@ -944,18 +945,21 @@
                 nurseBedAssignments = cloudData.nurseBedAssignments || nurseBedAssignments;
                 if (cloudData.userDatabase) userDatabase = cloudData.userDatabase;
                 globalSharedMemo = cloudData.globalSharedMemo || globalSharedMemo;
+                cloudMarquee = cloudData.marquee || cloudMarquee;
                 syncNurseAssignments();
                 if (!document.getElementById('patient-list-view').classList.contains('hidden')) renderPatientList();
                 if (!document.getElementById('nurse-manager-modal').classList.contains('hidden')) renderNurseManagerList();
             }
         });
 
+        // 【關鍵防護】手機端儲存時，完整保留 marquee 跑馬燈與白板資料
         function saveToCloud() {
             const payload = {
                 patientsData: patientsData,
                 nurseBedAssignments: nurseBedAssignments,
                 userDatabase: userDatabase,
                 globalSharedMemo: globalSharedMemo,
+                marquee: cloudMarquee, // 保護白板公告不被手機覆蓋消失
                 lastUpdated: new Date().toISOString()
             };
             set(dbRef, payload).catch(err => console.log('Cloud save err:', err));
@@ -1284,7 +1288,6 @@
 
         window.loadNurseBedSelection = function() {
             const selectEl = document.getElementById('schedule-nurse-select');
-            
             const previousSelectedNurse = selectEl.value;
 
             selectEl.innerHTML = '';
@@ -1382,7 +1385,6 @@
             closeNSAdminModal();
         };
 
-        // 護理師管理功能 (已加入 saveToCloud 同步雲端)
         window.openNurseManagerModal = function() {
             renderNurseManagerList();
             document.getElementById('new-nurse-id').value = '';
@@ -1437,7 +1439,7 @@
             userDatabase[id] = { password: pw, name: name, role: "nurse" };
             if (!nurseBedAssignments[name]) nurseBedAssignments[name] = [];
 
-            saveToCloud(); // 立即同步上傳到雲端與 LocalStorage
+            saveToCloud();
             alert(`✅ 成功新增護理師：${name} (員編: ${id}) 並已同步至雲端！`);
             renderNurseManagerList();
         };
@@ -1460,7 +1462,7 @@
             }
 
             syncNurseAssignments();
-            saveToCloud(); // 立即同步上傳到雲端
+            saveToCloud();
             alert(`✅ 員編 [${empId}] 之護理人員資料已更新成功並同步至雲端！`);
             renderNurseManagerList();
         };
@@ -1471,7 +1473,7 @@
                 delete userDatabase[empId];
                 if (nurseBedAssignments[nurseName]) delete nurseBedAssignments[nurseName];
                 syncNurseAssignments();
-                saveToCloud(); // 立即同步上傳到雲端
+                saveToCloud();
                 alert(`🗑️ 已成功刪除人員 ${nurseName} 的帳號！`);
                 renderNurseManagerList();
             }
