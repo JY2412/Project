@@ -681,7 +681,7 @@
                     <span>勾選負責床位 (已選走者不顯示)：</span>
                     <button onclick="quickSelectBeds(7)" class="text-teal-700 hover:underline text-[11px]">快速選取前7床</button>
                 </div>
-                <div id="schedule-beds-checkboxes" class="flex-1 overflow-y-auto space-y-1 pr-1 max-h-[200px] border border-slate-200 p-2 rounded-xl bg-slate-50"></div>
+                <div id="schedule-beds-checkboxes" class="flex-1 overflow-y-auto space-y-1.5 pr-1 max-h-[200px] border border-slate-200 p-2.5 rounded-xl bg-slate-50"></div>
                 <button onclick="saveNurseSchedule()" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-2.5 rounded-xl text-xs transition">儲存排班設定</button>
             </div>
         </div>
@@ -924,12 +924,12 @@
                 patientsData = generateDefaultPatients();
                 userDatabase = defaultUserDatabase;
                 saveToCloud();
-                if (statusEl) { statusEl.innerText = "🟢 雲端"; statusEl.className = "absolute top-1 right-2 text-[9px] font-bold text-emerald-600 z-30"; }
+                if (statusEl) { statusEl.innerText = "🟢 雲端初始化完成"; statusEl.className = "absolute top-1 right-2 text-[9px] font-bold text-emerald-600 z-30"; }
             }
             syncNurseAssignments();
         }).catch((error) => {
             const statusEl = document.getElementById('cloud-sync-status');
-            if (statusEl) { statusEl.innerText = "🔴 雲端連線失敗"; statusEl.className = "absolute top-1 right-2 text-[9px] font-bold text-rose-600 z-30"; }
+            if (statusEl) { statusEl.innerText = "🔴 雲端連線失敗(使用本地)"; statusEl.className = "absolute top-1 right-2 text-[9px] font-bold text-rose-600 z-30"; }
             patientsData = JSON.parse(localStorage.getItem('femh_45beds_vFixed10')) || generateDefaultPatients();
             nurseBedAssignments = JSON.parse(localStorage.getItem('femh_nurse_schedule_vFixed10')) || {};
             userDatabase = JSON.parse(localStorage.getItem('femh_user_db_vFixed10')) || defaultUserDatabase;
@@ -1284,19 +1284,23 @@
 
         window.loadNurseBedSelection = function() {
             const selectEl = document.getElementById('schedule-nurse-select');
-            selectEl.innerHTML = '';
             
-            Object.keys(userDatabase).forEach(empId => {
-                let u = userDatabase[empId];
-                if (u.role === 'nurse') {
-                    let opt = document.createElement('option');
-                    opt.value = u.name;
-                    opt.innerText = `${u.name} (員編:${empId})`;
-                    selectEl.appendChild(opt);
-                }
-            });
+            // 如果下拉選單尚未填入人名，先進行初始化填充
+            if (selectEl.options.length === 0) {
+                Object.keys(userDatabase).forEach(empId => {
+                    let u = userDatabase[empId];
+                    if (u.role === 'nurse') {
+                        let opt = document.createElement('option');
+                        opt.value = u.name;
+                        opt.innerText = `${u.name} (員編:${empId})`;
+                        selectEl.appendChild(opt);
+                    }
+                });
+            }
 
             const nurseName = selectEl.value;
+            if (!nurseName) return;
+
             const container = document.getElementById('schedule-beds-checkboxes');
             container.innerHTML = '';
             const currentAssigned = nurseBedAssignments[nurseName] || [];
@@ -1316,13 +1320,19 @@
                 availableCount++;
 
                 const isChecked = currentAssigned.includes(bedKey);
-                const label = document.createElement('label');
-                label.className = 'flex items-center space-x-2 text-xs font-medium text-slate-700 cursor-pointer';
-                label.innerHTML = `
-                    <input type="checkbox" value="${bedKey}" ${isChecked ? 'checked' : ''} class="w-3.5 h-3.5 accent-teal-600 rounded schedule-bed-chk">
-                    <span>${bedKey} (${patientsData[bedKey].name})</span>
+                const div = document.createElement('div');
+                div.className = 'flex items-center space-x-2.5 text-xs font-semibold text-slate-800 bg-white p-1.5 rounded-lg border border-slate-200 cursor-pointer hover:bg-slate-100 transition';
+                div.innerHTML = `
+                    <input type="checkbox" value="${bedKey}" ${isChecked ? 'checked' : ''} class="w-4 h-4 accent-teal-600 rounded schedule-bed-chk cursor-pointer">
+                    <span class="cursor-pointer flex-1">${bedKey} (${patientsData[bedKey].name})</span>
                 `;
-                container.appendChild(label);
+                div.onclick = (e) => {
+                    if (e.target.tagName !== 'INPUT') {
+                        const chk = div.querySelector('input');
+                        chk.checked = !chk.checked;
+                    }
+                };
+                container.appendChild(div);
             });
 
             if (availableCount === 0) {
@@ -1627,7 +1637,7 @@
                             </div>
                         </label>
                         <span class="text-[10px] font-bold ${isSaved ? 'text-slate-400' : isWithinWindow ? 'text-teal-600' : 'text-rose-600'}">
-                            ${isSaved ? '已儲存(鎖定)' : isWithinWindow ? '可執行' : '未達時間窗'}
+                            ${isSaved ? '已儲存(鎖定)' : isWithinWindow ? '可執行(±30分內)' : '未達時間窗'}
                         </span>
                     </div>
                 `;
@@ -2233,11 +2243,11 @@
 
         window.saveBloodRecord = function() {
             if (!bloodVerifiedNurse1 || !bloodVerifiedNurse2) {
-                alert('輸血作業必須由「兩位不同」的護理師完成雙重核對！');
+                alert('❌ 輸血作業必須由「兩位不同」的護理師完成雙重核對！');
                 return;
             }
             if (bloodVerifiedNurse1 === bloodVerifiedNurse2) {
-                alert('兩位護理師不能為同一人！');
+                alert('❌ 輸血安全防呆：兩位護理師不能為同一人！');
                 return;
             }
 
