@@ -586,6 +586,8 @@
                     <button id="nurse2-btn" onclick="openNurseModal(2)" class="flex-1 bg-slate-100 hover:bg-slate-200 border border-slate-300 py-2 text-xs font-bold text-slate-700 rounded-xl shadow-sm transition">護理師二 核對</button>
                 </div>
                 <button id="blood-save-btn" onclick="saveBloodRecord()" class="w-full bg-rose-500 hover:bg-rose-600 text-white font-bold py-2.5 rounded-xl shadow text-sm shrink-0">確認儲存輸血作業</button>
+                <!-- 輸血完畢與結案按鈕（與白板及雲端完全連動） -->
+                <button id="blood-complete-btn" onclick="completeBloodRecord()" class="w-full bg-teal-700 hover:bg-teal-800 text-white font-bold py-2.5 rounded-xl shadow text-sm shrink-0">輸血完畢 / 結案 (移除血品標籤)</button>
             </div>
             <div class="w-full px-2 mb-2 flex items-center shrink-0">
                 <button onclick="switchView('nfc-view')" class="w-10 h-10 bg-slate-800 hover:bg-slate-900 text-white rounded-full flex items-center justify-center text-sm">❮</button>
@@ -866,7 +868,7 @@
                     let bedKey = `${roomStr}-${b}`;
 
                     if (bedKey === "01-2" || bedKey === "03-1") {
-                        data[bedKey] = { isEmpty: true, realName: "", name: `${bedKey} 〔空床待清〕`, info: "", extra: "", assignedNurse: "", vitals: [], advancedVitals: [], meds: [], treats: [], notes: [], editInfo: {}, bloodRecord: null, consents: {}, medChecked: {}, treatChecked: {}, treatTimestamps: {} };
+                        data[bedKey] = { isEmpty: true, realName: "", name: `${bedKey} 〔空床待清〕`, info: "", extra: "", assignedNurse: "", vitals: [], advancedVitals: [], meds: [], treats: [], notes: [], editInfo: {}, bloodRecord: null, consents: {}, medChecked: {}, treatChecked: {}, treatTimestamps: {}, ewsAlert: false, ewsReason: "" };
                         continue;
                     }
 
@@ -897,6 +899,8 @@
                         hasBlood: (bedKey === "01-1"),
                         hasConsent: (bedKey === "01-1"),
                         hasIO: true, hasGCS: true, hasMP: true,
+                        ewsAlert: false,
+                        ewsReason: "",
                         vitals: [
                             { time: "08:00", t: "36.5", p: "78", r: "18", bp: "120/80", spo2: "98", pain: "2", creator: "許Ｏ媃" }
                         ],
@@ -992,6 +996,52 @@
         let currentActiveNurse = null;
         let currentPatientTab = 'my';
         let editingNoteId = null;
+
+        // ==========================================
+        // EWS 複合式觸發機制核心邏輯運算
+        // ==========================================
+        function evaluateEWS(patient, newVital, newGcs, newMp) {
+            let reasons = [];
+            let isTriggered = false;
+
+            // 1. 單項危險值檢查 (單點即觸發)
+            let t = newVital ? parseFloat(newVital.t) : (patient.vitals && patient.vitals.length > 0 ? parseFloat(patient.vitals[0].t) : 36.5);
+            let p = newVital ? parseInt(newVital.p) : (patient.vitals && patient.vitals.length > 0 ? parseInt(patient.vitals[0].p) : 78);
+            let r = newVital ? parseInt(newVital.r) : (patient.vitals && patient.vitals.length > 0 ? parseInt(patient.vitals[0].r) : 18);
+            let spo2 = newVital ? parseInt(newVital.spo2) : (patient.vitals && patient.vitals.length > 0 ? parseInt(patient.vitals[0].spo2) : 98);
+            let bpSys = newVital ? parseInt(newVital.bp.split('/')[0]) : (patient.vitals && patient.vitals.length > 0 ? parseInt(patient.vitals[0].bp.split('/')[0]) : 120);
+
+            if (t > 38.0 || t < 35.5) { isTriggered = true; reasons.push(`體溫異常 (${t}℃)`); }
+            if (p > 120 || p < 50) { isTriggered = true; reasons.push(`心跳異常 (${p} bpm)`); }
+            if (r > 24 || r < 10) { isTriggered = true; reasons.push(`呼吸頻率異常 (${r} 次/分)`); }
+            if (spo2 < 92) { isTriggered = true; reasons.push(`血氧過低 (${spo2}%)`); }
+            if (bpSys < 90 || bpSys > 160) { isTriggered = true; reasons.push(`收縮壓異常 (${bpSys} mmHg)`); }
+
+            // 2. 跨次比較與神經學動態惡化檢查 (GCS 總分下降 >= 2 分 或 肌力下降 >= 1 級)
+            let gcsList = (patient.advancedVitals || []).filter(item => item.type === 'GCS');
+            if (newGcs) {
+                if (gcsList.length > 0) {
+                    let prevTotal = gcsList[0].total;
+                    let currTotal = newGcs.total;
+                    if (prevTotal - currTotal >= 2) {
+                        isTriggered = true;
+                        reasons.push(`GCS 意識惡化 (由 ${prevTotal} 降至 ${currTotal} 分)`);
+                    }
+                }
+            }
+
+            let mpList = (patient.advancedVitals || []).filter(item => item.type === 'MP');
+            if (newMp && mpList.length > 0) {
+                let prev = mpList[0];
+                if ((prev.rue - newMp.rue >= 1) || (prev.lue - newMp.lue >= 1) || (prev.rle - newMp.rle >= 1) || (prev.lle - newMp.lle >= 1)) {
+                    isTriggered = true;
+                    reasons.push(`Muscle Power 肌力顯著下降`);
+                }
+            }
+
+            patient.ewsAlert = isTriggered;
+            patient.ewsReason = reasons.join('；');
+        }
 
         function syncNurseAssignments() {
             Object.keys(patientsData).forEach(bedKey => {
@@ -1124,7 +1174,6 @@
 
             if (currentPatientTab === 'my') {
                 if (currentUser && currentUser.role === 'ns_scheduler') {
-                    // NS 帳號責任床位分組：僅呈現綠色護理人員排班標籤
                     let hasAssigned = false;
                     Object.keys(nurseBedAssignments).forEach(nurseName => {
                         const assignedBeds = nurseBedAssignments[nurseName] || [];
@@ -1142,7 +1191,6 @@
                         container.innerHTML = '<div class="text-center text-slate-400 text-xs py-8">目前無任何護理人員排班指派紀錄</div>';
                     }
                 } else {
-                    // 一般護理師帳號責任床位清單
                     const myAssigned = (currentUser && nurseBedAssignments[currentUser.name]) || [];
                     if (myAssigned.length === 0) {
                         container.innerHTML = '<div class="text-center text-slate-400 text-xs py-8">目前無負責床位（請洽護理站 NS 進行床位綁定）</div>';
@@ -1154,7 +1202,6 @@
                     });
                 }
             } else {
-                // 全病房總覽清單 (右側顯示護理師綠框圓角標籤)
                 beds.forEach(bedKey => {
                     const p = patientsData[bedKey];
                     if (p) container.appendChild(createPatientRow(bedKey, p, true));
@@ -1168,7 +1215,6 @@
             
             let safeFullName = getSafePatientName(p, bedKey);
             
-            // 綠框護理師標籤（右側）
             let nurseTagHtml = '';
             if (showNurseTag && p.assignedNurse) {
                 nurseTagHtml = `<span class="bg-emerald-50 text-teal-700 border border-emerald-300 font-bold px-2 py-0.5 rounded-md text-[10px] shrink-0 mr-1.5">${p.assignedNurse}</span>`;
@@ -1186,6 +1232,10 @@
                 `;
             } else {
                 let badgeHtml = '';
+                // 若有 EWS 複合式警示，優先顯示 EWS 警示標籤
+                if (p.ewsAlert) {
+                    badgeHtml += '<span class="bg-purple-600 text-white font-bold px-1 rounded text-[10px] mr-1 shrink-0 animate-pulse">EWS警示</span>';
+                }
                 if (p.isolation === '接') badgeHtml += '<span class="bg-rose-500 text-white font-bold px-1 rounded text-[10px] mr-1 shrink-0">接</span>';
                 else if (p.isolation === '氣') badgeHtml += '<span class="bg-blue-600 text-white font-bold px-1 rounded text-[10px] mr-1 shrink-0">氣</span>';
                 
@@ -1754,7 +1804,8 @@
         window.saveVitalsData = function() {
             const p = patientsData[currentSelectedBed];
             if (!p.vitals) p.vitals = [];
-            p.vitals.unshift({
+            
+            const newVital = {
                 time: getActiveTime(),
                 t: document.getElementById('input-t').value || '36.5',
                 p: document.getElementById('input-p').value || '78',
@@ -1763,7 +1814,13 @@
                 spo2: document.getElementById('input-spo2').value || '98',
                 pain: document.getElementById('input-pain').value || '0',
                 creator: currentUser ? currentUser.name : "護理師"
-            });
+            };
+
+            p.vitals.unshift(newVital);
+
+            // 即時進行 EWS 複合式評估並更新狀態
+            evaluateEWS(p, newVital, null, null);
+
             saveToCloud();
             document.getElementById('input-t').value = '';
             document.getElementById('input-p').value = '';
@@ -1772,7 +1829,7 @@
             document.getElementById('input-bp-dia').value = '';
             document.getElementById('input-spo2').value = '';
             document.getElementById('input-pain').value = '';
-            alert('生命徵象數據儲存成功（已同步雲端）！');
+            alert('生命徵象數據儲存成功（已同步雲端，EWS 複合式觸發機制已自動判定）！');
             switchView('nfc-view');
         };
 
@@ -1844,15 +1901,22 @@
             const p = patientsData[currentSelectedBed];
             if (!p.advancedVitals) p.advancedVitals = [];
             const now = new Date();
-            p.advancedVitals.unshift({
+            
+            const newGcs = {
                 time: `${now.getMonth()+1}/${now.getDate()}`,
                 type: 'GCS', e, v, m, score: `E${e}V${v}M${m}`, total: e+v+m
-            });
+            };
+
+            p.advancedVitals.unshift(newGcs);
+
+            // 執行 EWS 複合式觸發評估（比對意識下降狀況）
+            evaluateEWS(p, null, newGcs, null);
+
             saveToCloud();
             document.getElementById('gcs-e').value = '';
             document.getElementById('gcs-v').value = '';
             document.getElementById('gcs-m').value = '';
-            alert(`GCS 儲存成功 (E${e}V${v}M${m})！`);
+            alert(`GCS 儲存成功 (E${e}V${v}M${m})！EWS 複合式觸發機制已完成檢核。`);
             switchView('nfc-view');
         };
 
@@ -1870,16 +1934,23 @@
             const p = patientsData[currentSelectedBed];
             if (!p.advancedVitals) p.advancedVitals = [];
             const now = new Date();
-            p.advancedVitals.unshift({
+
+            const newMp = {
                 time: `${now.getMonth()+1}/${now.getDate()}`,
                 type: 'MP', rue, lue, rle, lle
-            });
+            };
+
+            p.advancedVitals.unshift(newMp);
+
+            // 執行 EWS 複合式觸發評估（比對肌力下降狀況）
+            evaluateEWS(p, null, null, newMp);
+
             saveToCloud();
             document.getElementById('mp-rue').value = '';
             document.getElementById('mp-lue').value = '';
             document.getElementById('mp-rle').value = '';
             document.getElementById('mp-lle').value = '';
-            alert('Muscle Power 儲存成功（已同步雲端）！');
+            alert('Muscle Power 儲存成功（已同步雲端，EWS 複合式觸發已更新）！');
             switchView('nfc-view');
         };
 
@@ -2272,6 +2343,7 @@
                 nurse2: bloodVerifiedNurse2,
                 timestamp: getActiveTime()
             };
+            p.hasBlood = true; // 保持輸血標籤顯示
 
             saveToCloud();
 
@@ -2280,6 +2352,24 @@
 
             alert(`✅ 輸血作業儲存成功（已同步雲端）！\n- 血品：${selectedProduct}\n- 核對人員：${bloodVerifiedNurse1} & ${bloodVerifiedNurse2}\n- 儲存時間：${p.bloodRecord.timestamp}`);
             switchView('nfc-view');
+        };
+
+        // ==========================================
+        // 輸血完畢與結案連動功能 (對應白板移除標籤)
+        // ==========================================
+        window.completeBloodRecord = function() {
+            const p = patientsData[currentSelectedBed];
+            if (!p.bloodRecord) {
+                alert('目前該床尚無進行中的輸血紀錄！');
+                return;
+            }
+            if (confirm('確定要將此床的輸血作業標記為「輸血完畢/結案」並移除血品標籤嗎？')) {
+                p.bloodRecord = null;
+                p.hasBlood = false; // 移除白板與手機端的輸血標籤
+                saveToCloud();
+                alert('✅ 輸血作業已結案，血品標籤已成功移除並同步至雲端與白板！');
+                switchView('nfc-view');
+            }
         };
 
         let sigCanvas, sigCtx, isDrawing = false;
