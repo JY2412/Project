@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>亞東紀念醫院 - 11G 護理站電子白板 (專題最終完整對齊版)</title>
+  <title>亞東紀念醫院 - 11G 護理站電子白板系統</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
   <style>
@@ -29,18 +29,18 @@
     <div class="flex items-center space-x-4">
       <img src="https://www.femh.org.tw/images/template/logo_g.svg" alt="亞東紀念醫院 Logo" class="h-10 object-contain">
       <span id="sync-status-dot" class="w-3.5 h-3.5 rounded-full bg-emerald-500 animate-pulse" title="雲端同步中"></span>
-      <h1 class="text-xl font-bold tracking-wide text-[#383533]">11G 護理站電子白板 (完整對齊版)</h1>
+      <h1 class="text-xl font-bold tracking-wide text-[#383533]">11G 護理站電子白板系統</h1>
       <span id="top-clock-date" class="text-sm text-[#8C827A] font-bold ml-4 bg-[#F7F6F2] px-4 py-2 rounded-xl border border-[#E5E0D8]">--</span>
     </div>
     <div class="flex items-center space-x-4">
       <span id="current-mode-label" class="text-sm bg-[#F0EDE6] text-[#786759] font-bold px-4.5 py-2.5 rounded-xl border border-[#E5E0D8]">目前唯讀模式</span>
-      <button onclick="openUnlockModal()" class="btn-comfort bg-[#8C7A6B] hover:bg-[#786759] text-white shadow-xs"> 解鎖編輯</button>
+      <button onclick="openUnlockModal()" class="btn-comfort bg-[#8C7A6B] hover:bg-[#786759] text-white shadow-xs">解鎖編輯</button>
     </div>
   </header>
 
   <!-- 頂部跑馬燈 -->
   <div class="bg-rose-50/90 border-b border-rose-200/80 px-8 py-3 flex items-center shrink-0">
-    <span class="text-sm font-bold text-rose-700 bg-rose-100 px-4 py-1.5 rounded-xl mr-6 shrink-0 shadow-xs"> 急救分機：999</span>
+    <span class="text-sm font-bold text-rose-700 bg-rose-100 px-4 py-1.5 rounded-xl mr-6 shrink-0 shadow-xs">急救分機：999</span>
     <div class="flex-1 marquee-container">
       <div id="dynamic-marquee" class="marquee-content text-sm font-bold text-rose-800">
         11G 護理站電子白板系統即時連線中...
@@ -58,6 +58,7 @@
       <div onclick="filterBedStatus('isolation')" class="bg-white px-5 py-3 rounded-2xl border border-[#E5E0D8] cursor-pointer hover:bg-[#F0EDE6] btn-comfort shadow-xs">隔離管制 <span id="stat-iso" class="text-rose-600 font-extrabold ml-2">-- 床</span></div>
       <div onclick="filterTag('ICU')" class="bg-white px-5 py-3 rounded-2xl border border-[#E5E0D8] cursor-pointer hover:bg-orange-50 btn-comfort shadow-xs text-orange-700">未入病房 <span id="stat-icu" class="font-extrabold ml-2">-- 床</span></div>
       <div onclick="filterTag('OutOfWard')" class="bg-white px-5 py-3 rounded-2xl border border-[#E5E0D8] cursor-pointer hover:bg-cyan-50 btn-comfort shadow-xs text-cyan-800">不在病房 <span id="stat-outward" class="font-extrabold ml-2">-- 床</span></div>
+      <div onclick="filterTag('Blood')" class="bg-white px-5 py-3 rounded-2xl border border-[#E5E0D8] cursor-pointer hover:bg-rose-50 btn-comfort shadow-xs text-rose-700">輸血作業 <span id="stat-blood" class="font-extrabold ml-2">-- 床</span></div>
       <div onclick="filterTag('EarlyWarning')" class="bg-white px-5 py-3 rounded-2xl border border-[#E5E0D8] cursor-pointer hover:bg-[#F0EDE6] btn-comfort shadow-xs text-purple-600">早期警示 <span id="stat-ew" class="font-extrabold ml-2">-- 床</span></div>
     </div>
 
@@ -83,9 +84,9 @@
       <div class="muji-card p-8 flex justify-between items-center bg-white">
         <div>
           <h2 class="text-xl font-bold text-[#383533]">當班護理人員與責任床位工作分配</h2>
-          <p class="text-base text-[#8C827A] mt-2">解鎖後點擊卡片即可調整護理師負責床位！</p>
+          <p class="text-base text-[#8C827A] mt-2">解鎖後點擊卡片即可調整護理師負責床位</p>
         </div>
-        <button onclick="openUnlockModal()" class="btn-comfort bg-[#8C7A6B] hover:bg-[#786759] text-white shadow-xs"> 解鎖並調整排班</button>
+        <button onclick="openUnlockModal()" class="btn-comfort bg-[#8C7A6B] hover:bg-[#786759] text-white shadow-xs">解鎖並調整排班</button>
       </div>
       <div id="scheduling-cards-container" class="space-y-4"></div>
     </section>
@@ -106,8 +107,8 @@
       <div class="muji-card p-8 space-y-6 bg-white">
         <div class="flex justify-between items-center border-b border-[#E5E0D8] pb-5">
           <div>
-            <h2 class="text-xl font-bold text-[#383533]">病房管理控制台 (出入院 / 狀態 / 醫師 / 今辦明出 / 隱私)</h2>
-            <p class="text-base text-[#8C827A] mt-2">解鎖後可進行入院登記、修改狀態與辦理出院</p>
+            <h2 class="text-xl font-bold text-[#383533]">病房管理控制台 (出入院 / 狀態 / 醫師 / 今辦明出 / 輸血結案 / 隱私)</h2>
+            <p class="text-base text-[#8C827A] mt-2">解鎖後可進行入院登記、修改狀態、輸血結案與辦理出院</p>
           </div>
           <div class="bg-[#F7F6F2] border border-[#E5E0D8] px-6 py-3.5 rounded-2xl flex items-center space-x-5 shadow-xs">
             <div class="space-y-0.5 text-right">
@@ -135,7 +136,12 @@
             <div>
               <label for="marquee-speed-select" class="block text-sm font-bold mb-2">移動速度</label>
               <select id="marquee-speed-select" onchange="updateMarqueeSettings()" class="w-full p-3 bg-white border border-[#E5E0D8] rounded-xl">
-                <option value="60">很慢（60 秒一輪）</option><option value="45">慢（45 秒一輪）</option><option value="30" selected>一般（30 秒一輪）</option><option value="20">快（20 秒一輪）</option><option value="12">很快（12 秒一輪）</option>
+                <option value="120">很慢（120 秒一輪）</option>
+                <option value="90">慢（90 秒一輪）</option>
+                <option value="60">適中（60 秒一輪）</option>
+                <option value="45">快（45 秒一輪）</option>
+                <option value="30" selected>一般（30 秒一輪）</option>
+                <option value="20">很快（20 秒一輪）</option>
               </select>
             </div>
             <label class="flex items-center justify-between gap-3 text-sm font-bold"><span>公告自動輪播</span><input id="marquee-carousel-toggle" type="checkbox" checked onchange="updateMarqueeSettings()" class="w-5 h-5 accent-stone-600"></label>
@@ -190,11 +196,11 @@
 
   <!-- 4. 底部主選單導覽列 -->
   <nav class="bg-white border-t border-[#E5E0D8] px-8 py-4.5 grid grid-cols-5 gap-4 text-center shrink-0 shadow-lg">
-    <button onclick="switchTab('matrix')" id="btn-tab-matrix" class="btn-comfort font-bold bg-[#8C7A6B] text-white py-4.5 text-lg"> 病床總覽</button>
-    <button onclick="switchTab('scheduling')" id="btn-tab-scheduling" class="btn-comfort font-bold bg-[#F0EDE6] text-[#5C554E] py-4.5 text-lg"> 護理排班</button>
-    <button onclick="switchTab('alarms')" id="btn-tab-alarms" class="btn-comfort font-bold bg-[#F0EDE6] text-[#5C554E] py-4.5 text-lg"> 即時警示</button>
-    <button onclick="switchTab('secretary')" id="btn-tab-secretary" class="btn-comfort font-bold bg-[#F0EDE6] text-[#5C554E] py-4.5 text-lg"> 病房管理</button>
-    <button onclick="switchTab('announcements')" id="btn-tab-announcements" class="btn-comfort font-bold bg-[#F0EDE6] text-[#5C554E] py-4.5 text-lg"> 公告廣播</button>
+    <button onclick="switchTab('matrix')" id="btn-tab-matrix" class="btn-comfort font-bold bg-[#8C7A6B] text-white py-4.5 text-lg">病床總覽</button>
+    <button onclick="switchTab('scheduling')" id="btn-tab-scheduling" class="btn-comfort font-bold bg-[#F0EDE6] text-[#5C554E] py-4.5 text-lg">護理排班</button>
+    <button onclick="switchTab('alarms')" id="btn-tab-alarms" class="btn-comfort font-bold bg-[#F0EDE6] text-[#5C554E] py-4.5 text-lg">即時警示</button>
+    <button onclick="switchTab('secretary')" id="btn-tab-secretary" class="btn-comfort font-bold bg-[#F0EDE6] text-[#5C554E] py-4.5 text-lg">病房管理</button>
+    <button onclick="switchTab('announcements')" id="btn-tab-announcements" class="btn-comfort font-bold bg-[#F0EDE6] text-[#5C554E] py-4.5 text-lg">公告廣播</button>
   </nav>
 
   <!-- 5. 權限解鎖彈窗 -->
@@ -219,7 +225,7 @@
       <div><label class="font-bold">性別：</label><select id="add-gender-select" class="w-full p-3 bg-[#F7F6F2] border rounded-xl mt-1 font-bold"><option value="男">男性</option><option value="女">女性</option></select></div>
       <div><label class="font-bold">主治醫師：</label><select id="add-doctor-select" class="w-full p-3 bg-[#F7F6F2] border rounded-xl mt-1 font-bold"></select></div>
       <div><label class="font-bold">疾病診斷：</label><input type="text" id="add-diag-input" class="w-full p-3 bg-[#F7F6F2] border rounded-xl mt-1 font-bold" value="Acute Myocardial Infarction (AMI)"></div>
-      <div><label class="font-bold">病人現在狀態：</label><select id="add-loc-select" class="w-full p-3 bg-[#F7F6F2] border rounded-xl mt-1 font-bold"><option value="在病房">在病房</option><option value="請假">請假</option><option value="檢查中">檢查中</option><option value="手術中">手術中</option><option value="傳送中">傳送中</option><option value="ICU">ICU</option><option value="急診">急診</option><option value="轉床">其他病房轉入（轉床）</option><option value="門診">門診</option><option value="其他單位">其他單位</option></select></div>
+      <div><label class="font-bold">病人現在狀態：</label><select id="add-loc-select" class="w-full p-3 bg-[#F7F6F2] border rounded-xl mt-1 font-bold"><option value="在病房">在病房</option><option value="請假">請假</option><option value="檢查中">檢查中</option><option value="手術中">手術中</option><option value="傳送中">傳送中</option><option value="ICU">ICU</option><option value="急診">急診</option><option value="門診">門診</option><option value="其他單位(轉床)">其他單位(轉床)</option></select></div>
       <div><label class="font-bold">白板姓名隱私：</label><select id="add-public-select" class="w-full p-3 bg-[#F7F6F2] border rounded-xl mt-1 font-bold"><option value="true">公開真實姓名</option><option value="false">不公開 (顯示 ＯＯＯ)</option></select></div>
       <div class="flex space-x-4 pt-2">
         <button onclick="closeAddPatientModal()" class="btn-comfort flex-1 bg-[#F0EDE6]">取消</button>
@@ -236,7 +242,7 @@
       <div><label class="font-bold">姓名：</label><input type="text" id="edit-name-input" class="w-full p-3 bg-[#F7F6F2] border rounded-xl mt-1 font-bold"></div>
       <div><label class="font-bold">主治醫師：</label><select id="edit-doctor-select" class="w-full p-3 bg-[#F7F6F2] border rounded-xl mt-1 font-bold"></select></div>
       <div><label class="font-bold">疾病診斷：</label><input type="text" id="edit-diag-input" class="w-full p-3 bg-[#F7F6F2] border rounded-xl mt-1 font-bold"></div>
-      <div><label class="font-bold">病人現在狀態：</label><select id="edit-loc-select" class="w-full p-3 bg-[#F7F6F2] border rounded-xl mt-1 font-bold"><option value="在病房">在病房</option><option value="請假">請假</option><option value="檢查中">檢查中</option><option value="手術中">手術中</option><option value="傳送中">傳送中</option><option value="ICU">ICU</option><option value="急診">急診</option><option value="轉床">其他病房轉入（轉床）</option><option value="門診">門診</option><option value="其他單位">其他單位</option></select></div>
+      <div><label class="font-bold">病人現在狀態：</label><select id="edit-loc-select" class="w-full p-3 bg-[#F7F6F2] border rounded-xl mt-1 font-bold"><option value="在病房">在病房</option><option value="請假">請假</option><option value="檢查中">檢查中</option><option value="手術中">手術中</option><option value="傳送中">傳送中</option><option value="ICU">ICU</option><option value="急診">急診</option><option value="門診">門診</option><option value="其他單位(轉床)">其他單位(轉床)</option></select></div>
       <div><label class="font-bold">白板姓名隱私：</label><select id="edit-public-select" class="w-full p-3 bg-[#F7F6F2] border rounded-xl mt-1 font-bold"><option value="true">公開真實姓名</option><option value="false">不公開 (顯示 ＯＯＯ)</option></select></div>
       <div><label class="font-bold">隔離管制：</label><select id="edit-iso-select" class="w-full p-3 bg-[#F7F6F2] border rounded-xl mt-1 font-bold"><option value="">無隔離</option><option value="接">接觸隔離 (接)</option><option value="氣">空氣隔離 (氣)</option></select></div>
       <div><label class="font-bold">今辦明出：</label><select id="edit-discharging-select" class="w-full p-3 bg-[#F7F6F2] border rounded-xl mt-1 font-bold text-blue-800"><option value="false">否</option><option value="true">是 (今辦明出)</option></select></div>
@@ -295,7 +301,7 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
-    const SYNC_DB_PATH = 'femh_cloud_db_v3';
+    const SYNC_DB_PATH = 'femh_cloud_db_v12';
     const dbRef = ref(db, SYNC_DB_PATH);
 
     let masterCloudData = {};
@@ -340,9 +346,9 @@
     onValue(dbRef, (snapshot) => {
       const cloudData = snapshot.val();
       const dot = document.getElementById('sync-status-dot');
-      if (cloudData && cloudData.patientsData) {
+      if (cloudData && (cloudData.patientsData || typeof cloudData === 'object')) {
         masterCloudData = cloudData;
-        patientsData = sanitizeData(cloudData.patientsData);
+        patientsData = sanitizeData(cloudData.patientsData || cloudData);
         nurseBedAssignments = cloudData.nurseBedAssignments || {};
         marqueeHistory = cloudData.marquee || [];
         marqueeSettings = { ...marqueeSettings, ...(cloudData.marqueeSettings || {}) };
@@ -380,9 +386,10 @@
           .replace(/\s*\([男女]\)$/, '')
           .trim();
 
+        // 嚴格過濾空床判斷
         let isEmpty = (p.isEmpty === true);
-        if (cleanedName && cleanedName !== "〔空床待清〕" && cleanedName !== "空床") {
-          isEmpty = false;
+        if (!cleanedName || cleanedName.includes("空床") || cleanedName.includes("待清") || cleanedName === "〔空床待清〕") {
+          isEmpty = true;
         }
 
         let allergyVal = (p.editInfo && p.editInfo.allergy) || "";
@@ -397,6 +404,8 @@
           if (diagMatch) diagVal = diagMatch[1].trim();
         }
 
+        let hasActiveBlood = !!p.hasBlood || !!p.bloodRecord;
+
         sanitized[bedKey] = {
           ...p,
           isEmpty: isEmpty,
@@ -407,6 +416,8 @@
           isDischarging: !!p.isDischarging,
           dnr: !!p.dnr,
           isAbnormal: !!p.isAbnormal,
+          ewsReason: p.ewsReason || "",
+          hasBlood: hasActiveBlood,
           diag: isEmpty ? "" : (diagVal || "Acute Myocardial Infarction (AMI)"),
           allergy: allergyVal || "Penicillin",
           info: p.info || `1985/04/12 (41Y) | 病例號：103198${bedKey.replace('-','')}`,
@@ -467,7 +478,10 @@
       const grid = document.getElementById('bed-grid');
       if(!grid) return;
       grid.innerHTML = '';
-      let total = 0, occ = 0, empty = 0, iso = 0, dischargingCount = 0, icuCount = 0, outOfWardCount = 0, ewCount = 0;
+      let total = 0, occ = 0, empty = 0, iso = 0, dischargingCount = 0, icuCount = 0, outOfWardCount = 0, bloodCount = 0, ewCount = 0;
+
+      const unadmittedLocations = ['急診', 'ICU', '門診', '其他單位(轉床)'];
+      const outOfWardLocations = ['請假', '檢查中', '手術中', '傳送中'];
 
       Object.keys(patientsData).sort().forEach(bedKey => {
         const p = patientsData[bedKey];
@@ -478,8 +492,9 @@
           occ++;
           if (p.isolation) iso++;
           if (p.isDischarging) dischargingCount++;
-          if (['急診', 'ICU', '轉床', '門診'].includes(p.location)) icuCount++;
-          if (['請假', '檢查中', '手術中', '傳送中'].includes(p.location)) outOfWardCount++;
+          if (unadmittedLocations.includes(p.location)) icuCount++;
+          if (outOfWardLocations.includes(p.location)) outOfWardCount++;
+          if (p.hasBlood) bloodCount++;
           if (p.isAbnormal) ewCount++;
         }
 
@@ -491,8 +506,9 @@
         if (currentFilterTag === '接' && p.isolation !== '接') return;
         if (currentFilterTag === '氣' && p.isolation !== '氣') return;
         if (currentFilterTag === 'DNR' && !p.dnr) return;
-        if (currentFilterTag === 'ICU' && !['急診', 'ICU', '轉床', '門診'].includes(p.location)) return;
-        if (currentFilterTag === 'OutOfWard' && !['請假', '檢查中', '手術中', '傳送中'].includes(p.location)) return;
+        if (currentFilterTag === 'ICU' && !unadmittedLocations.includes(p.location)) return;
+        if (currentFilterTag === 'OutOfWard' && !outOfWardLocations.includes(p.location)) return;
+        if (currentFilterTag === 'Blood' && !p.hasBlood) return;
         if (currentFilterTag === 'EarlyWarning' && !p.isAbnormal) return;
 
         const card = document.createElement('div');
@@ -514,7 +530,7 @@
           const tagStyles = {
             'ICU': 'bg-orange-200 text-orange-900 border border-orange-300',
             '急診': 'bg-red-700 text-white',
-            '轉床': 'bg-slate-200 text-slate-700 border border-slate-300',
+            '其他單位(轉床)': 'bg-slate-200 text-slate-700 border border-slate-300',
             '門診': 'bg-lime-700 text-white',
             '請假': 'bg-slate-700 text-white',
             '檢查中': 'bg-[#CCFBF1] text-[#115E59] border border-[#99F6E4]',
@@ -525,6 +541,7 @@
           if (tagStyles[p.location]) tagsHtml += `<span class="${tagStyles[p.location]} px-3 py-1.5 text-sm rounded-lg font-bold">${p.location}</span>`;
           if (p.isolation === '接') tagsHtml += `<span class="bg-pink-200 text-pink-950 border border-pink-300 px-3 py-1.5 text-sm rounded-lg font-bold">接觸隔離</span>`;
           else if (p.isolation === '氣') tagsHtml += `<span class="bg-sky-100 text-sky-900 border border-sky-300 px-3 py-1.5 text-sm rounded-lg font-bold">空氣隔離</span>`;
+          if (p.hasBlood) tagsHtml += `<span class="bg-rose-100 text-rose-800 border border-rose-300 px-3 py-1.5 text-sm rounded-lg font-bold">輸血中/待輸血</span>`;
           if (p.isDischarging) tagsHtml += `<span class="bg-sky-700 text-white px-3 py-1.5 text-sm rounded-lg font-bold">今辦明出</span>`;
           if (p.dnr) tagsHtml += `<span class="bg-yellow-200 text-yellow-900 border border-yellow-300 px-3 py-1.5 text-sm rounded-lg font-bold">DNR</span>`;
           tagsHtml += '</div>';
@@ -560,6 +577,7 @@
       document.getElementById('stat-iso').innerText = `${iso} 床`;
       document.getElementById('stat-icu').innerText = `${icuCount} 床`;
       document.getElementById('stat-outward').innerText = `${outOfWardCount} 床`;
+      document.getElementById('stat-blood').innerText = `${bloodCount} 床`;
       document.getElementById('stat-ew').innerText = `${ewCount} 床`;
     }
 
@@ -611,7 +629,7 @@
       else nurseBedAssignments[nurse] = newBeds;
       closeScheduleModal();
       saveAndSyncToCloud();
-      alert(` ${nurse} 的責任床位已更新！`);
+      alert(`${nurse} 的責任床位已更新！`);
     }
 
     function renderAlarmsTab() {
@@ -634,12 +652,14 @@
             <span class="font-bold text-purple-900 text-lg">${bedKey} 床 (${p.realName})：生理數據早期警示</span>
             <span class="bg-purple-100 text-purple-800 px-4 py-1.5 rounded-xl font-bold">早期警示</span>
           </div>
+          <div class="text-sm text-stone-700 bg-purple-50 p-3 rounded-xl border border-purple-200">
+            <strong>觸發原因：</strong>${p.ewsReason || '生命徵象或評估數值異常'}
+          </div>
         `;
         container.appendChild(card);
       });
     }
 
-    // ✅ 已修正：支援隱私設定不公開時，書記病房管理端也同步顯示為 OOO
     function renderSecretary() {
       const container = document.getElementById('secretary-bed-list');
       if(!container) return;
@@ -665,15 +685,20 @@
         } else {
           const displayName = (p.isPublicName === false || p.isPublicName === "false") ? 'ＯＯＯ' : (p.realName || '未設定');
           let dischargingTag = p.isDischarging ? ' | <span class="text-blue-600 font-bold">今辦明出</span>' : '';
-          const notInWard = ['急診', 'ICU', '轉床', '門診'].includes(p.location);
+          let bloodTag = p.hasBlood ? ' | <span class="text-rose-600 font-bold">輸血中/待輸血</span>' : '';
+          const unadmittedLocations = ['急診', 'ICU', '門診', '其他單位(轉床)'];
+          const notInWard = unadmittedLocations.includes(p.location);
           const statusClass = notInWard ? 'inline-block rounded-md bg-amber-100 px-2 py-0.5 font-bold text-amber-800' : 'font-semibold text-slate-600';
           
+          let bloodCloseBtn = p.hasBlood ? `<button onclick="closeBloodRecord('${bedKey}')" class="btn-comfort bg-white border text-xs py-2 px-3 text-rose-800 font-bold">輸血結案</button>` : '';
+
           card.innerHTML = `
             <div class="space-y-1">
               <div class="font-bold text-slate-800">${bedKey} - ${displayName}</div>
-              <div class="text-xs text-slate-500">護理師: <span class="font-bold text-teal-800">${p.assignedNurse}</span> | 醫師: ${p.doctor} | 狀態: <span class="${statusClass}">${p.location || '在病房'}</span>${dischargingTag}</div>
+              <div class="text-xs text-slate-500">護理師: <span class="font-bold text-teal-800">${p.assignedNurse}</span> | 醫師: ${p.doctor} | 狀態: <span class="${statusClass}">${p.location || '在病房'}</span>${dischargingTag}${bloodTag}</div>
             </div>
-            <div class="space-x-2">
+            <div class="space-x-1 flex items-center">
+              ${bloodCloseBtn}
               <button onclick="openEditPatientModal('${bedKey}')" class="btn-comfort bg-white border text-xs py-2 px-3">詳細設定</button>
               <button onclick="dischargeBed('${bedKey}')" class="btn-comfort bg-white border text-sm py-2 px-4 text-rose-700 font-bold">辦理出院</button>
             </div>
@@ -717,13 +742,13 @@
         info: `1985/04/12 (41Y) | 病例號：103198${b.replace('-','')}`,
         location: document.getElementById('add-loc-select').value,
         isPublicName: (document.getElementById('add-public-select').value === 'true'),
-        isolation: "", isDischarging: false, dnr: false, isAbnormal: false
+        isolation: "", isDischarging: false, dnr: false, isAbnormal: false, hasBlood: false, ewsReason: ""
       };
       saveAndSyncToCloud();
       closeAddPatientModal();
       renderBedGrid();
       renderSecretary();
-      alert(` ${b} 床已完成入住登記並同步白板！`);
+      alert(`${b} 床已完成入住登記並同步白板！`);
     }
 
     let currentDetailBedKey = null;
@@ -738,12 +763,12 @@
         content.innerHTML = `<div class="rounded-xl bg-slate-50 p-4"><div class="text-lg font-bold">${safe(bedKey)} 床</div><div class="mt-2 text-slate-600">空床待清</div></div>`;
         document.getElementById('bed-detail-edit-btn').textContent = '入院登記';
       } else {
-        const statusLabels = {'急診':'急診','ICU':'ICU','轉床':'轉床','門診':'門診'};
         const displayPatientName = p.isPublicName === false ? 'ＯＯＯ' : (p.realName || p.name || p.patientName || '未設定');
-        const status = statusLabels[p.location] || safe(p.location || '在病房');
+        const status = safe(p.location || '在病房');
         const notes = [];
         if (p.isolation === '接') notes.push('接觸隔離');
         if (p.isolation === '氣') notes.push('空氣隔離');
+        if (p.hasBlood) notes.push('輸血中/待輸血');
         if (p.isDischarging) notes.push('今辦明出');
         if (p.dnr) notes.push('DNR');
         if (p.isAbnormal) notes.push('早期警示');
@@ -751,6 +776,17 @@
         const patientInfoStr = p.info || `1985/04/12 (41Y) | 病例號：103198${bedKey.replace('-','')}`;
         const patientAllergy = p.allergy || 'Penicillin';
         const patientDiag = p.diag || '一般照護';
+
+        let ewsDetailHtml = '';
+        if (p.isAbnormal) {
+          ewsDetailHtml = `
+            <div class="rounded-xl border border-purple-300 bg-purple-50 p-3 sm:col-span-2">
+              <div class="text-xs text-purple-800 font-bold">早期警示 (EWS) 觸發原因詳情</div>
+              <div class="mt-1 font-bold text-purple-900">${safe(p.ewsReason || '生命徵象或評估數值異常')}</div>
+              ${isUnlocked ? `<button onclick="dismissEwsAlert('${bedKey}')" class="mt-2 btn-comfort bg-purple-700 text-white text-xs py-1.5 px-3">解除此警示狀態</button>` : ''}
+            </div>
+          `;
+        }
 
         content.innerHTML = `
           <div class="rounded-xl bg-[#F7F6F2] p-4">
@@ -764,10 +800,11 @@
             <div class="rounded-xl border p-3 sm:col-span-2"><div class="text-xs text-stone-500">過敏記錄 (Allergy)</div><div class="mt-1 font-bold text-amber-700">${safe(patientAllergy)}</div></div>
             <div class="rounded-xl border p-3"><div class="text-xs text-stone-500">病人狀態</div><div class="mt-1 font-bold">${status}</div></div>
             <div class="rounded-xl border p-3"><div class="text-xs text-stone-500">負責護理師</div><div class="mt-1 font-bold">${safe(p.assignedNurse || '-')}</div></div>
+            ${ewsDetailHtml}
           </div>
           <div class="rounded-xl border p-3">
             <div class="text-xs text-stone-500 mb-2">特殊事項</div>
-            <div class="flex flex-wrap gap-2">${notes.length ? notes.map(n => { const tagColors = { '接觸隔離': 'bg-pink-100 text-pink-800 border-pink-300', '空氣隔離': 'bg-sky-100 text-sky-800 border-sky-300', '今辦明出': 'bg-blue-100 text-blue-800 border-blue-300', 'DNR': 'bg-yellow-100 text-yellow-900 border-yellow-300', '早期警示': 'bg-purple-100 text-purple-800 border-purple-300' }; return `<span class="rounded-lg border ${tagColors[n] || 'bg-stone-100 text-stone-700 border-stone-300'} px-3 py-1.5 text-sm font-bold">${n}</span>`; }).join('') : '<span class="text-sm text-stone-400">目前沒有特殊事項標記</span>'}</div>
+            <div class="flex flex-wrap gap-2">${notes.length ? notes.map(n => { const tagColors = { '接觸隔離': 'bg-pink-100 text-pink-800 border-pink-300', '空氣隔離': 'bg-sky-100 text-sky-800 border-sky-300', '輸血中/待輸血': 'bg-rose-100 text-rose-800 border-rose-300', '今辦明出': 'bg-blue-100 text-blue-800 border-blue-300', 'DNR': 'bg-yellow-100 text-yellow-900 border-yellow-300', '早期警示': 'bg-purple-100 text-purple-800 border-purple-300' }; return `<span class="rounded-lg border ${tagColors[n] || 'bg-stone-100 text-stone-700 border-stone-300'} px-3 py-1.5 text-sm font-bold">${n}</span>`; }).join('') : '<span class="text-sm text-stone-400">目前沒有特殊事項標記</span>'}</div>
           </div>`;
         document.getElementById('bed-detail-edit-btn').textContent = '詳細設定／編輯';
       }
@@ -788,6 +825,31 @@
       if (p && p.isEmpty) openAddPatientModal(bedKey);
       else if (isUnlocked) openEditPatientModal(bedKey);
       else { alert('請先解鎖權限！'); openUnlockModal(); }
+    };
+
+    window.dismissEwsAlert = function(bedKey) {
+      if(!isUnlocked) { alert('請先解鎖權限！'); return; }
+      if(patientsData[bedKey]) {
+        patientsData[bedKey].isAbnormal = false;
+        patientsData[bedKey].ewsReason = "";
+        saveAndSyncToCloud();
+        closeBedDetailModal();
+        alert(`${bedKey} 床的早期警示狀態已解除！`);
+      }
+    };
+
+    window.closeBloodRecord = function(bedKey) {
+      if(!isUnlocked) { alert('請先解鎖權限！'); return; }
+      if(confirm(`確定將 ${bedKey} 床的輸血作業標記為結案並清除輸血標籤嗎？`)) {
+        if(patientsData[bedKey]) {
+          patientsData[bedKey].hasBlood = false;
+          patientsData[bedKey].bloodRecord = null;
+          saveAndSyncToCloud();
+          renderSecretary();
+          renderBedGrid();
+          alert(`${bedKey} 床輸血作業已結案！`);
+        }
+      }
     };
 
     window.openEditPatientModal = function(bedKey) {
@@ -825,7 +887,7 @@
       closeEditPatientModal();
       renderBedGrid();
       renderSecretary();
-      alert(` ${b} 床詳細資料已更新！`);
+      alert(`${b} 床詳細資料已更新！`);
     }
 
     window.dischargeBed = function(b) {
@@ -835,7 +897,7 @@
         saveAndSyncToCloud();
         renderBedGrid();
         renderSecretary();
-        alert(` ${b} 床已完成出院處理！`);
+        alert(`${b} 床已完成出院處理！`);
       }
     }
 
@@ -850,6 +912,15 @@
       document.getElementById('broadcast-text-input').value = '';
       saveAndSyncToCloud();
     }
+
+    window.deleteMarqueeItem = function(id) {
+      if(!isUnlocked) { alert('請先解鎖權限！'); return; }
+      if(confirm('確定要刪除這筆廣播公告紀錄嗎？')) {
+        marqueeHistory = marqueeHistory.filter(item => item.id !== id);
+        saveAndSyncToCloud();
+        renderMarqueeHistory();
+      }
+    };
 
     const emergencyRoleLabels = [
       ['command', '指揮班／指揮官', 2, 'on'], ['notify', '通報班', 2, 'on'],
@@ -966,7 +1037,7 @@
       marqueeHistory.forEach(item => {
         const div = document.createElement('div');
         div.className = "bg-[#F7F6F2] p-3 rounded-xl text-xs flex justify-between items-center";
-        div.innerHTML = `<span>[${item.time}] ${item.text}</span><button onclick="replayMarquee('${encodeURIComponent(item.text)}')" class="btn-comfort bg-teal-700 text-white text-xs py-1 px-3">重播</button>`;
+        div.innerHTML = `<span>[${item.time}] ${item.text}</span><div class="space-x-1"><button onclick="replayMarquee('${encodeURIComponent(item.text)}')" class="btn-comfort bg-teal-700 text-white text-xs py-1 px-3">重播</button><button onclick="deleteMarqueeItem(${item.id})" class="btn-comfort bg-rose-700 text-white text-xs py-1 px-3">刪除</button></div>`;
         list.appendChild(div);
       });
     }
@@ -983,8 +1054,8 @@
       if (document.getElementById('unlock-pw-input').value.trim() === 'nst') {
         isUnlocked = true;
         closeUnlockModal();
-        document.getElementById('current-mode-label').innerText = " 已解鎖編輯模式";
-        alert(' 權限解鎖成功！');
+        document.getElementById('current-mode-label').innerText = "已解鎖編輯模式";
+        alert('權限解鎖成功！');
       } else {
         document.getElementById('unlock-err').classList.remove('hidden');
       }
