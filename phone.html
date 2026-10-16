@@ -410,7 +410,7 @@
             </div>
         </div>
 
-        <!-- 6. 上傳 V/S 頁面 (空白無預設) -->
+        <!-- 6. 上傳 V/S 頁面 -->
         <div id="vitals-upload-view" class="hidden w-full flex-1 flex flex-col justify-between pt-6 pb-2 overflow-hidden">
             <div class="text-xs font-bold text-slate-700 text-center py-1 bg-slate-100 rounded-md">生命徵象數據輸入</div>
             <div class="flex-1 flex flex-col justify-between py-2 space-y-2 overflow-y-auto pr-1">
@@ -439,7 +439,7 @@
             </div>
         </div>
 
-        <!-- 6.1 I/O 上傳頁面 (空白無預設) -->
+        <!-- 6.1 I/O 上傳頁面 -->
         <div id="io-upload-view" class="hidden w-full flex-1 flex flex-col justify-between pt-6 pb-2 overflow-hidden">
             <div class="text-xs font-bold text-slate-700 text-center py-1 bg-slate-100 rounded-md">I/O 紀錄輸入</div>
             <div class="flex-1 flex flex-col justify-between py-2 space-y-2 overflow-y-auto pr-1">
@@ -473,7 +473,7 @@
             </div>
         </div>
 
-        <!-- 6.2 身高體重上傳 (空白無預設) -->
+        <!-- 6.2 身高體重上傳 -->
         <div id="wh-upload-view" class="hidden w-full flex-1 flex flex-col justify-between pt-6 pb-2 overflow-hidden">
             <div class="text-xs font-bold text-slate-700 text-center py-1 bg-slate-100 rounded-md">身高 / 體重 輸入</div>
             <div class="flex-1 flex flex-col justify-center space-y-3 px-2">
@@ -492,7 +492,7 @@
             </div>
         </div>
 
-        <!-- 6.3 GCS 上傳 (空白無預設) -->
+        <!-- 6.3 GCS 上傳 -->
         <div id="gcs-upload-view" class="hidden w-full flex-1 flex flex-col justify-between pt-6 pb-2 overflow-hidden">
             <div class="text-xs font-bold text-slate-700 text-center py-1 bg-slate-100 rounded-md">上傳GCS</div>
             <div class="flex-1 flex flex-col justify-center space-y-3 px-2">
@@ -512,7 +512,7 @@
             </div>
         </div>
 
-        <!-- 6.4 肌力 M/P 上傳 (空白無預設) -->
+        <!-- 6.4 肌力 M/P 上傳 -->
         <div id="mp-upload-view" class="hidden w-full flex-1 flex flex-col justify-between pt-6 pb-2 overflow-hidden">
             <div class="text-xs font-bold text-slate-700 text-center py-1 bg-slate-100 rounded-md">Muscle Power</div>
             <div class="flex-1 flex flex-col justify-center space-y-3 px-2">
@@ -548,9 +548,17 @@
                         <option value="TPR">生命徵象 (V/S 趨勢)</option>
                     </select>
                 </div>
-                <div id="io-mode-selector" class="hidden flex space-x-1 px-1">
-                    <button id="io-mode-single" onclick="setIOMode('single')" class="flex-1 py-1 bg-teal-600 text-white rounded text-xs font-bold">單日明細</button>
-                    <button id="io-mode-all" onclick="setIOMode('all')" class="flex-1 py-1 bg-slate-200 text-slate-700 rounded text-xs font-bold">全日加總</button>
+                
+                <!-- I/O 模式切換與單日日期選擇器 -->
+                <div id="io-controls-box" class="hidden space-y-1.5 px-1">
+                    <div class="flex space-x-1">
+                        <button id="io-mode-single" onclick="setIOMode('single')" class="flex-1 py-1 bg-teal-600 text-white rounded text-xs font-bold">單日明細</button>
+                        <button id="io-mode-all" onclick="setIOMode('all')" class="flex-1 py-1 bg-slate-200 text-slate-700 rounded text-xs font-bold">全日加總</button>
+                    </div>
+                    <div id="io-date-filter-wrapper" class="flex items-center space-x-2 bg-slate-50 p-1.5 rounded-lg border border-slate-200 text-xs">
+                        <span class="font-bold text-slate-700">選擇日期：</span>
+                        <input type="date" id="io-query-date-picker" onchange="renderAdvancedChart()" class="input-bg px-2 py-0.5 rounded text-xs font-semibold text-slate-800 outline-none flex-1">
+                    </div>
                 </div>
 
                 <div id="adv-chart-container" class="flex-1 bg-white border border-slate-200 p-3 rounded-xl shadow-xs overflow-y-auto flex flex-col space-y-2 relative"></div>
@@ -615,7 +623,6 @@
                         </select>
                     </div>
 
-                    <!-- 新增血袋號碼與大大的血型 -->
                     <div class="flex items-center justify-between border-t border-slate-200 pt-2">
                         <div>
                             <label class="text-[11px] text-slate-600 font-bold block mb-0.5">血袋號碼：</label>
@@ -961,7 +968,7 @@
                         ewsAlert: false,
                         ewsReason: "",
                         vitals: [],
-                        advancedVitals: [], // 移除 10/14 預設資料
+                        advancedVitals: [],
                         meds: JSON.parse(JSON.stringify(profile.meds)),
                         treats: profile.treats,
                         notes: [
@@ -982,7 +989,7 @@
         let globalSharedMemo = "全病房交班注意事項：請落實三讀五對、洗手規範與生命徵象異常回報。";
         let cloudMarquee = [];
 
-        const dbRef = ref(db, 'femh_cloud_db_v3');
+        const dbRef = ref(db, 'femh_cloud_db_v12');
         get(dbRef).then((snapshot) => {
             const statusEl = document.getElementById('cloud-sync-status');
             const cloudData = snapshot.val();
@@ -1003,11 +1010,11 @@
         }).catch((error) => {
             const statusEl = document.getElementById('cloud-sync-status');
             if (statusEl) { statusEl.innerText = "雲端連線失敗(使用本地)"; statusEl.className = "absolute top-1 right-2 text-[9px] font-bold text-rose-600 z-30"; }
-            patientsData = JSON.parse(localStorage.getItem('femh_45beds_vFixed11')) || generateDefaultPatients();
-            nurseBedAssignments = JSON.parse(localStorage.getItem('femh_nurse_schedule_vFixed11')) || {};
-            let localUserDb = JSON.parse(localStorage.getItem('femh_user_db_vFixed11'));
+            patientsData = JSON.parse(localStorage.getItem('femh_45beds_vFixed12')) || generateDefaultPatients();
+            nurseBedAssignments = JSON.parse(localStorage.getItem('femh_nurse_schedule_vFixed12')) || {};
+            let localUserDb = JSON.parse(localStorage.getItem('femh_user_db_vFixed12'));
             userDatabase = (localUserDb && Object.keys(localUserDb).length > 0) ? localUserDb : defaultUserDatabase;
-            globalSharedMemo = localStorage.getItem('femh_shared_memo_vFixed11') || globalSharedMemo;
+            globalSharedMemo = localStorage.getItem('femh_shared_memo_vFixed12') || globalSharedMemo;
             syncNurseAssignments();
         });
 
@@ -1036,10 +1043,10 @@
                 lastUpdated: new Date().toISOString()
             };
             set(dbRef, payload).catch(err => console.log('Cloud save err:', err));
-            localStorage.setItem('femh_45beds_vFixed11', JSON.stringify(patientsData));
-            localStorage.setItem('femh_shared_memo_vFixed11', globalSharedMemo);
-            localStorage.setItem('femh_nurse_schedule_vFixed11', JSON.stringify(nurseBedAssignments));
-            localStorage.setItem('femh_user_db_vFixed11', JSON.stringify(userDatabase));
+            localStorage.setItem('femh_45beds_vFixed12', JSON.stringify(patientsData));
+            localStorage.setItem('femh_shared_memo_vFixed12', globalSharedMemo);
+            localStorage.setItem('femh_nurse_schedule_vFixed12', JSON.stringify(nurseBedAssignments));
+            localStorage.setItem('femh_user_db_vFixed12', JSON.stringify(userDatabase));
         }
 
         window.saveToLocalStorage = saveToCloud;
@@ -1053,6 +1060,26 @@
         let currentPatientTab = 'my';
         let currentIOMode = 'single';
         let editingNoteId = null;
+
+        // 自動將各項操作記錄暫存至護理紀錄
+        function autoAddDraftNote(contentDesc) {
+            if (!currentUser) return;
+            const p = patientsData[currentSelectedBed];
+            if (!p) return;
+            if (!p.notes) p.notes = [];
+            const now = new Date();
+            const timeStr = `${String(now.getMonth()+1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')} ${getActiveTime()}`;
+            p.notes.unshift({
+                id: Date.now(),
+                time: timeStr,
+                content: `[自動暫存] ${contentDesc}`,
+                status: "draft",
+                creator: currentUser.name,
+                photo: null,
+                part: ""
+            });
+            saveToCloud();
+        }
 
         function evaluateEWS(patient, newVital, newGcs, newMp) {
             let reasons = [];
@@ -1134,7 +1161,7 @@
         function updateDynamicMarquee() {
             const marquee = document.getElementById('dynamic-marquee');
             if (!marquee) return;
-            marquee.innerText = `院內共通公告：落實三讀五對。 【全病房即時提醒】目前尚有未執行之臨床處置，請各班護理師儘速查核！    【管路安全】請同仁於每班交班時仔細盤點及評估各類留置管路（CVC、NG、Foley、Drain），並確實記錄深度與固定狀況，避免管路意外自拔或滑脫。  `;
+            marquee.innerText = `院內共通公告：落實三讀五對。 【全病房即時提醒】目前尚有無執行之臨床處置，請各班護理師儘速查核！`;
         }
 
         window.handleLogin = function() {
@@ -1327,7 +1354,6 @@
             document.querySelectorAll('#detail-patient-info, #nfc-patient-info, #blood-patient-info, #consent-patient-info').forEach(el => el.innerText = p.info || '1985/04/12 (41Y) | 病例號：1031988001');
             document.querySelectorAll('#detail-patient-extra, #nfc-patient-extra, #blood-patient-extra, #consent-patient-extra').forEach(el => el.innerText = p.extra || `診斷：${p.diag || '一般照護'}`);
             
-            // 更新血袋血型標籤與病人血型相符
             const bagTypeLabel = document.getElementById('blood-bag-type-label');
             if (bagTypeLabel) {
                 bagTypeLabel.innerText = p.blood || 'O+';
@@ -1715,6 +1741,15 @@
             else if (viewId === 'mp-upload-view') {
                 document.getElementById('mp-input-time').value = getActiveTime();
             }
+            else if (viewId === 'advanced-query-view') {
+                const now = new Date();
+                const year = now.getFullYear();
+                const month = String(now.getMonth() + 1).padStart(2, '0');
+                const day = String(now.getDate()).padStart(2, '0');
+                const datePicker = document.getElementById('io-query-date-picker');
+                if (datePicker) datePicker.value = `${year}-${month}-${day}`;
+                renderAdvancedChart();
+            }
             else if (viewId === 'consent-view') {
                 setTimeout(initSignatureCanvas, 150);
             }
@@ -1749,7 +1784,6 @@
                         count++;
                         const item = document.createElement('div');
                         item.className = 'flex items-center justify-between border border-slate-300 p-2 rounded-xl bg-slate-50 text-xs shadow-2xs';
-                        // 「(尚未執行)」用紅色字體且包含括號，統一靠右，處置在左
                         item.innerHTML = `<span class="font-semibold text-slate-800">${t}</span><span class="text-rose-600 font-bold shrink-0 ml-2">(尚未執行)</span>`;
                         container.appendChild(item);
                     }
@@ -1812,14 +1846,17 @@
         window.saveMedications = function() {
             const p = patientsData[currentSelectedBed];
             if (!p.medChecked) p.medChecked = {};
+            let savedAny = false;
             p.meds.forEach((med, idx) => {
                 const chk = document.getElementById(`med-chk-${idx}`);
-                if (chk && chk.checked && !chk.disabled) {
+                if (chk && chk.checked && !chk.disabled && !p.medChecked[idx]) {
                     p.medChecked[idx] = true;
+                    savedAny = true;
+                    autoAddDraftNote(`給予藥物：${med.name} (${med.dose})，途徑: ${med.route}`);
                 }
             });
             saveToCloud();
-            alert('給藥作業儲存成功（已同步雲端並鎖定）！');
+            alert('給藥作業儲存成功（已同步雲端並自動暫存至護理紀錄）！');
             switchView('nfc-view');
         };
 
@@ -1858,15 +1895,15 @@
                     if (chk && chk.checked && !chk.disabled) {
                         p.treatChecked[idx] = true;
                         p.treatTimestamps[idx] = currentTimeStr;
+                        autoAddDraftNote(`執行治療處置：${treatText}`);
                     }
                 });
             }
             saveToCloud();
-            alert('治療處置儲存成功（已同步雲端）！');
+            alert('治療處置儲存成功（已同步雲端並自動暫存至護理紀錄）！');
             switchView('nfc-view');
         };
 
-        // 儲存 V/S（空白無預設）
         window.saveVitalsData = function() {
             const p = patientsData[currentSelectedBed];
             if (!p.vitals) p.vitals = [];
@@ -1885,7 +1922,9 @@
             }
 
             const customTime = document.getElementById('vitals-input-time').value || getActiveTime();
+            const creatorName = currentUser ? currentUser.name : "護理師";
             const newVital = {
+                id: Date.now(),
                 time: customTime,
                 t: tVal || '',
                 p: pVal || '',
@@ -1893,11 +1932,12 @@
                 bp: (sysVal || diaVal) ? `${sysVal || ''}/${diaVal || ''}` : '',
                 spo2: spo2Val || '',
                 pain: painVal || '',
-                creator: currentUser ? currentUser.name : "護理師"
+                creator: creatorName
             };
 
             p.vitals.unshift(newVital);
             evaluateEWS(p, newVital, null, null);
+            autoAddDraftNote(`上傳生命徵象 V/S (T:${tVal||'-'}, P:${pVal||'-'}, BP:${sysVal||'-'}/${diaVal||'-'})`);
             saveToCloud();
 
             document.getElementById('input-t').value = '';
@@ -1915,15 +1955,9 @@
         window.saveIOData = function() {
             const dateInputVal = document.getElementById('io-input-date').value;
             const timeInputVal = document.getElementById('io-input-time').value || getActiveTime();
-            let formattedDate = '';
-            if (dateInputVal) {
-                let parts = dateInputVal.split('-');
-                if (parts.length === 3) formattedDate = `${parts[1]}/${parts[2]} ${timeInputVal}`;
-            }
-            if (!formattedDate) {
-                const now = new Date();
-                formattedDate = `${now.getMonth()+1}/${now.getDate()} ${timeInputVal}`;
-            }
+            let rawDateStr = dateInputVal || `${new Date().getFullYear()}-${String(new Date().getMonth()+1).padStart(2,'0')}-${String(new Date().getDate()).padStart(2,'0')}`;
+            let parts = rawDateStr.split('-');
+            let formattedDate = (parts.length === 3) ? `${parts[1]}/${parts[2]} ${timeInputVal}` : `${new Date().getMonth()+1}/${new Date().getDate()} ${timeInputVal}`;
 
             const inFood = parseInt(document.getElementById('io-in-food').value) || 0;
             const inW = parseInt(document.getElementById('io-in-water').value) || 0;
@@ -1943,11 +1977,15 @@
             const p = patientsData[currentSelectedBed];
             if (!p.advancedVitals) p.advancedVitals = [];
             
+            const creatorName = currentUser ? currentUser.name : "護理師";
             p.advancedVitals.unshift({
+                id: Date.now(),
+                rawDate: rawDateStr,
                 time: formattedDate,
                 type: 'IO', inVal: totalIn, outVal: totalOut, net: net,
-                details: { inFood, inW, inIV, inB, inO, outU, outStool, outD, outV, outO }
+                creator: creatorName
             });
+            autoAddDraftNote(`上傳 I/O 紀錄 (總進量:${totalIn}ml, 總出量:${totalOut}ml)`);
             saveToCloud();
 
             document.getElementById('io-in-food').value = '';
@@ -1976,10 +2014,14 @@
             const p = patientsData[currentSelectedBed];
             if (!p.advancedVitals) p.advancedVitals = [];
             const now = new Date();
+            const creatorName = currentUser ? currentUser.name : "護理師";
             p.advancedVitals.unshift({
+                id: Date.now(),
                 time: `${now.getMonth()+1}/${now.getDate()} ${timeVal}`,
-                type: 'WH', height: h, weight: w
+                type: 'WH', height: h, weight: w,
+                creator: creatorName
             });
+            autoAddDraftNote(`上傳身高體重 (身高:${h||'-'}cm, 體重:${w||'-'}kg)`);
             saveToCloud();
             document.getElementById('input-height').value = '';
             document.getElementById('input-weight').value = '';
@@ -2007,14 +2049,18 @@
             const p = patientsData[currentSelectedBed];
             if (!p.advancedVitals) p.advancedVitals = [];
             const now = new Date();
+            const creatorName = currentUser ? currentUser.name : "護理師";
             
             const newGcs = {
+                id: Date.now(),
                 time: `${now.getMonth()+1}/${now.getDate()} ${timeVal}`,
-                type: 'GCS', e, v, m, score: `E${e}V${v}M${m}`, total: e+v+m
+                type: 'GCS', e, v, m, score: `E${e}V${v}M${m}`, total: e+v+m,
+                creator: creatorName
             };
 
             p.advancedVitals.unshift(newGcs);
             evaluateEWS(p, null, newGcs, null);
+            autoAddDraftNote(`上傳 GCS 昏迷指數 (${newGcs.score}, 總分:${newGcs.total})`);
             saveToCloud();
 
             document.getElementById('gcs-e').value = '';
@@ -2046,14 +2092,18 @@
             const p = patientsData[currentSelectedBed];
             if (!p.advancedVitals) p.advancedVitals = [];
             const now = new Date();
+            const creatorName = currentUser ? currentUser.name : "護理師";
 
             const newMp = {
+                id: Date.now(),
                 time: `${now.getMonth()+1}/${now.getDate()} ${timeVal}`,
-                type: 'MP', rue, lue, rle, lle
+                type: 'MP', rue, lue, rle, lle,
+                creator: creatorName
             };
 
             p.advancedVitals.unshift(newMp);
             evaluateEWS(p, null, null, newMp);
+            autoAddDraftNote(`上傳 Muscle Power 肌力評估`);
             saveToCloud();
 
             document.getElementById('mp-rue').value = '';
@@ -2074,12 +2124,15 @@
             currentIOMode = mode;
             const btnSingle = document.getElementById('io-mode-single');
             const btnAll = document.getElementById('io-mode-all');
+            const dateWrapper = document.getElementById('io-date-filter-wrapper');
             if (mode === 'single') {
                 btnSingle.className = 'flex-1 py-1 bg-teal-600 text-white rounded text-xs font-bold';
                 btnAll.className = 'flex-1 py-1 bg-slate-200 text-slate-700 rounded text-xs font-bold';
+                dateWrapper.classList.remove('hidden');
             } else {
                 btnSingle.className = 'flex-1 py-1 bg-slate-200 text-slate-700 rounded text-xs font-bold';
                 btnAll.className = 'flex-1 py-1 bg-teal-600 text-white rounded text-xs font-bold';
+                dateWrapper.classList.add('hidden');
             }
             renderAdvancedChart();
         };
@@ -2087,12 +2140,12 @@
         window.renderAdvancedChart = function() {
             const qType = document.getElementById('adv-query-type').value;
             const container = document.getElementById('adv-chart-container');
-            const ioModeSelector = document.getElementById('io-mode-selector');
+            const ioControlsBox = document.getElementById('io-controls-box');
             const p = patientsData[currentSelectedBed];
             container.innerHTML = '';
 
             if (qType === 'IO') {
-                ioModeSelector.classList.remove('hidden');
+                ioControlsBox.classList.remove('hidden');
                 const ioList = (p.advancedVitals || []).filter(item => item.type === 'IO');
                 if (ioList.length === 0) {
                     container.innerHTML = '<div class="text-center text-slate-400 text-xs py-8">目前無 I/O 紀錄</div>';
@@ -2100,64 +2153,85 @@
                 }
 
                 if (currentIOMode === 'single') {
+                    const selectedDate = document.getElementById('io-query-date-picker').value;
+                    const filteredList = selectedDate ? ioList.filter(item => item.rawDate === selectedDate) : ioList;
+
+                    if (filteredList.length === 0) {
+                        container.innerHTML = `<div class="text-center text-slate-400 text-xs py-8">所選日期 (${selectedDate || '全部'}) 無 I/O 紀錄</div>`;
+                        return;
+                    }
+
                     let tableHtml = `
+                        <div class="text-[11px] font-bold text-teal-800 mb-1">【單日明細查詢】日期：${selectedDate || '全部'}</div>
                         <table class="w-full text-xs text-left border-collapse border border-slate-300 rounded-lg overflow-hidden">
                             <thead>
                                 <tr class="bg-slate-100 text-slate-700">
-                                    <th class="border border-slate-300 p-2">時間/日期</th>
-                                    <th class="border border-slate-300 p-2 text-blue-800">總進量(IN)</th>
-                                    <th class="border border-slate-300 p-2 text-rose-800">總出量(OUT)</th>
-                                    <th class="border border-slate-300 p-2">淨值(Net)</th>
+                                    <th class="border border-slate-300 p-2">時間</th>
+                                    <th class="border border-slate-300 p-2 text-blue-800">總進(IN)</th>
+                                    <th class="border border-slate-300 p-2 text-rose-800">總出(OUT)</th>
+                                    <th class="border border-slate-300 p-2">淨值</th>
+                                    <th class="border border-slate-300 p-2 text-center">操作</th>
                                 </tr>
                             </thead>
                             <tbody>
                     `;
-                    ioList.forEach(item => {
-                        let netStr = item.net >= 0 ? `+${item.net} ml` : `${item.net} ml`;
+                    filteredList.forEach(item => {
+                        let netStr = item.net >= 0 ? `+${item.net}` : `${item.net}`;
+                        let canDelete = currentUser && item.creator === currentUser.name;
+                        let delBtnHtml = canDelete ? `<button onclick="deleteAdvRecord('${item.id}')" class="text-rose-600 font-bold hover:underline">刪除</button>` : `<span class="text-slate-400">唯讀</span>`;
                         tableHtml += `
                             <tr>
                                 <td class="border border-slate-300 p-2 font-bold">${item.time}</td>
-                                <td class="border border-slate-300 p-2">${item.inVal} ml</td>
-                                <td class="border border-slate-300 p-2">${item.outVal} ml</td>
+                                <td class="border border-slate-300 p-2">${item.inVal}</td>
+                                <td class="border border-slate-300 p-2">${item.outVal}</td>
                                 <td class="border border-slate-300 p-2 font-bold ${item.net >= 0 ? 'text-teal-700' : 'text-rose-600'}">${netStr}</td>
+                                <td class="border border-slate-300 p-2 text-center">${delBtnHtml}</td>
                             </tr>
                         `;
                     });
                     tableHtml += `</tbody></table>`;
                     container.innerHTML = tableHtml;
                 } else {
-                    let sumIn = 0, sumOut = 0;
+                    // 全日加總模式（依日期群組：10月5號整天、10月6號整天……）
+                    let grouped = {};
                     ioList.forEach(item => {
-                        sumIn += (item.inVal || 0);
-                        sumOut += (item.outVal || 0);
+                        let dKey = item.rawDate || item.time.split(' ')[0] || '未分類日期';
+                        if (!grouped[dKey]) grouped[dKey] = { inSum: 0, outSum: 0, count: 0 };
+                        grouped[dKey].inSum += (item.inVal || 0);
+                        grouped[dKey].outSum += (item.outVal || 0);
+                        grouped[dKey].count += 1;
                     });
-                    let totalNet = sumIn - sumOut;
-                    let netStr = totalNet >= 0 ? `+${totalNet} ml` : `${totalNet} ml`;
 
-                    container.innerHTML = `
-                        <div class="bg-emerald-50 border border-emerald-300 p-4 rounded-xl text-xs space-y-3 shadow-sm">
-                            <div class="font-bold text-teal-900 text-center text-sm border-b pb-2">全日 I/O 累計總統計</div>
-                            <div class="grid grid-cols-3 gap-2 text-center">
-                                <div class="bg-white p-2 rounded border border-emerald-200">
-                                    <div class="text-blue-800 font-bold">總進量 (IN)</div>
-                                    <div class="text-sm font-extrabold mt-1">${sumIn} ml</div>
+                    let sortedDates = Object.keys(grouped).sort();
+                    if (sortedDates.length === 0) {
+                        container.innerHTML = '<div class="text-center text-slate-400 text-xs py-8">無全日加總紀錄</div>';
+                        return;
+                    }
+
+                    let allHtml = `<div class="text-[11px] font-bold text-teal-800 mb-1">【全日每日累計總統計表】</div>`;
+                    sortedDates.forEach(dKey => {
+                        let g = grouped[dKey];
+                        let net = g.inSum - g.outSum;
+                        let netStr = net >= 0 ? `+${net} ml` : `${net} ml`;
+                        allHtml += `
+                            <div class="bg-emerald-50 border border-emerald-300 p-3 rounded-xl text-xs space-y-1.5 shadow-2xs my-1">
+                                <div class="font-bold text-teal-900 border-b pb-1 flex justify-between">
+                                    <span>日期：${dKey} 整天累計</span>
+                                    <span class="text-slate-500 font-normal">共 ${g.count} 筆紀錄</span>
                                 </div>
-                                <div class="bg-white p-2 rounded border border-emerald-200">
-                                    <div class="text-rose-800 font-bold">總出量 (OUT)</div>
-                                    <div class="text-sm font-extrabold mt-1">${sumOut} ml</div>
-                                </div>
-                                <div class="bg-white p-2 rounded border border-emerald-200">
-                                    <div class="text-teal-800 font-bold">淨值 (Net)</div>
-                                    <div class="text-sm font-extrabold mt-1 ${totalNet >= 0 ? 'text-teal-700' : 'text-rose-600'}">${netStr}</div>
+                                <div class="grid grid-cols-3 gap-1 text-center pt-1 font-medium text-slate-800">
+                                    <div class="bg-white p-1 rounded border">總進: <span class="text-blue-800 font-bold">${g.inSum}ml</span></div>
+                                    <div class="bg-white p-1 rounded border">總出: <span class="text-rose-800 font-bold">${g.outSum}ml</span></div>
+                                    <div class="bg-white p-1 rounded border">淨值: <span class="${net>=0?'text-teal-700':'text-rose-600'} font-bold">${netStr}</span></div>
                                 </div>
                             </div>
-                            <div class="text-[11px] text-slate-600 text-center font-medium">共計 ${ioList.length} 筆上傳紀錄加總</div>
-                        </div>
-                    `;
+                        `;
+                    });
+                    container.innerHTML = allHtml;
                 }
                 return;
             } else {
-                ioModeSelector.classList.add('hidden');
+                ioControlsBox.classList.add('hidden');
             }
 
             if (qType === 'TPR') {
@@ -2166,11 +2240,12 @@
                     return;
                 }
                 p.vitals.forEach(v => {
+                    let canDel = currentUser && v.creator === currentUser.name;
                     container.innerHTML += `
                         <div class="border border-slate-200 p-2.5 rounded-xl text-xs space-y-1 w-full bg-slate-50 shadow-2xs">
-                            <div class="font-bold text-slate-700 border-b pb-1 flex justify-between">
-                                <span>時間：${v.time}</span>
-                                <span class="text-[10px] text-slate-500">記錄者: ${v.creator}</span>
+                            <div class="font-bold text-slate-700 border-b pb-1 flex justify-between items-center">
+                                <span>時間：${v.time} | 記錄者: ${v.creator}</span>
+                                ${canDel ? `<button onclick="deleteVitalRecord(${v.id})" class="text-rose-600 font-bold text-[10px] hover:underline">刪除</button>` : '<span class="text-slate-400 text-[10px]">唯讀</span>'}
                             </div>
                             <div class="grid grid-cols-3 gap-1 pt-1 text-[11px] font-medium text-slate-800">
                                 <div>T: ${v.t !== '' ? v.t + ' ℃' : '-'}</div>
@@ -2192,7 +2267,11 @@
                 return;
             }
 
-            rawList.forEach((item, index) => {
+            rawList.forEach((item) => {
+                let canDel = currentUser && item.creator === currentUser.name;
+                let creatorBadge = `<span class="text-[10px] text-slate-500 font-normal">記錄者: ${item.creator || '護理師'}</span>`;
+                let delBtn = canDel ? `<button onclick="deleteAdvRecord('${item.id}')" class="text-rose-600 font-bold text-[10px] hover:underline">刪除</button>` : '<span class="text-slate-400 text-[10px]">唯讀</span>';
+
                 let cardHtml = '';
                 if (qType === 'WH') {
                     let heightVal = item.height;
@@ -2200,9 +2279,9 @@
                     let bmi = (heightVal && weightVal) ? (weightVal / Math.pow(heightVal / 100, 2)).toFixed(1) : '-';
                     cardHtml = `
                         <div class="bg-white border border-slate-200 p-3 rounded-xl shadow-2xs text-xs space-y-1">
-                            <div class="font-bold text-slate-800 border-b pb-1 flex justify-between">
-                                <span>測量時間：${item.time}</span>
-                                <span class="text-teal-700 font-bold">BMI: ${bmi}</span>
+                            <div class="font-bold text-slate-800 border-b pb-1 flex justify-between items-center">
+                                <span>測量時間：${item.time} ${creatorBadge}</span>
+                                <div class="flex items-center space-x-2"><span class="text-teal-700 font-bold">BMI: ${bmi}</span>${delBtn}</div>
                             </div>
                             <div class="grid grid-cols-2 pt-1 font-semibold text-slate-700">
                                 <div>身高：${heightVal !== null ? heightVal + ' 公分 (CM)' : '-'}</div>
@@ -2214,8 +2293,8 @@
                     cardHtml = `
                         <div class="bg-white border border-slate-200 p-3 rounded-xl shadow-2xs text-xs space-y-1.5">
                             <div class="font-bold text-slate-800 border-b pb-1 flex justify-between items-center">
-                                <span>評估時間：${item.time}</span>
-                                <span class="text-indigo-700 font-bold">${item.total} 分 (${item.score})</span>
+                                <span>評估時間：${item.time} ${creatorBadge}</span>
+                                <div class="flex items-center space-x-2"><span class="text-indigo-700 font-bold">${item.total} 分 (${item.score})</span>${delBtn}</div>
                             </div>
                             <div class="grid grid-cols-3 gap-1 pt-0.5 font-semibold text-slate-700 text-center">
                                 <div class="bg-slate-50 p-1 rounded border">睜眼 E: ${item.e}</div>
@@ -2227,9 +2306,9 @@
                 } else if (qType === 'MP') {
                     cardHtml = `
                         <div class="bg-white border border-slate-200 p-3 rounded-xl shadow-2xs text-xs space-y-1.5">
-                            <div class="font-bold text-slate-800 border-b pb-1 flex justify-between">
-                                <span>評估時間：${item.time}</span>
-                                <span class="text-teal-700">肌力評估紀錄</span>
+                            <div class="font-bold text-slate-800 border-b pb-1 flex justify-between items-center">
+                                <span>評估時間：${item.time} ${creatorBadge}</span>
+                                ${delBtn}
                             </div>
                             <div class="grid grid-cols-2 gap-2 pt-0.5 font-semibold text-slate-700">
                                 <div class="bg-slate-50 p-1.5 rounded border flex justify-between"><span>右上肢 (RUE):</span><span>${item.rue !== null ? item.rue + ' 級' : '-'}</span></div>
@@ -2242,6 +2321,22 @@
                 }
                 container.innerHTML += cardHtml;
             });
+        };
+
+        window.deleteVitalRecord = function(id) {
+            const p = patientsData[currentSelectedBed];
+            p.vitals = p.vitals.filter(v => v.id !== id);
+            saveToCloud();
+            renderAdvancedChart();
+            alert('生命徵象紀錄已成功刪除！');
+        };
+
+        window.deleteAdvRecord = function(idStr) {
+            const p = patientsData[currentSelectedBed];
+            p.advancedVitals = p.advancedVitals.filter(item => String(item.id) !== String(idStr));
+            saveToCloud();
+            renderAdvancedChart();
+            alert('紀錄已成功刪除！');
         };
 
         window.loadNursingNotes = function() {
@@ -2377,6 +2472,7 @@
                     time: getActiveTime(),
                     content: `[相片紀錄: ${part}]`, status: "saved", creator: currentUser ? currentUser.name : "護理師", photo: e.target.result, part: part
                 });
+                autoAddDraftNote(`上傳照護部位相片 (${part})`);
                 saveToCloud();
                 closePhotoModal();
                 loadNursingNotes();
@@ -2491,13 +2587,11 @@
             }
         };
 
-        // 輸血防呆與時間限制（紅血球4小時、血漿2小時、血小板30分）
         window.saveBloodRecord = function() {
             const p = patientsData[currentSelectedBed];
             const patientBlood = p.blood || 'O+';
             const bagBlood = document.getElementById('blood-bag-type-label').innerText;
 
-            // 血型相容邏輯檢核
             if (patientBlood !== bagBlood && patientBlood !== 'O+') {
                 alert(`安全防呆警告：病人血型為 [${patientBlood}]，但血袋血型為 [${bagBlood}]，血型不符無法核對！`);
                 return;
@@ -2534,21 +2628,17 @@
                 return;
             }
 
-            let maxAllowedMin = 240; // 預設全血或紅血球 4 小時 (240分)
             if (selectedProduct.includes('血小板')) {
-                maxAllowedMin = 30;
                 if (diffMin > 30) {
                     alert(`安全法規限制：血小板濃縮液多在 30 分鐘內輸完，目前設定耗時 ${diffMin} 分鐘，超過範圍！`);
                     return;
                 }
             } else if (selectedProduct.includes('血漿')) {
-                maxAllowedMin = 120;
                 if (diffMin > 120) {
                     alert(`安全法規限制：新鮮冷凍血漿一般在 30 至 60 分鐘或最慢 2 小時內需輸完，目前設定耗時 ${diffMin} 分鐘，超過 2 小時限制！`);
                     return;
                 }
             } else if (selectedProduct.includes('紅血球')) {
-                maxAllowedMin = 240;
                 if (diffMin > 240) {
                     alert(`安全法規限制：紅血球濃縮液需於 4 小時內輸完，目前設定耗時 ${diffMin} 分鐘，超過 4 小時限制！`);
                     return;
@@ -2566,6 +2656,7 @@
             };
             p.hasBlood = true;
 
+            autoAddDraftNote(`進行輸血作業 (${selectedProduct}, 血袋號碼:${bagNo}, ${startTime}~${endTime})`);
             saveToCloud();
 
             document.getElementById('blood-product-type').disabled = true;
@@ -2573,7 +2664,7 @@
             document.getElementById('blood-end-time').disabled = true;
             bloodIsLocked = true;
 
-            alert(`輸血作業儲存成功（已同步雲端）！\n- 血品：${selectedProduct}\n- 血袋號碼：${bagNo}\n- 時間：${startTime} ~ ${endTime} (${diffMin}分鐘)\n- 核對人員：${bloodVerifiedNurse1} & ${bloodVerifiedNurse2}`);
+            alert(`輸血作業儲存成功（已同步雲端並自動暫存至護理紀錄）！\n- 血品：${selectedProduct}\n- 血袋號碼：${bagNo}\n- 時間：${startTime} ~ ${endTime}`);
             switchView('nfc-view');
         };
 
@@ -2586,6 +2677,7 @@
             if (confirm('確定要將此床的輸血作業標記為「輸血完畢/結案」並移除血品標籤嗎？')) {
                 p.bloodRecord = null;
                 p.hasBlood = false;
+                autoAddDraftNote(`完成輸血作業並結案`);
                 saveToCloud();
                 alert('輸血作業已結案，血品標籤已成功移除並同步至雲端與白板！');
                 switchView('nfc-view');
@@ -2666,6 +2758,7 @@
             if (!p.consents) p.consents = {};
             
             p.consents[cType] = sigCanvas.toDataURL('image/png');
+            autoAddDraftNote(`完成電子簽署：${cType}`);
             saveToCloud();
             alert(`【${cType}】電子簽名完成並安全鎖定（已同步雲端）！`);
             checkConsentStatus();
