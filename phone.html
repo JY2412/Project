@@ -232,7 +232,6 @@
             </div>
 
             <div class="flex-1 overflow-y-auto my-2 space-y-2 px-2 pr-1">
-                <!-- EWS 警示詳細原因提示橫幅 -->
                 <div id="detail-ews-banner" class="hidden w-full bg-rose-50 border border-rose-300 p-2.5 rounded-xl text-rose-800 text-xs space-y-1">
                     <div class="font-bold">EWS 警示觸發通知</div>
                     <div id="detail-ews-reason-text" class="text-[11px]">--</div>
@@ -411,7 +410,7 @@
             </div>
         </div>
 
-        <!-- 6. 上傳 V/S 頁面 (含時間) -->
+        <!-- 6. 上傳 V/S 頁面 (空白無預設) -->
         <div id="vitals-upload-view" class="hidden w-full flex-1 flex flex-col justify-between pt-6 pb-2 overflow-hidden">
             <div class="text-xs font-bold text-slate-700 text-center py-1 bg-slate-100 rounded-md">生命徵象數據輸入</div>
             <div class="flex-1 flex flex-col justify-between py-2 space-y-2 overflow-y-auto pr-1">
@@ -420,18 +419,18 @@
                         <span class="font-bold text-slate-800">測量時間：</span>
                         <input type="time" id="vitals-input-time" class="input-bg px-2 py-1 rounded text-xs font-semibold text-slate-800 outline-none text-center">
                     </div>
-                    <div class="flex items-center justify-between"><span>T (°C):</span><input type="number" step="0.1" id="input-t" oninput="checkVitalInputColor(this, 't')" placeholder="請輸入" class="w-24 input-bg px-2 py-1 rounded text-center"></div>
-                    <div class="flex items-center justify-between"><span>P (次/分):</span><input type="number" id="input-p" oninput="checkVitalInputColor(this, 'p')" placeholder="請輸入" class="w-24 input-bg px-2 py-1 rounded text-center"></div>
-                    <div class="flex items-center justify-between"><span>R (次/分):</span><input type="number" id="input-r" oninput="checkVitalInputColor(this, 'r')" placeholder="請輸入" class="w-24 input-bg px-2 py-1 rounded text-center"></div>
+                    <div class="flex items-center justify-between"><span>T (°C):</span><input type="number" step="0.1" id="input-t" placeholder="請輸入" class="w-24 input-bg px-2 py-1 rounded text-center"></div>
+                    <div class="flex items-center justify-between"><span>P (次/分):</span><input type="number" id="input-p" placeholder="請輸入" class="w-24 input-bg px-2 py-1 rounded text-center"></div>
+                    <div class="flex items-center justify-between"><span>R (次/分):</span><input type="number" id="input-r" placeholder="請輸入" class="w-24 input-bg px-2 py-1 rounded text-center"></div>
                     <div class="flex items-center justify-between"><span>BP (mmHg):</span>
                         <div class="flex items-center space-x-1">
-                            <input type="number" id="input-bp-sys" oninput="checkVitalInputColor(this, 'bp_sys')" placeholder="收縮壓" class="w-14 input-bg px-1 py-1 rounded text-center">
+                            <input type="number" id="input-bp-sys" placeholder="收縮壓" class="w-14 input-bg px-1 py-1 rounded text-center">
                             <span>/</span>
-                            <input type="number" id="input-bp-dia" oninput="checkVitalInputColor(this, 'bp_dia')" placeholder="舒張壓" class="w-14 input-bg px-1 py-1 rounded text-center">
+                            <input type="number" id="input-bp-dia" placeholder="舒張壓" class="w-14 input-bg px-1 py-1 rounded text-center">
                         </div>
                     </div>
-                    <div class="flex items-center justify-between"><span>SPO2 (max 100%):</span><input type="number" min="0" max="100" id="input-spo2" oninput="checkVitalInputColor(this, 'spo2')" placeholder="請輸入" class="w-24 input-bg px-2 py-1 rounded text-center"></div>
-                    <div class="flex items-center justify-between"><span>Pain (0-10):</span><input type="number" min="0" max="10" id="input-pain" oninput="checkVitalInputColor(this, 'pain')" placeholder="請輸入" class="w-24 input-bg px-2 py-1 rounded text-center"></div>
+                    <div class="flex items-center justify-between"><span>SPO2 (max 100%):</span><input type="number" min="0" max="100" id="input-spo2" placeholder="請輸入" class="w-24 input-bg px-2 py-1 rounded text-center"></div>
+                    <div class="flex items-center justify-between"><span>Pain (0-10):</span><input type="number" min="0" max="10" id="input-pain" placeholder="請輸入" class="w-24 input-bg px-2 py-1 rounded text-center"></div>
                 </div>
                 <button onclick="saveVitalsData()" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-2.5 rounded-xl shadow text-xs">儲存</button>
             </div>
@@ -440,7 +439,7 @@
             </div>
         </div>
 
-        <!-- 6.1 I/O 上傳頁面 (含日期與時間) -->
+        <!-- 6.1 I/O 上傳頁面 (空白無預設) -->
         <div id="io-upload-view" class="hidden w-full flex-1 flex flex-col justify-between pt-6 pb-2 overflow-hidden">
             <div class="text-xs font-bold text-slate-700 text-center py-1 bg-slate-100 rounded-md">I/O 紀錄輸入</div>
             <div class="flex-1 flex flex-col justify-between py-2 space-y-2 overflow-y-auto pr-1">
@@ -454,18 +453,18 @@
                         <input type="time" id="io-input-time" class="input-bg px-2 py-1 rounded text-xs font-semibold text-slate-800 outline-none text-center">
                     </div>
                     <div class="text-teal-800 font-bold border-b pb-1 pt-1">輸入 (Intake)</div>
-                    <div class="flex items-center justify-between"><span>食物 (ml):</span><input type="number" id="io-in-food" placeholder="ml" class="w-24 input-bg px-2 py-1 rounded text-center"></div>
-                    <div class="flex items-center justify-between"><span>飲水 (ml):</span><input type="number" id="io-in-water" placeholder="ml" class="w-24 input-bg px-2 py-1 rounded text-center"></div>
-                    <div class="flex items-center justify-between"><span>靜脈點滴 (ml):</span><input type="number" id="io-in-iv" placeholder="ml" class="w-24 input-bg px-2 py-1 rounded text-center"></div>
-                    <div class="flex items-center justify-between"><span>血品 (ml):</span><input type="number" id="io-in-blood" placeholder="ml" class="w-24 input-bg px-2 py-1 rounded text-center"></div>
-                    <div class="flex items-center justify-between"><span>其他輸入 (ml):</span><input type="number" id="io-in-other" placeholder="ml" class="w-24 input-bg px-2 py-1 rounded text-center"></div>
+                    <div class="flex items-center justify-between"><span>食物 (ml):</span><input type="number" id="io-in-food" placeholder="" class="w-24 input-bg px-2 py-1 rounded text-center"></div>
+                    <div class="flex items-center justify-between"><span>飲水 (ml):</span><input type="number" id="io-in-water" placeholder="" class="w-24 input-bg px-2 py-1 rounded text-center"></div>
+                    <div class="flex items-center justify-between"><span>靜脈點滴 (ml):</span><input type="number" id="io-in-iv" placeholder="" class="w-24 input-bg px-2 py-1 rounded text-center"></div>
+                    <div class="flex items-center justify-between"><span>血品 (ml):</span><input type="number" id="io-in-blood" placeholder="" class="w-24 input-bg px-2 py-1 rounded text-center"></div>
+                    <div class="flex items-center justify-between"><span>其他輸入 (ml):</span><input type="number" id="io-in-other" placeholder="" class="w-24 input-bg px-2 py-1 rounded text-center"></div>
                     
                     <div class="text-rose-800 font-bold border-b pb-1 pt-2">輸出 (Output)</div>
-                    <div class="flex items-center justify-between"><span>尿液 (ml):</span><input type="number" id="io-out-urine" placeholder="ml" class="w-24 input-bg px-2 py-1 rounded text-center"></div>
-                    <div class="flex items-center justify-between"><span>糞便 (ml):</span><input type="number" id="io-out-stool" placeholder="ml" class="w-24 input-bg px-2 py-1 rounded text-center"></div>
-                    <div class="flex items-center justify-between"><span>引流 (ml):</span><input type="number" id="io-out-drain" placeholder="ml" class="w-24 input-bg px-2 py-1 rounded text-center"></div>
-                    <div class="flex items-center justify-between"><span>嘔吐物 (ml):</span><input type="number" id="io-out-vomit" placeholder="ml" class="w-24 input-bg px-2 py-1 rounded text-center"></div>
-                    <div class="flex items-center justify-between"><span>其他輸出 (ml):</span><input type="number" id="io-out-other" placeholder="ml" class="w-24 input-bg px-2 py-1 rounded text-center"></div>
+                    <div class="flex items-center justify-between"><span>尿液 (ml):</span><input type="number" id="io-out-urine" placeholder="" class="w-24 input-bg px-2 py-1 rounded text-center"></div>
+                    <div class="flex items-center justify-between"><span>糞便 (ml):</span><input type="number" id="io-out-stool" placeholder="" class="w-24 input-bg px-2 py-1 rounded text-center"></div>
+                    <div class="flex items-center justify-between"><span>引流 (ml):</span><input type="number" id="io-out-drain" placeholder="" class="w-24 input-bg px-2 py-1 rounded text-center"></div>
+                    <div class="flex items-center justify-between"><span>嘔吐物 (ml):</span><input type="number" id="io-out-vomit" placeholder="" class="w-24 input-bg px-2 py-1 rounded text-center"></div>
+                    <div class="flex items-center justify-between"><span>其他輸出 (ml):</span><input type="number" id="io-out-other" placeholder="" class="w-24 input-bg px-2 py-1 rounded text-center"></div>
                 </div>
                 <button onclick="saveIOData()" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-2.5 rounded-xl shadow text-xs">儲存</button>
             </div>
@@ -474,7 +473,7 @@
             </div>
         </div>
 
-        <!-- 6.2 身高體重上傳 (含時間) -->
+        <!-- 6.2 身高體重上傳 (空白無預設) -->
         <div id="wh-upload-view" class="hidden w-full flex-1 flex flex-col justify-between pt-6 pb-2 overflow-hidden">
             <div class="text-xs font-bold text-slate-700 text-center py-1 bg-slate-100 rounded-md">身高 / 體重 輸入</div>
             <div class="flex-1 flex flex-col justify-center space-y-3 px-2">
@@ -493,7 +492,7 @@
             </div>
         </div>
 
-        <!-- 6.3 GCS 上傳 (含時間) -->
+        <!-- 6.3 GCS 上傳 (空白無預設) -->
         <div id="gcs-upload-view" class="hidden w-full flex-1 flex flex-col justify-between pt-6 pb-2 overflow-hidden">
             <div class="text-xs font-bold text-slate-700 text-center py-1 bg-slate-100 rounded-md">上傳GCS</div>
             <div class="flex-1 flex flex-col justify-center space-y-3 px-2">
@@ -513,7 +512,7 @@
             </div>
         </div>
 
-        <!-- 6.4 肌力 M/P 上傳 (含時間) -->
+        <!-- 6.4 肌力 M/P 上傳 (空白無預設) -->
         <div id="mp-upload-view" class="hidden w-full flex-1 flex flex-col justify-between pt-6 pb-2 overflow-hidden">
             <div class="text-xs font-bold text-slate-700 text-center py-1 bg-slate-100 rounded-md">Muscle Power</div>
             <div class="flex-1 flex flex-col justify-center space-y-3 px-2">
@@ -536,18 +535,22 @@
             </div>
         </div>
 
-        <!-- 7. 查詢生理測量記錄 (NIS 長條趨勢與表格對照) -->
+        <!-- 7. 查詢生理測量記錄 -->
         <div id="advanced-query-view" class="hidden w-full flex-1 flex flex-col justify-between pt-6 pb-2 overflow-hidden">
             <div class="text-xs font-bold text-slate-700 text-center py-1 bg-slate-100 rounded-md">查詢記錄 (NIS 趨勢表)</div>
             <div class="flex-1 flex flex-col py-2 space-y-2 overflow-y-auto pr-1">
                 <div class="flex space-x-1 shrink-0 px-1">
                     <select id="adv-query-type" onchange="renderAdvancedChart()" class="w-full input-bg h-9 px-2 rounded text-xs font-bold text-slate-800">
                         <option value="MP">Muscle Power (四肢肌力對照)</option>
-                        <option value="IO">I/O 每日統計表</option>
+                        <option value="IO">I/O 統計表 (單日/全日切換)</option>
                         <option value="WH">身高 / 體重 / BMI</option>
                         <option value="GCS">GCS 昏迷指數趨勢</option>
                         <option value="TPR">生命徵象 (V/S 趨勢)</option>
                     </select>
+                </div>
+                <div id="io-mode-selector" class="hidden flex space-x-1 px-1">
+                    <button id="io-mode-single" onclick="setIOMode('single')" class="flex-1 py-1 bg-teal-600 text-white rounded text-xs font-bold">單日明細</button>
+                    <button id="io-mode-all" onclick="setIOMode('all')" class="flex-1 py-1 bg-slate-200 text-slate-700 rounded text-xs font-bold">全日加總</button>
                 </div>
 
                 <div id="adv-chart-container" class="flex-1 bg-white border border-slate-200 p-3 rounded-xl shadow-xs overflow-y-auto flex flex-col space-y-2 relative"></div>
@@ -606,11 +609,24 @@
                         <span>血品種類：</span>
                         <select id="blood-product-type" class="input-bg px-2 py-1 rounded text-xs font-semibold text-slate-800 outline-none">
                             <option value="全血">全血</option>
-                            <option value="紅血球濃縮液">紅血球濃縮液</option>
+                            <option value="紅血球濃縮液">紅血球濃縮液 (需於4小時內輸完)</option>
                             <option value="血小板濃縮液">血小板濃縮液 (需於30分鐘內輸完)</option>
                             <option value="新鮮冷凍血漿">新鮮冷凍血漿 (需於2小時內輸完)</option>
                         </select>
                     </div>
+
+                    <!-- 新增血袋號碼與大大的血型 -->
+                    <div class="flex items-center justify-between border-t border-slate-200 pt-2">
+                        <div>
+                            <label class="text-[11px] text-slate-600 font-bold block mb-0.5">血袋號碼：</label>
+                            <input type="text" id="blood-bag-no" value="B849201938" readonly class="input-bg h-7 px-2 rounded text-xs font-bold text-slate-700 w-32 text-center">
+                        </div>
+                        <div class="text-center bg-rose-100 border border-rose-300 px-3 py-1 rounded-lg">
+                            <span class="text-[10px] text-rose-700 block font-bold">血袋血型</span>
+                            <span id="blood-bag-type-label" class="text-sm font-extrabold text-rose-800">O+</span>
+                        </div>
+                    </div>
+
                     <div class="grid grid-cols-2 gap-2 pt-1 border-t border-slate-200">
                         <div>
                             <label class="text-[11px] text-slate-600 font-bold block mb-0.5">輸血開始時間：</label>
@@ -732,7 +748,7 @@
             </div>
         </div>
 
-        <!-- 13.1 護理師管理視窗 (新增、修改、刪除) -->
+        <!-- 13.1 護理師管理視窗 -->
         <div id="nurse-manager-modal" class="hidden absolute inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-3">
             <div class="bg-white w-full max-w-[330px] p-4 rounded-2xl shadow-2xl space-y-3 border border-slate-200 flex flex-col max-h-[92vh]">
                 <div class="flex justify-between items-center border-b pb-2">
@@ -802,7 +818,7 @@
         <div class="home-indicator"></div>
     </div>
 
-    <!-- Firebase SDK 引入與完整除蟲邏輯 -->
+    <!-- Firebase SDK 引入與完整邏輯 -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
         import { getDatabase, ref, set, onValue, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
@@ -944,10 +960,8 @@
                         hasIO: true, hasGCS: true, hasMP: true,
                         ewsAlert: false,
                         ewsReason: "",
-                        vitals: [
-                            { time: "08:00", t: "36.5", p: "78", r: "18", bp: "120/80", spo2: "98", pain: "2", creator: "許Ｏ媃" }
-                        ],
-                        advancedVitals: [], // 移除預設 10/14 I/O 資料
+                        vitals: [],
+                        advancedVitals: [], // 移除 10/14 預設資料
                         meds: JSON.parse(JSON.stringify(profile.meds)),
                         treats: profile.treats,
                         notes: [
@@ -989,11 +1003,11 @@
         }).catch((error) => {
             const statusEl = document.getElementById('cloud-sync-status');
             if (statusEl) { statusEl.innerText = "雲端連線失敗(使用本地)"; statusEl.className = "absolute top-1 right-2 text-[9px] font-bold text-rose-600 z-30"; }
-            patientsData = JSON.parse(localStorage.getItem('femh_45beds_vFixed10')) || generateDefaultPatients();
-            nurseBedAssignments = JSON.parse(localStorage.getItem('femh_nurse_schedule_vFixed10')) || {};
-            let localUserDb = JSON.parse(localStorage.getItem('femh_user_db_vFixed10'));
+            patientsData = JSON.parse(localStorage.getItem('femh_45beds_vFixed11')) || generateDefaultPatients();
+            nurseBedAssignments = JSON.parse(localStorage.getItem('femh_nurse_schedule_vFixed11')) || {};
+            let localUserDb = JSON.parse(localStorage.getItem('femh_user_db_vFixed11'));
             userDatabase = (localUserDb && Object.keys(localUserDb).length > 0) ? localUserDb : defaultUserDatabase;
-            globalSharedMemo = localStorage.getItem('femh_shared_memo_vFixed10') || globalSharedMemo;
+            globalSharedMemo = localStorage.getItem('femh_shared_memo_vFixed11') || globalSharedMemo;
             syncNurseAssignments();
         });
 
@@ -1022,10 +1036,10 @@
                 lastUpdated: new Date().toISOString()
             };
             set(dbRef, payload).catch(err => console.log('Cloud save err:', err));
-            localStorage.setItem('femh_45beds_vFixed10', JSON.stringify(patientsData));
-            localStorage.setItem('femh_shared_memo_vFixed10', globalSharedMemo);
-            localStorage.setItem('femh_nurse_schedule_vFixed10', JSON.stringify(nurseBedAssignments));
-            localStorage.setItem('femh_user_db_vFixed10', JSON.stringify(userDatabase));
+            localStorage.setItem('femh_45beds_vFixed11', JSON.stringify(patientsData));
+            localStorage.setItem('femh_shared_memo_vFixed11', globalSharedMemo);
+            localStorage.setItem('femh_nurse_schedule_vFixed11', JSON.stringify(nurseBedAssignments));
+            localStorage.setItem('femh_user_db_vFixed11', JSON.stringify(userDatabase));
         }
 
         window.saveToLocalStorage = saveToCloud;
@@ -1037,23 +1051,24 @@
         let currentSelectedBed = "01-1"; 
         let currentActiveNurse = null;
         let currentPatientTab = 'my';
+        let currentIOMode = 'single';
         let editingNoteId = null;
 
         function evaluateEWS(patient, newVital, newGcs, newMp) {
             let reasons = [];
             let isTriggered = false;
 
-            let t = newVital ? parseFloat(newVital.t) : (patient.vitals && patient.vitals.length > 0 ? parseFloat(patient.vitals[0].t) : 36.5);
-            let p = newVital ? parseInt(newVital.p) : (patient.vitals && patient.vitals.length > 0 ? parseInt(patient.vitals[0].p) : 78);
-            let r = newVital ? parseInt(newVital.r) : (patient.vitals && patient.vitals.length > 0 ? parseInt(patient.vitals[0].r) : 18);
-            let spo2 = newVital ? parseInt(newVital.spo2) : (patient.vitals && patient.vitals.length > 0 ? parseInt(patient.vitals[0].spo2) : 98);
-            let bpSys = newVital ? parseInt(newVital.bp.split('/')[0]) : (patient.vitals && patient.vitals.length > 0 ? parseInt(patient.vitals[0].bp.split('/')[0]) : 120);
+            let t = newVital && newVital.t ? parseFloat(newVital.t) : null;
+            let p = newVital && newVital.p ? parseInt(newVital.p) : null;
+            let r = newVital && newVital.r ? parseInt(newVital.r) : null;
+            let spo2 = newVital && newVital.spo2 ? parseInt(newVital.spo2) : null;
+            let bpSys = newVital && newVital.bp ? parseInt(newVital.bp.split('/')[0]) : null;
 
-            if (t > 38.0 || t < 35.5) { isTriggered = true; reasons.push(`體溫異常 (${t}℃)`); }
-            if (p > 120 || p < 50) { isTriggered = true; reasons.push(`心跳異常 (${p} bpm)`); }
-            if (r > 24 || r < 10) { isTriggered = true; reasons.push(`呼吸頻率異常 (${r} 次/分)`); }
-            if (spo2 < 92) { isTriggered = true; reasons.push(`血氧過低 (${spo2}%)`); }
-            if (bpSys < 90 || bpSys > 160) { isTriggered = true; reasons.push(`收縮壓異常 (${bpSys} mmHg)`); }
+            if (t !== null && (t > 38.0 || t < 35.5)) { isTriggered = true; reasons.push(`體溫異常 (${t}℃)`); }
+            if (p !== null && (p > 120 || p < 50)) { isTriggered = true; reasons.push(`心跳異常 (${p} bpm)`); }
+            if (r !== null && (r > 24 || r < 10)) { isTriggered = true; reasons.push(`呼吸頻率異常 (${r} 次/分)`); }
+            if (spo2 !== null && spo2 < 92) { isTriggered = true; reasons.push(`血氧過低 (${spo2}%)`); }
+            if (bpSys !== null && (bpSys < 90 || bpSys > 160)) { isTriggered = true; reasons.push(`收縮壓異常 (${bpSys} mmHg)`); }
 
             let gcsList = (patient.advancedVitals || []).filter(item => item.type === 'GCS');
             if (newGcs) {
@@ -1075,16 +1090,6 @@
                 if (newMp.rue <= 3 || newMp.lue <= 3 || newMp.rle <= 3 || newMp.lle <= 3) {
                     isTriggered = true;
                     reasons.push(`肢體肌力顯著下降 (出現 <= 3 級)`);
-                }
-                let mpList = (patient.advancedVitals || []).filter(item => item.type === 'MP');
-                if (mpList.length > 0) {
-                    let prev = mpList[0];
-                    let sumPrev = prev.rue + prev.lue + prev.rle + prev.lle;
-                    let sumCurr = newMp.rue + newMp.lue + newMp.rle + newMp.lle;
-                    if (sumPrev - sumCurr >= 2) {
-                        isTriggered = true;
-                        reasons.push(`總體肌力顯著衰退`);
-                    }
                 }
             }
 
@@ -1258,7 +1263,6 @@
             }
         }
 
-        // 修正病床清單排版整齊對齊
         function createPatientRow(bedKey, p, showNurseTag) {
             const btn = document.createElement('button');
             btn.className = 'w-full bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-800 py-2 px-3 rounded-xl shadow-2xs text-left flex items-center justify-between transition text-xs my-1';
@@ -1322,6 +1326,13 @@
             document.querySelectorAll('#detail-bed-name, #nfc-bed-patient, #orders-bed-name, #loc-bed-name, #med-bed-name, #treat-bed-name, #blood-bed-name, #consent-bed-name').forEach(el => el.innerText = safeFullName);
             document.querySelectorAll('#detail-patient-info, #nfc-patient-info, #blood-patient-info, #consent-patient-info').forEach(el => el.innerText = p.info || '1985/04/12 (41Y) | 病例號：1031988001');
             document.querySelectorAll('#detail-patient-extra, #nfc-patient-extra, #blood-patient-extra, #consent-patient-extra').forEach(el => el.innerText = p.extra || `診斷：${p.diag || '一般照護'}`);
+            
+            // 更新血袋血型標籤與病人血型相符
+            const bagTypeLabel = document.getElementById('blood-bag-type-label');
+            if (bagTypeLabel) {
+                bagTypeLabel.innerText = p.blood || 'O+';
+            }
+
             const dobEl = document.getElementById('med-bed-dob');
             if (dobEl) dobEl.innerText = `出生年月日：${p.dob || '1985/04/12'}`;
 
@@ -1737,9 +1748,9 @@
                     if (!p.treatChecked || !p.treatChecked[idx]) {
                         count++;
                         const item = document.createElement('div');
-                        item.className = 'flex items-center space-x-2 border border-slate-300 p-2 rounded-xl bg-slate-50 text-xs shadow-2xs';
-                        // 「(尚未執行)」改為紅色字體
-                        item.innerHTML = `<span class="font-semibold text-slate-850">${t} (<span class="text-rose-600 font-bold">尚未執行</span>)</span>`;
+                        item.className = 'flex items-center justify-between border border-slate-300 p-2 rounded-xl bg-slate-50 text-xs shadow-2xs';
+                        // 「(尚未執行)」用紅色字體且包含括號，統一靠右，處置在左
+                        item.innerHTML = `<span class="font-semibold text-slate-800">${t}</span><span class="text-rose-600 font-bold shrink-0 ml-2">(尚未執行)</span>`;
                         container.appendChild(item);
                     }
                 });
@@ -1855,29 +1866,7 @@
             switchView('nfc-view');
         };
 
-        window.checkVitalInputColor = function(el, type) {
-            let val = parseFloat(el.value);
-            if (isNaN(val)) { el.style.color = '#1e293b'; return; }
-            let isAbnormal = false;
-            if (type === 't' && (val > 37.5 || val < 36.0)) isAbnormal = true;
-            if (type === 'p' && (val < 60 || val > 100)) isAbnormal = true;
-            if (type === 'r' && (val < 12 || val > 20)) isAbnormal = true;
-            if (type === 'spo2') {
-                if (val > 100) { el.value = 100; val = 100; }
-                if (val < 95) isAbnormal = true;
-            }
-            if (type === 'pain') {
-                if (val > 10) { el.value = 10; val = 10; }
-                if (val > 4) isAbnormal = true;
-            }
-            if (type === 'bp_sys' && val > 120) isAbnormal = true;
-            if (type === 'bp_dia' && val > 80) isAbnormal = true;
-
-            el.style.color = isAbnormal ? '#e11d48' : '#1e293b';
-            el.style.fontWeight = isAbnormal ? '700' : '500';
-        };
-
-        // 移除預設值，改為空白欄位上傳
+        // 儲存 V/S（空白無預設）
         window.saveVitalsData = function() {
             const p = patientsData[currentSelectedBed];
             if (!p.vitals) p.vitals = [];
@@ -1890,7 +1879,7 @@
             const spo2Val = document.getElementById('input-spo2').value;
             const painVal = document.getElementById('input-pain').value;
 
-            if (!tVal && !pVal && !rVal && !sysVal && !spo2Val) {
+            if (!tVal && !pVal && !rVal && !sysVal && !spo2Val && !painVal) {
                 alert('請至少填寫一項生命徵象數值！');
                 return;
             }
@@ -1898,12 +1887,12 @@
             const customTime = document.getElementById('vitals-input-time').value || getActiveTime();
             const newVital = {
                 time: customTime,
-                t: tVal || '36.5',
-                p: pVal || '78',
-                r: rVal || '18',
-                bp: `${sysVal || '120'}/${diaVal || '80'}`,
-                spo2: spo2Val || '98',
-                pain: painVal || '0',
+                t: tVal || '',
+                p: pVal || '',
+                r: rVal || '',
+                bp: (sysVal || diaVal) ? `${sysVal || ''}/${diaVal || ''}` : '',
+                spo2: spo2Val || '',
+                pain: painVal || '',
                 creator: currentUser ? currentUser.name : "護理師"
             };
 
@@ -1956,7 +1945,8 @@
             
             p.advancedVitals.unshift({
                 time: formattedDate,
-                type: 'IO', inVal: totalIn, outVal: totalOut, net: net
+                type: 'IO', inVal: totalIn, outVal: totalOut, net: net,
+                details: { inFood, inW, inIV, inB, inO, outU, outStool, outD, outV, outO }
             });
             saveToCloud();
 
@@ -1980,8 +1970,8 @@
             const wVal = document.getElementById('input-weight').value;
             if (!hVal && !wVal) { alert('請填寫身高或體重！'); return; }
 
-            const h = parseFloat(hVal) || 172;
-            const w = parseFloat(wVal) || 68;
+            const h = hVal !== '' ? parseFloat(hVal) : null;
+            const w = wVal !== '' ? parseFloat(wVal) : null;
             const timeVal = document.getElementById('wh-input-time').value || getActiveTime();
             const p = patientsData[currentSelectedBed];
             if (!p.advancedVitals) p.advancedVitals = [];
@@ -2008,11 +1998,11 @@
             const eVal = document.getElementById('gcs-e').value;
             const vVal = document.getElementById('gcs-v').value;
             const mVal = document.getElementById('gcs-m').value;
-            if (!eVal || !vVal || !mVal) { alert('請完整填寫 GCS 的 E、V、M 分數！'); return; }
+            if (!eVal && !vVal && !mVal) { alert('請填寫 GCS 分數！'); return; }
 
-            const e = parseInt(eVal);
-            const v = parseInt(vVal);
-            const m = parseInt(mVal);
+            const e = eVal !== '' ? parseInt(eVal) : 0;
+            const v = vVal !== '' ? parseInt(vVal) : 0;
+            const m = mVal !== '' ? parseInt(mVal) : 0;
             const timeVal = document.getElementById('gcs-input-time').value || getActiveTime();
             const p = patientsData[currentSelectedBed];
             if (!p.advancedVitals) p.advancedVitals = [];
@@ -2046,12 +2036,12 @@
             const lueVal = document.getElementById('mp-lue').value;
             const rleVal = document.getElementById('mp-rle').value;
             const lleVal = document.getElementById('mp-lle').value;
-            if (!rueVal && !lueVal && !rleVal && !lleVal) { alert('請至少填寫一肢肌力分數！'); return; }
+            if (!rueVal && !lueVal && !rleVal && !lleVal) { alert('請填寫肌力分數！'); return; }
 
-            const rue = parseInt(rueVal) || 5;
-            const lue = parseInt(lueVal) || 5;
-            const rle = parseInt(rleVal) || 5;
-            const lle = parseInt(lleVal) || 5;
+            const rue = rueVal !== '' ? parseInt(rueVal) : null;
+            const lue = lueVal !== '' ? parseInt(lueVal) : null;
+            const rle = rleVal !== '' ? parseInt(rleVal) : null;
+            const lle = lleVal !== '' ? parseInt(lleVal) : null;
             const timeVal = document.getElementById('mp-input-time').value || getActiveTime();
             const p = patientsData[currentSelectedBed];
             if (!p.advancedVitals) p.advancedVitals = [];
@@ -2080,44 +2070,94 @@
             renderAdvancedChart();
         };
 
+        window.setIOMode = function(mode) {
+            currentIOMode = mode;
+            const btnSingle = document.getElementById('io-mode-single');
+            const btnAll = document.getElementById('io-mode-all');
+            if (mode === 'single') {
+                btnSingle.className = 'flex-1 py-1 bg-teal-600 text-white rounded text-xs font-bold';
+                btnAll.className = 'flex-1 py-1 bg-slate-200 text-slate-700 rounded text-xs font-bold';
+            } else {
+                btnSingle.className = 'flex-1 py-1 bg-slate-200 text-slate-700 rounded text-xs font-bold';
+                btnAll.className = 'flex-1 py-1 bg-teal-600 text-white rounded text-xs font-bold';
+            }
+            renderAdvancedChart();
+        };
+
         window.renderAdvancedChart = function() {
             const qType = document.getElementById('adv-query-type').value;
             const container = document.getElementById('adv-chart-container');
+            const ioModeSelector = document.getElementById('io-mode-selector');
             const p = patientsData[currentSelectedBed];
             container.innerHTML = '';
 
             if (qType === 'IO') {
+                ioModeSelector.classList.remove('hidden');
                 const ioList = (p.advancedVitals || []).filter(item => item.type === 'IO');
                 if (ioList.length === 0) {
                     container.innerHTML = '<div class="text-center text-slate-400 text-xs py-8">目前無 I/O 紀錄</div>';
                     return;
                 }
-                let tableHtml = `
-                    <table class="w-full text-xs text-left border-collapse border border-slate-300 rounded-lg overflow-hidden">
-                        <thead>
-                            <tr class="bg-slate-100 text-slate-700">
-                                <th class="border border-slate-300 p-2">時間/日期</th>
-                                <th class="border border-slate-300 p-2 text-blue-800">總進量(IN)</th>
-                                <th class="border border-slate-300 p-2 text-rose-800">總出量(OUT)</th>
-                                <th class="border border-slate-300 p-2">淨值(Net)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                `;
-                ioList.forEach(item => {
-                    let netStr = item.net >= 0 ? `+${item.net} ml` : `${item.net} ml`;
-                    tableHtml += `
-                        <tr>
-                            <td class="border border-slate-300 p-2 font-bold">${item.time}</td>
-                            <td class="border border-slate-300 p-2">${item.inVal} ml</td>
-                            <td class="border border-slate-300 p-2">${item.outVal} ml</td>
-                            <td class="border border-slate-300 p-2 font-bold ${item.net >= 0 ? 'text-teal-700' : 'text-rose-600'}">${netStr}</td>
-                        </tr>
+
+                if (currentIOMode === 'single') {
+                    let tableHtml = `
+                        <table class="w-full text-xs text-left border-collapse border border-slate-300 rounded-lg overflow-hidden">
+                            <thead>
+                                <tr class="bg-slate-100 text-slate-700">
+                                    <th class="border border-slate-300 p-2">時間/日期</th>
+                                    <th class="border border-slate-300 p-2 text-blue-800">總進量(IN)</th>
+                                    <th class="border border-slate-300 p-2 text-rose-800">總出量(OUT)</th>
+                                    <th class="border border-slate-300 p-2">淨值(Net)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
                     `;
-                });
-                tableHtml += `</tbody></table>`;
-                container.innerHTML = tableHtml;
+                    ioList.forEach(item => {
+                        let netStr = item.net >= 0 ? `+${item.net} ml` : `${item.net} ml`;
+                        tableHtml += `
+                            <tr>
+                                <td class="border border-slate-300 p-2 font-bold">${item.time}</td>
+                                <td class="border border-slate-300 p-2">${item.inVal} ml</td>
+                                <td class="border border-slate-300 p-2">${item.outVal} ml</td>
+                                <td class="border border-slate-300 p-2 font-bold ${item.net >= 0 ? 'text-teal-700' : 'text-rose-600'}">${netStr}</td>
+                            </tr>
+                        `;
+                    });
+                    tableHtml += `</tbody></table>`;
+                    container.innerHTML = tableHtml;
+                } else {
+                    let sumIn = 0, sumOut = 0;
+                    ioList.forEach(item => {
+                        sumIn += (item.inVal || 0);
+                        sumOut += (item.outVal || 0);
+                    });
+                    let totalNet = sumIn - sumOut;
+                    let netStr = totalNet >= 0 ? `+${totalNet} ml` : `${totalNet} ml`;
+
+                    container.innerHTML = `
+                        <div class="bg-emerald-50 border border-emerald-300 p-4 rounded-xl text-xs space-y-3 shadow-sm">
+                            <div class="font-bold text-teal-900 text-center text-sm border-b pb-2">全日 I/O 累計總統計</div>
+                            <div class="grid grid-cols-3 gap-2 text-center">
+                                <div class="bg-white p-2 rounded border border-emerald-200">
+                                    <div class="text-blue-800 font-bold">總進量 (IN)</div>
+                                    <div class="text-sm font-extrabold mt-1">${sumIn} ml</div>
+                                </div>
+                                <div class="bg-white p-2 rounded border border-emerald-200">
+                                    <div class="text-rose-800 font-bold">總出量 (OUT)</div>
+                                    <div class="text-sm font-extrabold mt-1">${sumOut} ml</div>
+                                </div>
+                                <div class="bg-white p-2 rounded border border-emerald-200">
+                                    <div class="text-teal-800 font-bold">淨值 (Net)</div>
+                                    <div class="text-sm font-extrabold mt-1 ${totalNet >= 0 ? 'text-teal-700' : 'text-rose-600'}">${netStr}</div>
+                                </div>
+                            </div>
+                            <div class="text-[11px] text-slate-600 text-center font-medium">共計 ${ioList.length} 筆上傳紀錄加總</div>
+                        </div>
+                    `;
+                }
                 return;
+            } else {
+                ioModeSelector.classList.add('hidden');
             }
 
             if (qType === 'TPR') {
@@ -2126,8 +2166,6 @@
                     return;
                 }
                 p.vitals.forEach(v => {
-                    let isAbnormalT = parseFloat(v.t) > 37.5 || parseFloat(v.t) < 36.0;
-                    let isAbnormalP = parseInt(v.p) > 100 || parseInt(v.p) < 60;
                     container.innerHTML += `
                         <div class="border border-slate-200 p-2.5 rounded-xl text-xs space-y-1 w-full bg-slate-50 shadow-2xs">
                             <div class="font-bold text-slate-700 border-b pb-1 flex justify-between">
@@ -2135,12 +2173,12 @@
                                 <span class="text-[10px] text-slate-500">記錄者: ${v.creator}</span>
                             </div>
                             <div class="grid grid-cols-3 gap-1 pt-1 text-[11px] font-medium text-slate-800">
-                                <div class="${isAbnormalT ? 'text-rose-600 font-bold' : ''}">T: ${v.t} ℃</div>
-                                <div class="${isAbnormalP ? 'text-rose-600 font-bold' : ''}">P: ${v.p} 次</div>
-                                <div>R: ${v.r} 次</div>
-                                <div>BP: ${v.bp}</div>
-                                <div class="${parseInt(v.spo2)<95 ? 'text-rose-600 font-bold' : ''}">SpO2: ${v.spo2} %</div>
-                                <div class="${parseInt(v.pain)>4 ? 'text-rose-600 font-bold' : ''}">Pain: ${v.pain} 分</div>
+                                <div>T: ${v.t !== '' ? v.t + ' ℃' : '-'}</div>
+                                <div>P: ${v.p !== '' ? v.p + ' 次' : '-'}</div>
+                                <div>R: ${v.r !== '' ? v.r + ' 次' : '-'}</div>
+                                <div>BP: ${v.bp || '-'}</div>
+                                <div>SpO2: ${v.spo2 !== '' ? v.spo2 + ' %' : '-'}</div>
+                                <div>Pain: ${v.pain !== '' ? v.pain + ' 分' : '-'}</div>
                             </div>
                         </div>
                     `;
@@ -2157,9 +2195,9 @@
             rawList.forEach((item, index) => {
                 let cardHtml = '';
                 if (qType === 'WH') {
-                    let heightVal = item.height || 172;
-                    let weightVal = item.weight || 68;
-                    let bmi = (weightVal / Math.pow(heightVal / 100, 2)).toFixed(1);
+                    let heightVal = item.height;
+                    let weightVal = item.weight;
+                    let bmi = (heightVal && weightVal) ? (weightVal / Math.pow(heightVal / 100, 2)).toFixed(1) : '-';
                     cardHtml = `
                         <div class="bg-white border border-slate-200 p-3 rounded-xl shadow-2xs text-xs space-y-1">
                             <div class="font-bold text-slate-800 border-b pb-1 flex justify-between">
@@ -2167,25 +2205,17 @@
                                 <span class="text-teal-700 font-bold">BMI: ${bmi}</span>
                             </div>
                             <div class="grid grid-cols-2 pt-1 font-semibold text-slate-700">
-                                <div>身高：${heightVal} 公分 (CM)</div>
-                                <div>體重：${weightVal} 公斤 (KG)</div>
+                                <div>身高：${heightVal !== null ? heightVal + ' 公分 (CM)' : '-'}</div>
+                                <div>體重：${weightVal !== null ? weightVal + ' 公斤 (KG)' : '-'}</div>
                             </div>
                         </div>
                     `;
                 } else if (qType === 'GCS') {
-                    let isLow = item.total <= 12;
-                    let prevTotal = (index + 1 < rawList.length) ? rawList[index + 1].total : item.total;
-                    let isDeclined = (prevTotal - item.total >= 2);
-                    let shouldAlert = isLow || isDeclined;
-
                     cardHtml = `
-                        <div class="bg-white border ${shouldAlert ? 'border-rose-400 bg-rose-50/40' : 'border-slate-200'} p-3 rounded-xl shadow-2xs text-xs space-y-1.5">
+                        <div class="bg-white border border-slate-200 p-3 rounded-xl shadow-2xs text-xs space-y-1.5">
                             <div class="font-bold text-slate-800 border-b pb-1 flex justify-between items-center">
                                 <span>評估時間：${item.time}</span>
-                                <div class="flex items-center space-x-1">
-                                    ${shouldAlert ? '<span class="bg-rose-600 text-white px-1.5 py-0.5 rounded text-[10px] font-bold">警示</span>' : ''}
-                                    <span class="${shouldAlert ? 'text-rose-600 font-bold text-sm' : 'text-indigo-700 font-bold'}">${item.total} 分 (${item.score})</span>
-                                </div>
+                                <span class="text-indigo-700 font-bold">${item.total} 分 (${item.score})</span>
                             </div>
                             <div class="grid grid-cols-3 gap-1 pt-0.5 font-semibold text-slate-700 text-center">
                                 <div class="bg-slate-50 p-1 rounded border">睜眼 E: ${item.e}</div>
@@ -2195,18 +2225,17 @@
                         </div>
                     `;
                 } else if (qType === 'MP') {
-                    let hasWeakness = item.rue <= 3 || item.lue <= 3 || item.rle <= 3 || item.lle <= 3;
                     cardHtml = `
-                        <div class="bg-white border ${hasWeakness ? 'border-amber-300 bg-amber-50/30' : 'border-slate-200'} p-3 rounded-xl shadow-2xs text-xs space-y-1.5">
+                        <div class="bg-white border border-slate-200 p-3 rounded-xl shadow-2xs text-xs space-y-1.5">
                             <div class="font-bold text-slate-800 border-b pb-1 flex justify-between">
                                 <span>評估時間：${item.time}</span>
-                                ${hasWeakness ? '<span class="text-rose-600 font-bold">有肌力下降部位</span>' : '<span class="text-teal-700">肌力正常</span>'}
+                                <span class="text-teal-700">肌力評估紀錄</span>
                             </div>
                             <div class="grid grid-cols-2 gap-2 pt-0.5 font-semibold text-slate-700">
-                                <div class="bg-slate-50 p-1.5 rounded border flex justify-between"><span>右上肢 (RUE):</span><span class="font-bold ${item.rue<=3?'text-rose-600':''}">${item.rue} 級</span></div>
-                                <div class="bg-slate-50 p-1.5 rounded border flex justify-between"><span>左上肢 (LUE):</span><span class="font-bold ${item.lue<=3?'text-rose-600':''}">${item.lue} 級</span></div>
-                                <div class="bg-slate-50 p-1.5 rounded border flex justify-between"><span>右下肢 (RLE):</span><span class="font-bold ${item.rle<=3?'text-rose-600':''}">${item.rle} 級</span></div>
-                                <div class="bg-slate-50 p-1.5 rounded border flex justify-between"><span>左下肢 (LLE):</span><span class="font-bold ${item.lle<=3?'text-rose-600':''}">${item.lle} 級</span></div>
+                                <div class="bg-slate-50 p-1.5 rounded border flex justify-between"><span>右上肢 (RUE):</span><span>${item.rue !== null ? item.rue + ' 級' : '-'}</span></div>
+                                <div class="bg-slate-50 p-1.5 rounded border flex justify-between"><span>左上肢 (LUE):</span><span>${item.lue !== null ? item.lue + ' 級' : '-'}</span></div>
+                                <div class="bg-slate-50 p-1.5 rounded border flex justify-between"><span>右下肢 (RLE):</span><span>${item.rle !== null ? item.rle + ' 級' : '-'}</span></div>
+                                <div class="bg-slate-50 p-1.5 rounded border flex justify-between"><span>左下肢 (LLE):</span><span>${item.lle !== null ? item.lle + ' 級' : '-'}</span></div>
                             </div>
                         </div>
                     `;
@@ -2462,8 +2491,18 @@
             }
         };
 
-        // 嚴格定義輸血結束時間範圍（血小板限30分內，血漿限2小時內）
+        // 輸血防呆與時間限制（紅血球4小時、血漿2小時、血小板30分）
         window.saveBloodRecord = function() {
+            const p = patientsData[currentSelectedBed];
+            const patientBlood = p.blood || 'O+';
+            const bagBlood = document.getElementById('blood-bag-type-label').innerText;
+
+            // 血型相容邏輯檢核
+            if (patientBlood !== bagBlood && patientBlood !== 'O+') {
+                alert(`安全防呆警告：病人血型為 [${patientBlood}]，但血袋血型為 [${bagBlood}]，血型不符無法核對！`);
+                return;
+            }
+
             if (!bloodVerifiedNurse1 || !bloodVerifiedNurse2) {
                 alert('輸血作業必須由「兩位不同」的護理人員完成雙重核對！');
                 return;
@@ -2474,6 +2513,7 @@
             }
 
             const selectedProduct = document.getElementById('blood-product-type').value;
+            const bagNo = document.getElementById('blood-bag-no').value;
             const startTime = document.getElementById('blood-start-time').value;
             const endTime = document.getElementById('blood-end-time').value;
 
@@ -2482,12 +2522,11 @@
                 return;
             }
 
-            // 計算時間差（分鐘）
             const [sH, sM] = startTime.split(':').map(Number);
             const [eH, eM] = endTime.split(':').map(Number);
             const startMin = sH * 60 + sM;
             let endMin = eH * 60 + eM;
-            if (endMin < startMin) endMin += 24 * 60; // 跨日處理
+            if (endMin < startMin) endMin += 24 * 60;
             const diffMin = endMin - startMin;
 
             if (diffMin < 0) {
@@ -2495,21 +2534,30 @@
                 return;
             }
 
+            let maxAllowedMin = 240; // 預設全血或紅血球 4 小時 (240分)
             if (selectedProduct.includes('血小板')) {
+                maxAllowedMin = 30;
                 if (diffMin > 30) {
                     alert(`安全法規限制：血小板濃縮液多在 30 分鐘內輸完，目前設定耗時 ${diffMin} 分鐘，超過範圍！`);
                     return;
                 }
             } else if (selectedProduct.includes('血漿')) {
+                maxAllowedMin = 120;
                 if (diffMin > 120) {
                     alert(`安全法規限制：新鮮冷凍血漿一般在 30 至 60 分鐘或最慢 2 小時內需輸完，目前設定耗時 ${diffMin} 分鐘，超過 2 小時限制！`);
                     return;
                 }
+            } else if (selectedProduct.includes('紅血球')) {
+                maxAllowedMin = 240;
+                if (diffMin > 240) {
+                    alert(`安全法規限制：紅血球濃縮液需於 4 小時內輸完，目前設定耗時 ${diffMin} 分鐘，超過 4 小時限制！`);
+                    return;
+                }
             }
 
-            const p = patientsData[currentSelectedBed];
             p.bloodRecord = {
                 productType: selectedProduct,
+                bagNo: bagNo,
                 startTime: startTime,
                 endTime: endTime,
                 nurse1: bloodVerifiedNurse1,
@@ -2525,7 +2573,7 @@
             document.getElementById('blood-end-time').disabled = true;
             bloodIsLocked = true;
 
-            alert(`輸血作業儲存成功（已同步雲端）！\n- 血品：${selectedProduct}\n- 開始時間：${startTime}\n- 結束時間：${endTime}\n- 核對人員：${bloodVerifiedNurse1} & ${bloodVerifiedNurse2}`);
+            alert(`輸血作業儲存成功（已同步雲端）！\n- 血品：${selectedProduct}\n- 血袋號碼：${bagNo}\n- 時間：${startTime} ~ ${endTime} (${diffMin}分鐘)\n- 核對人員：${bloodVerifiedNurse1} & ${bloodVerifiedNurse2}`);
             switchView('nfc-view');
         };
 
