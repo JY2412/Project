@@ -1026,7 +1026,8 @@
                         notes: [
                             { id: 1, time: "08:10", content: `病人生命徵象穩定，遵醫囑妥善照護中。`, status: "saved", creator: "許Ｏ媃", photo: null, part: "一般照護" }
                         ],
-                        location: { top: "45%", left: "40%", desc: `${room}房` },
+                        location: initialSource || "在病房",
+                        watchLocation: { top: "45%", left: "40%", desc: `${room}房` },
                         editInfo: { name: `${pName}`, dob: "1985/04/12", blood: "O+", allergy: profile.allergy, disease: profile.disease, contact: "林大華 (家屬)", phone: "0912-345678" },
                         bloodRecord: null, consents: {}, medChecked: {}, treatChecked: {}, treatTimestamps: {}
                     };
@@ -1461,8 +1462,8 @@
                 document.getElementById('patient-location-map-panel').classList.toggle('hidden', !inWard);
                 document.getElementById('watch-map-details').classList.toggle('hidden', !inWard);
                 if (inWard) {
-                    document.getElementById('map-pin').style.top = (p.location && typeof p.location === 'object' && p.location.top) || '45%';
-                    document.getElementById('map-pin').style.left = (p.location && typeof p.location === 'object' && p.location.left) || '40%';
+                    document.getElementById('map-pin').style.top = (p.watchLocation && p.watchLocation.top) || (p.location && typeof p.location === 'object' && p.location.top) || '45%';
+                    document.getElementById('map-pin').style.left = (p.watchLocation && p.watchLocation.left) || (p.location && typeof p.location === 'object' && p.location.left) || '40%';
                 }
             }
             if (viewId === 'alarm-view') {
