@@ -386,7 +386,6 @@
           .replace(/\s*\([男女]\)$/, '')
           .trim();
 
-        // 嚴格過濾空床判斷
         let isEmpty = (p.isEmpty === true);
         if (!cleanedName || cleanedName.includes("空床") || cleanedName.includes("待清") || cleanedName === "〔空床待清〕") {
           isEmpty = true;
@@ -405,6 +404,8 @@
         }
 
         let hasActiveBlood = !!p.hasBlood || !!p.bloodRecord;
+        let isAbnormalVal = !!p.isAbnormal;
+        let ewsReasonVal = p.ewsReason || "";
 
         sanitized[bedKey] = {
           ...p,
@@ -415,8 +416,8 @@
           isolation: p.isolation || "",
           isDischarging: !!p.isDischarging,
           dnr: !!p.dnr,
-          isAbnormal: !!p.isAbnormal,
-          ewsReason: p.ewsReason || "",
+          isAbnormal: isAbnormalVal,
+          ewsReason: ewsReasonVal,
           hasBlood: hasActiveBlood,
           diag: isEmpty ? "" : (diagVal || "Acute Myocardial Infarction (AMI)"),
           allergy: allergyVal || "Penicillin",
