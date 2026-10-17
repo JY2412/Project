@@ -603,7 +603,7 @@
               <div class="text-xs text-stone-400 text-right">-</div>
             </div>`;
         } else {
-          let leftColorBarClass = (p.gender === '女') ? 'bg-rose-400' : 'bg-sky-400';
+          let leftColorBarClass = !cloudReady ? 'bg-slate-400' : ((p.gender === '女') ? 'bg-rose-400' : 'bg-sky-400');
           const tagStyles = {
             'ICU': 'bg-orange-200 text-orange-900 border border-orange-300',
             '急診': 'bg-red-700 text-white',
@@ -615,7 +615,7 @@
             '傳送中': 'bg-green-700 text-white'
           };
           let tagsHtml = '<div class="flex flex-wrap gap-2 items-center mb-1">';
-          if (tagStyles[p.location]) tagsHtml += `<span class="${tagStyles[p.location]} px-3 py-1.5 text-sm rounded-lg font-bold">${p.location}</span>`;
+          if (tagStyles[p.location]) { const sourceBadge = {'ICU':'I入','急診':'急','門診':'門','其他單位(轉床)':'轉'}; tagsHtml += `<span class="${tagStyles[p.location]} px-3 py-1.5 text-sm rounded-lg font-bold">${sourceBadge[p.location] || p.location}</span>`; }
           isolationTypes(p.isolation).forEach(type => {
             tagsHtml += `<img src="${isolationIcons[type]}" alt="${isolationNames[type]}" title="${isolationNames[type]}" class="w-10 h-10 object-contain shrink-0" />`;
           });
@@ -780,6 +780,7 @@
           const notInWard = unadmittedLocations.includes(p.location);
           const statusClass = notInWard ? 'inline-block rounded-md bg-amber-100 px-2 py-0.5 font-bold text-amber-800' : 'font-semibold text-slate-600';
           
+          let arrivalBtn = notInWard ? `<button onclick="confirmWardArrival('${bedKey}')" class="btn-comfort bg-teal-700 text-white text-xs py-2 px-3">確認抵達病房</button>` : '';
           let bloodCloseBtn = (p.hasBlood || p.hasPendingBlood) ? `<button onclick="closeBloodRecord('${bedKey}')" class="btn-comfort bg-white border text-xs py-2 px-3 text-rose-800 font-bold">輸血結案</button>` : '';
 
           card.innerHTML = `
@@ -788,6 +789,7 @@
               <div class="text-xs text-slate-500">護理師: <span class="font-bold text-teal-800">${p.assignedNurse}</span> | 醫師: ${p.doctor} | 狀態: <span class="${statusClass}">${p.location || '在病房'}</span>${dischargingTag}${pendingBloodTag}${bloodTag}${pausedBloodTag}${ewsTag}</div>
             </div>
             <div class="space-x-1 flex items-center">
+              ${arrivalBtn}
               ${bloodCloseBtn}
               <button onclick="openEditPatientModal('${bedKey}')" class="btn-comfort bg-white border text-xs py-2 px-3">詳細設定</button>
               <button onclick="dischargeBed('${bedKey}')" class="btn-comfort bg-white border text-sm py-2 px-4 text-rose-700 font-bold">辦理出院</button>
@@ -803,6 +805,30 @@
       if (rateTextEl) rateTextEl.innerText = `${rate}% (${occ}/${total}床)`;
       if (rateBarEl) rateBarEl.style.width = `${rate}%`;
     }
+
+    // 僅由電子白板病房管理確認抵達；只 PATCH 單床位置，保留其他雲端欄位。
+    window.confirmWardArrival = async function(bedKey) {
+      if (!isUnlocked) { alert('請先解鎖權限！'); return; }
+      if (!cloudReady) { alert('雲端尚未連線，無法確認抵達。'); return; }
+      const patient = patientsData[bedKey];
+      const origins = ['ICU', '急診', '門診', '其他單位(轉床)'];
+      if (!patient || patient.isEmpty || !origins.includes(patient.location)) return;
+      if (!confirm(`確認 ${bedKey} 床病人已從「${patient.location}」抵達病房？`)) return;
+      try {
+        const response = await fetch(dbUrl(`${SYNC_DB_PATH}/patientsData/${encodeURIComponent(bedKey)}`), {
+          method: 'PATCH', headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({location:'在病房', isArrived:true})
+        });
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+        patient.location = '在病房';
+        patient.isArrived = true;
+        if (masterCloudData.patientsData && masterCloudData.patientsData[bedKey]) {
+          masterCloudData.patientsData[bedKey].location = '在病房';
+          masterCloudData.patientsData[bedKey].isArrived = true;
+        }
+        renderBedGrid(); renderSecretary();
+      } catch (error) { alert('雲端更新失敗：' + error.message); }
+    };
 
     window.openAddPatientModal = function(bedKey) {
       if(!isUnlocked) { alert('請先解鎖權限！'); return; }
