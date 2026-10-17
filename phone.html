@@ -104,7 +104,7 @@
                 </div>
                 <div class="pt-2">
                     <button onclick="handleLogin()" class="w-full bg-slate-800 hover:bg-slate-900 active:bg-slate-700 py-3 text-base font-semibold text-white transition-colors shadow-md rounded-lg flex items-center justify-center space-x-1">
-                        <span>登入</span><span class="text-[11px] font-normal opacity-75">_雲端步</span>
+                        <span>登入</span><span class="text-[11px] font-normal opacity-75">_雲端同步版</span>
                     </button>
                 </div>
                 <div id="error-message" class="hidden mt-2 text-center text-rose-600 font-semibold bg-rose-50 py-2 border border-rose-200 rounded-lg text-xs">員編或密碼錯誤，請重新輸入</div>
@@ -341,11 +341,12 @@
             <div class="text-xs font-bold text-slate-700 text-center py-1 bg-slate-100 rounded-md">11樓病房平面即時定位</div>
             <div class="flex-1 flex flex-col justify-between py-2 space-y-2 overflow-y-auto">
                 <div class="text-center font-bold text-slate-800 text-xs" id="map-title-label">01-1 病人即時位置</div>
-                <div class="w-full h-52 bg-slate-100 border border-slate-300 rounded-xl relative overflow-hidden shadow-inner flex items-center justify-center shrink-0">
+                <div id="map-unavailable-note" class="hidden bg-amber-50 border border-amber-200 rounded-lg p-2 text-center text-xs font-bold text-amber-800">目前無法取得定位</div>
+                <div id="patient-location-map-panel" class="w-full h-52 bg-slate-100 border border-slate-300 rounded-xl relative overflow-hidden shadow-inner flex items-center justify-center shrink-0">
                     <img src="https://www.femh.org.tw/images/pic/floor/map_n_11f.png" alt="11F平面圖" class="w-full h-full object-cover opacity-90" />
                     <div id="map-pin" class="absolute w-4 h-4 bg-rose-600 rounded-full border-2 border-white shadow-md transition-all duration-1000"></div>
                 </div>
-                <div class="bg-slate-50 border border-slate-200 p-2 rounded-xl text-[11px] text-slate-700 space-y-0.5">
+                <div id="watch-map-details" class="bg-slate-50 border border-slate-200 p-2 rounded-xl text-[11px] text-slate-700 space-y-0.5">
                     <div class="font-bold text-teal-800">定位狀態說明：</div>
                     <div>• 訊號強度：強 (RSSI -58 dBm)</div>
                     <div>• 目前區域：11樓護理站南側走廊</div>
@@ -361,8 +362,8 @@
         <div id="alarm-view" class="hidden w-full flex-1 flex flex-col justify-between pt-6 pb-2 bg-white text-slate-800 overflow-hidden">
             <div class="text-xs font-bold text-slate-700 text-center py-1 bg-slate-100 rounded-md">手錶發聲尋找與警報控制</div>
             <div class="flex-1 flex flex-col justify-between py-2 space-y-2 overflow-y-auto">
-                <div class="text-center font-bold text-slate-800 text-xs">手錶警報聲響中 (發出嗶嗶聲...)</div>
-                <div class="w-full h-48 bg-slate-100 border border-slate-300 rounded-xl relative overflow-hidden shadow-inner flex items-center justify-center shrink-0">
+                <div id="watch-alarm-status" class="text-center font-bold text-slate-800 text-xs">尋找手錶警報（模擬呼叫）</div>
+                <div id="watch-alarm-map-panel" class="w-full h-48 bg-slate-100 border border-slate-300 rounded-xl relative overflow-hidden shadow-inner flex items-center justify-center shrink-0">
                     <img src="https://www.femh.org.tw/images/pic/floor/map_n_11f.png" alt="11F平面圖" class="w-full h-full object-cover opacity-90 animate-pulse" />
                     <div id="watch-map-pin" class="absolute w-4 h-4 bg-rose-600 rounded-full border-2 border-white shadow-md top-[45%] left-[40%]"></div>
                 </div>
@@ -967,7 +968,15 @@
                 "柏Ｏ君", "孫Ｏ美", "馬Ｏ傑", "羅Ｏ婷", "高Ｏ偉", "陳Ｏ霖", "林Ｏ慧", "周Ｏ傑"
             ];
 
-            let contactCount = 0, airCount = 0, icuCount = 0, opdCount = 0, erCount = 0;
+            // 固定的初始轉入來源：未列出的非空床一律已在病房。
+            // 書記在電子白板確認抵達後，仍以雲端 location 更新為「在病房」。
+            const initialTransferByBed = {
+                '02-1': 'ICU', '07-2': 'ICU', '12-3': 'ICU',
+                '03-2': '急診', '06-1': '急診', '10-2': '急診', '14-1': '急診',
+                '04-1': '門診', '08-3': '門診', '13-2': '門診',
+                '05-2': '其他單位', '09-1': '其他單位', '11-3': '其他單位', '15-1': '其他單位'
+            };
+            let contactCount = 0, airCount = 0;
             let nameIdx = 0;
 
             for (let room = 1; room <= 15; room++) {
@@ -987,14 +996,12 @@
                     let profile = clinicalProfiles[(room + b) % clinicalProfiles.length];
 
                     let isolationTag = "";
-                    let transferTag = "";
-                    let isArrived = true;
-
-                    if (contactCount < 3 && (room + b) % 4 === 0) { isolationTag = "接"; contactCount++; }
-                    else if (airCount < 2 && (room + b) % 5 === 0) { isolationTag = "氣"; airCount++; }
-                    else if (icuCount < 1 && bedKey === "02-1") { transferTag = "ICU轉入"; isArrived = false; icuCount++; }
-                    else if (opdCount < 1 && bedKey === "04-1") { transferTag = "門診"; isArrived = false; opdCount++; }
-                    else if (erCount < 2 && (room + b) % 7 === 0) { transferTag = "急診"; isArrived = false; erCount++; }
+                    const initialSource = initialTransferByBed[bedKey] || '';
+                    let transferTag = initialSource === 'ICU' ? 'ICU轉入' : initialSource;
+                    let isArrived = !initialSource;
+                    // 隔離標籤與轉入來源獨立設定，不互相排斥。
+                    if (contactCount < 3 && (room + b) % 4 === 0) { isolationTag = '接'; contactCount++; }
+                    else if (airCount < 2 && (room + b) % 5 === 0) { isolationTag = '氣'; airCount++; }
 
                     let genderVal = (bedKey === '01-3') ? '女' : (b % 2 === 0 ? '女' : '男');
 
@@ -1027,15 +1034,15 @@
             }
             // 初始化示範資料僅固定 01-1、01-3 有待輸血醫囑；兩床仍須另行簽署輸血治療同意書。
             const bloodBeds = new Set(['01-1', '01-3']);
-            const places = ['在病房', '在病房', '在病房', 'ICU', '門診', '檢查中', '請假', '手術中', '急診', '傳送中'];
             Object.entries(data).forEach(([key, patient]) => {
                 if (patient.isEmpty) return;
                 patient.hasBlood = bloodBeds.has(key);
                 patient.hasConsent = bloodBeds.has(key);
                 patient.bloodStatus = bloodBeds.has(key) ? '待輸血' : '';
                 patient.bloodRecord = null;
-                patient.transferTag = places[Math.floor(Math.random() * places.length)];
-                patient.isArrived = patient.transferTag === '在病房';
+                // 保留每床固定的轉入來源，不再隨機覆蓋；實際到院狀態由書記病房管理的雲端 location 控制。
+                if (patient.transferTag && patient.isArrived === false) patient.location = patient.transferTag === 'ICU轉入' ? 'ICU' : patient.transferTag;
+                else patient.location = '在病房';
             });
             return data;
         }
@@ -1088,6 +1095,8 @@
                 cloudMarquee = cloudData.marquee || cloudMarquee;
                 syncNurseAssignments();
                 if (!document.getElementById('patient-list-view').classList.contains('hidden')) renderPatientList();
+                if (!document.getElementById('map-view').classList.contains('hidden')) refreshWatchLocationView('map-view');
+                if (!document.getElementById('alarm-view').classList.contains('hidden')) refreshWatchLocationView('alarm-view');
                 if (!document.getElementById('nurse-manager-modal').classList.contains('hidden')) renderNurseManagerList();
                 if (!document.getElementById('ns-admin-modal').classList.contains('hidden')) loadNurseBedSelection();
             }
@@ -1417,9 +1426,49 @@
             if (typeof value === 'string') return ['接','疥','氣'].filter(v => value.includes(v));
             return [];
         }
+        // 白板既有 location 字串是病房管理的權威資料；手機 location 物件只保存模擬座標。
+        const mobileSources = {'ICU':'I入','ICU轉入':'I入','急診':'急','門診':'門','其他單位(轉床)':'轉','轉床':'轉','其他單位':'轉'};
+        const mobileActivities = ['在病房','請假','檢查中','手術中','傳送中'];
+        function mobilePatientMovement(p) {
+            const wardLocation = typeof p.location === 'string' ? p.location.trim() : '';
+            // 白板尚未入病房時以 location 判定來源；到病房後不再顯示來源標籤。
+            if (mobileSources[wardLocation]) return wardLocation;
+            if (mobileActivities.includes(wardLocation)) return '';
+            if (p.isArrived === false) return mobileSources[p.transferTag] ? p.transferTag : '';
+            return '';
+        }
         function mobileWardStatus(p) {
-            // 手機既有 location 可能是 {top,left,desc} 定位座標，不當成病房狀態。
-            return (typeof p.location === 'string' && p.location) || (typeof p.status === 'string' && p.status) || (typeof p.transferTag === 'string' && p.transferTag) || '';
+            const wardLocation = typeof p.location === 'string' ? p.location.trim() : '';
+            if (mobileSources[wardLocation]) return '未入病房';
+            if (mobileActivities.includes(wardLocation)) return wardLocation;
+            const legacyStatus = typeof p.status === 'string' ? p.status.trim() : '';
+            if (mobileSources[legacyStatus]) return '未入病房';
+            if (mobileActivities.includes(legacyStatus)) return legacyStatus;
+            if (p.isArrived === false && mobilePatientMovement(p)) return '未入病房';
+            return '在病房';
+        }
+        function mobileInWard(p) { return mobileWardStatus(p) === '在病房'; }
+        function refreshWatchLocationView(viewId) {
+            const p = patientsData[currentSelectedBed];
+            if (!p) return;
+            const inWard = mobileInWard(p);
+            const unavailableText = '目前無法取得定位，仍可呼叫手錶';
+            if (viewId === 'map-view') {
+                document.getElementById('map-title-label').innerText = `${getSafePatientName(p, currentSelectedBed)} 即時位置`;
+                const note = document.getElementById('map-unavailable-note');
+                note.classList.toggle('hidden', inWard);
+                note.innerText = unavailableText;
+                document.getElementById('patient-location-map-panel').classList.toggle('hidden', !inWard);
+                document.getElementById('watch-map-details').classList.toggle('hidden', !inWard);
+                if (inWard) {
+                    document.getElementById('map-pin').style.top = (p.location && typeof p.location === 'object' && p.location.top) || '45%';
+                    document.getElementById('map-pin').style.left = (p.location && typeof p.location === 'object' && p.location.left) || '40%';
+                }
+            }
+            if (viewId === 'alarm-view') {
+                document.getElementById('watch-alarm-status').innerText = inWard ? '尋找手錶警報（模擬呼叫）' : unavailableText;
+                document.getElementById('watch-alarm-map-panel').classList.toggle('hidden', !inWard);
+            }
         }
         function mobileCareTags(p) {
             const tags = [];
@@ -1430,11 +1479,26 @@
             if (p.dnr === true || p.dnr === 'true') add('DNR','bg-yellow-100 text-yellow-900');
             if (p.fallRisk === true || p.fallRisk === 'true' || p.isFallRisk === true) add('跌倒高風險','bg-orange-100 text-orange-900');
             if (p.isDischarging === true || p.isDischarging === 'true') add('今辦明出','bg-blue-100 text-blue-800');
+            const movement = mobilePatientMovement(p);
+            const movementStyle = {
+                'ICU':'bg-orange-200 text-orange-900 border border-orange-300',
+                'ICU轉入':'bg-orange-200 text-orange-900 border border-orange-300',
+                '急診':'bg-red-700 text-white',
+                '門診':'bg-lime-700 text-white',
+                '其他單位(轉床)':'bg-slate-200 text-slate-700 border border-slate-300',
+                '轉床':'bg-slate-200 text-slate-700 border border-slate-300',
+                '其他單位':'bg-slate-200 text-slate-700 border border-slate-300'
+            };
+            if (movement) add(mobileSources[movement], movementStyle[movement]);
             const status = mobileWardStatus(p);
-            if (status && status !== '在病房') {
-                const unadmitted = ['急診','ICU','門診','其他單位(轉床)','ICU轉入','轉床'];
-                const outside = ['請假','檢查中','手術中','傳送中'];
-                add((unadmitted.includes(status) ? '未入病房：' : outside.includes(status) ? '不在病房：' : '病人狀態：') + status,'bg-slate-200 text-slate-800');
+            if (status !== '在病房' && status !== '未入病房') {
+                const activityStyle = {
+                    '請假':'bg-slate-700 text-white',
+                    '檢查中':'bg-[#CCFBF1] text-[#115E59] border border-[#99F6E4]',
+                    '手術中':'bg-fuchsia-700 text-white',
+                    '傳送中':'bg-green-700 text-white'
+                };
+                add(status, activityStyle[status] || 'bg-slate-200 text-slate-800');
             }
             const bs = String(p.bloodStatus || '').trim();
             if (bs === '輸血暫停' || (p.bloodRecord && p.bloodRecord.status === '輸血暫停')) add('輸血暫停中','bg-amber-100 text-amber-900 border border-amber-300');
@@ -1500,8 +1564,9 @@
 
             const locBtn = document.getElementById('btn-detail-location');
             if (locBtn) {
-                locBtn.disabled = (p.isArrived === false);
-                locBtn.className = (p.isArrived !== false) ? 'bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold py-2.5 px-2 rounded-xl shadow-sm border border-slate-200 text-xs text-center' : 'bg-slate-300 text-slate-500 font-semibold py-2.5 px-2 rounded-xl text-xs text-center cursor-not-allowed';
+                // 不在病房仍可進入尋找手錶頁面，定位顯示另依病人動態狀態判斷。
+                locBtn.disabled = false;
+                locBtn.className = 'bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold py-2.5 px-2 rounded-xl shadow-sm border border-slate-200 text-xs text-center';
             }
 
             switchView('patient-detail-view');
@@ -1509,8 +1574,7 @@
 
         window.openPatientLocation = function() {
             const p = patientsData[currentSelectedBed];
-            if (p.isArrived === false) { alert('此病人資料已到，但人尚未抵達病房，尚無病人定位！'); return; }
-            document.getElementById('loc-bed-name').innerText = getSafePatientName(p, currentSelectedBed);
+            document.getElementById('loc-bed-name').innerText = getSafePatientName(p, currentSelectedBed) + '｜' + (mobilePatientMovement(p) ? mobileSources[mobilePatientMovement(p)] : mobileWardStatus(p));
         };
 
         window.openPatientEdit = function() {
@@ -1830,14 +1894,8 @@
             if (target) target.classList.remove('hidden');
 
             if (viewId === 'patient-list-view') renderPatientList();
-            else if (viewId === 'map-view') {
-                const p = patientsData[currentSelectedBed];
-                if (p) {
-                    document.getElementById('map-title-label').innerText = `${getSafePatientName(p, currentSelectedBed)} 即時位置`;
-                    document.getElementById('map-pin').style.top = (p.location && p.location.top) || "45%";
-                    document.getElementById('map-pin').style.left = (p.location && p.location.left) || "40%";
-                }
-            } else if (viewId === 'med-view') renderMedicationsList();
+            else if (viewId === 'map-view' || viewId === 'alarm-view') refreshWatchLocationView(viewId);
+            else if (viewId === 'med-view') renderMedicationsList();
             else if (viewId === 'treat-view') renderTreatmentsList();
             else if (viewId === 'blood-view') initBloodView();
             else if (viewId === 'io-upload-view') {
@@ -1875,7 +1933,7 @@
         };
 
         window.stopWatchAlarm = function() { 
-            alert('已成功關閉手錶警報！'); 
+            alert('已停止尋找手錶的模擬呼叫。'); 
             switchView('patient-location-view'); 
         };
 
