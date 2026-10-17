@@ -58,7 +58,16 @@
       <div onclick="filterBedStatus('isolation')" class="bg-white px-5 py-3 rounded-2xl border border-[#E5E0D8] cursor-pointer hover:bg-[#F0EDE6] btn-comfort shadow-xs">隔離管制 <span id="stat-iso" class="text-rose-600 font-extrabold ml-2">-- 床</span></div>
       <div onclick="filterTag('ICU')" class="bg-white px-5 py-3 rounded-2xl border border-[#E5E0D8] cursor-pointer hover:bg-orange-50 btn-comfort shadow-xs text-orange-700">未入病房 <span id="stat-icu" class="font-extrabold ml-2">-- 床</span></div>
       <div onclick="filterTag('OutOfWard')" class="bg-white px-5 py-3 rounded-2xl border border-[#E5E0D8] cursor-pointer hover:bg-cyan-50 btn-comfort shadow-xs text-cyan-800">不在病房 <span id="stat-outward" class="font-extrabold ml-2">-- 床</span></div>
-      <div onclick="filterTag('Blood')" class="bg-white px-5 py-3 rounded-2xl border border-[#E5E0D8] cursor-pointer hover:bg-rose-50 btn-comfort shadow-xs text-rose-700">輸血作業 <span id="stat-blood" class="font-extrabold ml-2">-- 床</span></div>
+      <!-- 輸血功能列：按下去可展開切換或篩選待輸血與輸血中 -->
+      <div class="relative group">
+        <div class="bg-white px-5 py-3 rounded-2xl border border-[#E5E0D8] cursor-pointer hover:bg-indigo-50 btn-comfort shadow-xs text-indigo-700">
+          輸血 <span id="stat-blood-total" class="font-extrabold ml-2">-- 床</span> ▾
+        </div>
+        <div class="hidden group-hover:block absolute left-0 top-full mt-1 bg-white border border-[#E5E0D8] rounded-2xl shadow-xl p-2 z-30 space-y-1 min-w-[140px]">
+          <div onclick="filterTag('PendingBlood')" class="px-4 py-2 hover:bg-amber-50 rounded-xl cursor-pointer text-amber-800 font-bold text-xs flex justify-between"><span>待輸血</span><span id="stat-pending-blood">--</span></div>
+          <div onclick="filterTag('Transfusing')" class="px-4 py-2 hover:bg-rose-50 rounded-xl cursor-pointer text-rose-800 font-bold text-xs flex justify-between"><span>輸血中</span><span id="stat-transfusing">--</span></div>
+        </div>
+      </div>
       <div onclick="filterTag('EarlyWarning')" class="bg-white px-5 py-3 rounded-2xl border border-[#E5E0D8] cursor-pointer hover:bg-[#F0EDE6] btn-comfort shadow-xs text-purple-600">早期警示 <span id="stat-ew" class="font-extrabold ml-2">-- 床</span></div>
     </div>
 
@@ -96,7 +105,7 @@
       <div class="flex justify-between items-center bg-white p-8 muji-card">
         <div>
           <h2 class="text-xl font-bold text-[#383533]">即時警示與特殊風險通報</h2>
-          <p class="text-base text-[#8C827A] mt-2">依生理量測異常與警示狀態自動觸發標記</p>
+          <p class="text-base text-[#8C827A] mt-2">依生命徵象、GCS 或 Muscle Power 數值異常自動觸發標記</p>
         </div>
       </div>
       <div id="alarms-list-container" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
@@ -403,14 +412,53 @@
           if (diagMatch) diagVal = diagMatch[1].trim();
         }
 
-        let hasActiveBlood = !!p.hasBlood || !!p.bloodRecord;
-        
-        // 嚴格對齊手機端的 EWS 異常與原因判定
-        let isAbnormalVal = p.isAbnormal === true || p.isAbnormal === "true" || p.ewsAbnormal === true;
-        let ewsReasonVal = p.ewsReason || p.ewsDescription || p.abnormalReason || "";
-        if (!ewsReasonVal && p.extra && p.extra.includes("EWS")) {
-          ewsReasonVal = p.extra;
+        // 全方位遞迴/深度檢查 EWS、GCS、Muscle Power 異常狀態與原因
+        let isAbnormalVal = false;
+        let ewsReasonVal = "";
+
+        const checkAbnormalObj = (obj) => {
+          if (!obj || typeof obj !== 'object') return;
+          if (obj.isAbnormal === true || obj.isAbnormal === "true" || obj.ewsAbnormal === true) {
+            isAbnormalVal = true;
+          }
+          if (obj.reason || obj.ewsReason || obj.abnormalReason || obj.description) {
+            let r = String(obj.reason || obj.ewsReason || obj.abnormalReason || obj.description);
+            if (r && !ewsReasonVal.includes(r)) ewsReasonVal += (ewsReasonVal ? "；" : "") + r;
+          }
+          if (obj.gcsAbnormal || (obj.gcs !== undefined && Number(obj.gcs) < 15)) {
+            isAbnormalVal = true;
+            if (!ewsReasonVal.includes("GCS")) ewsReasonVal += (ewsReasonVal ? "；" : "") + "GCS 意識分數異常";
+          }
+          if (obj.musclePowerAbnormal || obj.mpAbnormal || (obj.musclePower !== undefined && String(obj.musclePower) !== "5")) {
+            isAbnormalVal = true;
+            if (!ewsReasonVal.includes("Muscle Power")) ewsReasonVal += (ewsReasonVal ? "；" : "") + "Muscle Power 肌力異常";
+          }
+        };
+
+        checkAbnormalObj(p);
+        checkAbnormalObj(p.ews);
+        checkAbnormalObj(p.vitals);
+        checkAbnormalObj(p.assessment);
+        checkAbnormalObj(p.neurology);
+
+        if (p.isAbnormal === true || p.isAbnormal === "true" || p.ewsAbnormal === true) isAbnormalVal = true;
+        if (p.ewsReason || p.ewsDescription || p.abnormalReason) {
+          let r = String(p.ewsReason || p.ewsDescription || p.abnormalReason);
+          if (r && !ewsReasonVal.includes(r)) ewsReasonVal += (ewsReasonVal ? "；" : "") + r;
         }
+
+        if (!ewsReasonVal && p.extra && (p.extra.includes("EWS") || p.extra.includes("異常") || p.extra.includes("GCS") || p.extra.includes("Muscle") || p.extra.includes("生理"))) {
+          ewsReasonVal = p.extra;
+          isAbnormalVal = true;
+        }
+        if (isAbnormalVal && !ewsReasonVal) {
+          ewsReasonVal = "生命徵象、GCS 或 Muscle Power 數值異常";
+        }
+
+        // 輸血狀態判定：有醫囑未執行為待輸血；手機確定執行為輸血中
+        let bloodStatusVal = String(p.bloodStatus || p.bloodState || "").trim();
+        let hasPendingBlood = !!p.hasPendingBlood || bloodStatusVal === '待輸血' || (p.extra && p.extra.includes("待輸血"));
+        let hasTransfusing = !!p.hasBlood || !!p.bloodRecord || bloodStatusVal === '輸血中' || bloodStatusVal === 'true' || (p.extra && p.extra.includes("輸血中"));
 
         sanitized[bedKey] = {
           ...p,
@@ -423,7 +471,8 @@
           dnr: !!p.dnr,
           isAbnormal: isAbnormalVal,
           ewsReason: ewsReasonVal,
-          hasBlood: hasActiveBlood,
+          hasPendingBlood: hasPendingBlood,
+          hasBlood: hasTransfusing,
           diag: isEmpty ? "" : (diagVal || "Acute Myocardial Infarction (AMI)"),
           allergy: allergyVal || "Penicillin",
           info: p.info || `1985/04/12 (41Y) | 病例號：103198${bedKey.replace('-','')}`,
@@ -484,7 +533,7 @@
       const grid = document.getElementById('bed-grid');
       if(!grid) return;
       grid.innerHTML = '';
-      let total = 0, occ = 0, empty = 0, iso = 0, dischargingCount = 0, icuCount = 0, outOfWardCount = 0, bloodCount = 0, ewCount = 0;
+      let total = 0, occ = 0, empty = 0, iso = 0, dischargingCount = 0, icuCount = 0, outOfWardCount = 0, pendingBloodCount = 0, transfusingCount = 0, ewCount = 0;
 
       const unadmittedLocations = ['急診', 'ICU', '門診', '其他單位(轉床)'];
       const outOfWardLocations = ['請假', '檢查中', '手術中', '傳送中'];
@@ -500,7 +549,8 @@
           if (p.isDischarging) dischargingCount++;
           if (unadmittedLocations.includes(p.location)) icuCount++;
           if (outOfWardLocations.includes(p.location)) outOfWardCount++;
-          if (p.hasBlood) bloodCount++;
+          if (p.hasPendingBlood) pendingBloodCount++;
+          if (p.hasBlood) transfusingCount++;
           if (p.isAbnormal) ewCount++;
         }
 
@@ -514,7 +564,8 @@
         if (currentFilterTag === 'DNR' && !p.dnr) return;
         if (currentFilterTag === 'ICU' && !unadmittedLocations.includes(p.location)) return;
         if (currentFilterTag === 'OutOfWard' && !outOfWardLocations.includes(p.location)) return;
-        if (currentFilterTag === 'Blood' && !p.hasBlood) return;
+        if (currentFilterTag === 'PendingBlood' && !p.hasPendingBlood) return;
+        if (currentFilterTag === 'Transfusing' && !p.hasBlood) return;
         if (currentFilterTag === 'EarlyWarning' && !p.isAbnormal) return;
 
         const card = document.createElement('div');
@@ -547,7 +598,9 @@
           if (tagStyles[p.location]) tagsHtml += `<span class="${tagStyles[p.location]} px-3 py-1.5 text-sm rounded-lg font-bold">${p.location}</span>`;
           if (p.isolation === '接') tagsHtml += `<span class="bg-pink-200 text-pink-950 border border-pink-300 px-3 py-1.5 text-sm rounded-lg font-bold">接觸隔離</span>`;
           else if (p.isolation === '氣') tagsHtml += `<span class="bg-sky-100 text-sky-900 border border-sky-300 px-3 py-1.5 text-sm rounded-lg font-bold">空氣隔離</span>`;
-          if (p.hasBlood) tagsHtml += `<span class="bg-rose-100 text-rose-800 border border-rose-300 px-3 py-1.5 text-sm rounded-lg font-bold">輸血中/待輸血</span>`;
+          // 待輸血與輸血中採用極高辨識度且不重複的配色
+          if (p.hasPendingBlood) tagsHtml += `<span class="bg-amber-200 text-amber-950 border border-amber-400 px-3 py-1.5 text-sm rounded-lg font-bold shadow-xs">待輸血</span>`;
+          if (p.hasBlood) tagsHtml += `<span class="bg-rose-600 text-white border border-rose-700 px-3 py-1.5 text-sm rounded-lg font-bold shadow-xs">輸血中</span>`;
           if (p.isAbnormal) tagsHtml += `<span class="bg-purple-100 text-purple-800 border border-purple-300 px-3 py-1.5 text-sm rounded-lg font-bold">早期警示</span>`;
           if (p.isDischarging) tagsHtml += `<span class="bg-sky-700 text-white px-3 py-1.5 text-sm rounded-lg font-bold">今辦明出</span>`;
           if (p.dnr) tagsHtml += `<span class="bg-yellow-200 text-yellow-900 border border-yellow-300 px-3 py-1.5 text-sm rounded-lg font-bold">DNR</span>`;
@@ -584,7 +637,9 @@
       document.getElementById('stat-iso').innerText = `${iso} 床`;
       document.getElementById('stat-icu').innerText = `${icuCount} 床`;
       document.getElementById('stat-outward').innerText = `${outOfWardCount} 床`;
-      document.getElementById('stat-blood').innerText = `${bloodCount} 床`;
+      document.getElementById('stat-blood-total').innerText = `${pendingBloodCount + transfusingCount} 床`;
+      document.getElementById('stat-pending-blood').innerText = `${pendingBloodCount} 床`;
+      document.getElementById('stat-transfusing').innerText = `${transfusingCount} 床`;
       document.getElementById('stat-ew').innerText = `${ewCount} 床`;
     }
 
@@ -656,11 +711,11 @@
         card.className = "muji-card p-8 bg-white border-l-8 border-purple-500 space-y-4";
         card.innerHTML = `
           <div class="flex justify-between items-center">
-            <span class="font-bold text-purple-900 text-lg">${bedKey} 床 (${p.realName})：生理數據早期警示</span>
+            <span class="font-bold text-purple-900 text-lg">${bedKey} 床 (${p.realName})：生理數據或神經學評估早期警示</span>
             <span class="bg-purple-100 text-purple-800 px-4 py-1.5 rounded-xl font-bold">早期警示</span>
           </div>
           <div class="text-sm text-stone-700 bg-purple-50 p-3 rounded-xl border border-purple-200">
-            <strong>觸發原因：</strong>${p.ewsReason || '生命徵象或評估數值異常'}
+            <strong>觸發原因：</strong>${p.ewsReason || '生命徵象、GCS 或 Muscle Power 數值異常'}
           </div>
         `;
         container.appendChild(card);
@@ -692,18 +747,19 @@
         } else {
           const displayName = (p.isPublicName === false || p.isPublicName === "false") ? 'ＯＯＯ' : (p.realName || '未設定');
           let dischargingTag = p.isDischarging ? ' | <span class="text-blue-600 font-bold">今辦明出</span>' : '';
-          let bloodTag = p.hasBlood ? ' | <span class="text-rose-600 font-bold">輸血中/待輸血</span>' : '';
+          let pendingBloodTag = p.hasPendingBlood ? ' | <span class="text-amber-700 font-bold">待輸血</span>' : '';
+          let bloodTag = p.hasBlood ? ' | <span class="text-rose-600 font-bold">輸血中</span>' : '';
           let ewsTag = p.isAbnormal ? ' | <span class="text-purple-600 font-bold">早期警示</span>' : '';
           const unadmittedLocations = ['急診', 'ICU', '門診', '其他單位(轉床)'];
           const notInWard = unadmittedLocations.includes(p.location);
           const statusClass = notInWard ? 'inline-block rounded-md bg-amber-100 px-2 py-0.5 font-bold text-amber-800' : 'font-semibold text-slate-600';
           
-          let bloodCloseBtn = p.hasBlood ? `<button onclick="closeBloodRecord('${bedKey}')" class="btn-comfort bg-white border text-xs py-2 px-3 text-rose-800 font-bold">輸血結案</button>` : '';
+          let bloodCloseBtn = (p.hasBlood || p.hasPendingBlood) ? `<button onclick="closeBloodRecord('${bedKey}')" class="btn-comfort bg-white border text-xs py-2 px-3 text-rose-800 font-bold">輸血結案</button>` : '';
 
           card.innerHTML = `
             <div class="space-y-1">
               <div class="font-bold text-slate-800">${bedKey} - ${displayName}</div>
-              <div class="text-xs text-slate-500">護理師: <span class="font-bold text-teal-800">${p.assignedNurse}</span> | 醫師: ${p.doctor} | 狀態: <span class="${statusClass}">${p.location || '在病房'}</span>${dischargingTag}${bloodTag}${ewsTag}</div>
+              <div class="text-xs text-slate-500">護理師: <span class="font-bold text-teal-800">${p.assignedNurse}</span> | 醫師: ${p.doctor} | 狀態: <span class="${statusClass}">${p.location || '在病房'}</span>${dischargingTag}${pendingBloodTag}${bloodTag}${ewsTag}</div>
             </div>
             <div class="space-x-1 flex items-center">
               ${bloodCloseBtn}
@@ -750,7 +806,7 @@
         info: `1985/04/12 (41Y) | 病例號：103198${b.replace('-','')}`,
         location: document.getElementById('add-loc-select').value,
         isPublicName: (document.getElementById('add-public-select').value === 'true'),
-        isolation: "", isDischarging: false, dnr: false, isAbnormal: false, hasBlood: false, ewsReason: ""
+        isolation: "", isDischarging: false, dnr: false, isAbnormal: false, hasPendingBlood: false, hasBlood: false, ewsReason: ""
       };
       saveAndSyncToCloud();
       closeAddPatientModal();
@@ -776,7 +832,8 @@
         const notes = [];
         if (p.isolation === '接') notes.push('接觸隔離');
         if (p.isolation === '氣') notes.push('空氣隔離');
-        if (p.hasBlood) notes.push('輸血中/待輸血');
+        if (p.hasPendingBlood) notes.push('待輸血');
+        if (p.hasBlood) notes.push('輸血中');
         if (p.isDischarging) notes.push('今辦明出');
         if (p.dnr) notes.push('DNR');
         if (p.isAbnormal) notes.push('早期警示');
@@ -790,7 +847,7 @@
           ewsDetailHtml = `
             <div class="rounded-xl border border-purple-300 bg-purple-50 p-3 sm:col-span-2">
               <div class="text-xs text-purple-800 font-bold">早期警示 (EWS) 觸發原因詳情</div>
-              <div class="mt-1 font-bold text-purple-900">${safe(p.ewsReason || '生命徵象或評估數值異常')}</div>
+              <div class="mt-1 font-bold text-purple-900">${safe(p.ewsReason || '生命徵象、GCS 或 Muscle Power 數值異常')}</div>
               ${isUnlocked ? `<button onclick="dismissEwsAlert('${bedKey}')" class="mt-2 btn-comfort bg-purple-700 text-white text-xs py-1.5 px-3">解除此警示狀態</button>` : ''}
             </div>
           `;
@@ -812,7 +869,7 @@
           </div>
           <div class="rounded-xl border p-3">
             <div class="text-xs text-stone-500 mb-2">特殊事項</div>
-            <div class="flex flex-wrap gap-2">${notes.length ? notes.map(n => { const tagColors = { '接觸隔離': 'bg-pink-100 text-pink-800 border-pink-300', '空氣隔離': 'bg-sky-100 text-sky-800 border-sky-300', '輸血中/待輸血': 'bg-rose-100 text-rose-800 border-rose-300', '今辦明出': 'bg-blue-100 text-blue-800 border-blue-300', 'DNR': 'bg-yellow-100 text-yellow-900 border-yellow-300', '早期警示': 'bg-purple-100 text-purple-800 border-purple-300' }; return `<span class="rounded-lg border ${tagColors[n] || 'bg-stone-100 text-stone-700 border-stone-300'} px-3 py-1.5 text-sm font-bold">${n}</span>`; }).join('') : '<span class="text-sm text-stone-400">目前沒有特殊事項標記</span>'}</div>
+            <div class="flex flex-wrap gap-2">${notes.length ? notes.map(n => { const tagColors = { '接觸隔離': 'bg-pink-100 text-pink-800 border-pink-300', '空氣隔離': 'bg-sky-100 text-sky-800 border-sky-300', '待輸血': 'bg-amber-200 text-amber-950 border-amber-400', '輸血中': 'bg-rose-600 text-white border-rose-700', '今辦明出': 'bg-blue-100 text-blue-800 border-blue-300', 'DNR': 'bg-yellow-100 text-yellow-900 border-yellow-300', '早期警示': 'bg-purple-100 text-purple-800 border-purple-300' }; return `<span class="rounded-lg border ${tagColors[n] || 'bg-stone-100 text-stone-700 border-stone-300'} px-3 py-1.5 text-sm font-bold">${n}</span>`; }).join('') : '<span class="text-sm text-stone-400">目前沒有特殊事項標記</span>'}</div>
           </div>`;
         document.getElementById('bed-detail-edit-btn').textContent = '詳細設定／編輯';
       }
@@ -848,8 +905,9 @@
 
     window.closeBloodRecord = function(bedKey) {
       if(!isUnlocked) { alert('請先解鎖權限！'); return; }
-      if(confirm(`確定將 ${bedKey} 床的輸血作業標記為結案並清除輸血標籤嗎？`)) {
+      if(confirm(`確定將 ${bedKey} 床的輸血作業標記為結案並清除待輸血/輸血中標籤嗎？`)) {
         if(patientsData[bedKey]) {
+          patientsData[bedKey].hasPendingBlood = false;
           patientsData[bedKey].hasBlood = false;
           patientsData[bedKey].bloodRecord = null;
           saveAndSyncToCloud();
@@ -873,7 +931,6 @@
       document.getElementById('edit-discharging-select').value = p.isDischarging ? 'true' : 'false';
       document.getElementById('edit-dnr-select').value = p.dnr ? 'true' : 'false';
       populateDoctorSelects(p.doctor || "陳大鈞");
-      document.getElementById('edit-patient-modal').classList.add('hidden'); // Fix typo
       document.getElementById('edit-patient-modal').classList.remove('hidden');
     }
     window.closeEditPatientModal = function() { document.getElementById('edit-patient-modal').classList.add('hidden'); }
