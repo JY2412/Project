@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="zh-TW"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>11G 病人床頭電子卡｜唯讀</title><script src="https://cdn.tailwindcss.com"></script><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet"><style>body{font-family:'Noto Sans TC',sans-serif;background:#f7f6f2;color:#383533}.panel{background:white;border:1px solid #e5e0d8;border-radius:20px}.field{background:#f7f6f2;border-radius:13px;padding:13px 16px;min-height:75px}.label{font-size:12px;color:#8c827a;font-weight:700;margin-bottom:5px}.value{font-size:18px;font-weight:700;overflow-wrap:anywhere}.warning{border:1px solid #e5e0d8;border-radius:12px;padding:10px 14px;font-weight:700;background:#fff}.warning.urgent{background:#fff1f2;color:#9f1239;border-color:#fecdd3}.warning.caution{background:#fffbeb;color:#92400e;border-color:#fde68a}.warning.dnr{background:#fef3c7;color:#92400e;border-color:#fcd34d}.warning.iso-contact{background:#fce7f3;color:#9d174d;border-color:#f9a8d4}.warning.iso-scabies{background:#dcfce7;color:#166534;border-color:#86efac}.warning.iso-air{background:#e0f2fe;color:#075985;border-color:#7dd3fc}@media(max-width:700px){.value{font-size:15px}.field{padding:10px}.patient-name{font-size:27px!important}}</style></head>
+<body class="min-h-screen p-3 md:p-8">
+<div id="login-screen" class="min-h-[85vh] flex items-center justify-center"><div class="panel p-8 w-full max-w-md space-y-5 shadow-sm"><div class="text-sm font-bold text-[#8c827a]">亞東紀念醫院 · 11G 護理病房</div><h1 class="text-3xl font-black">床頭電子卡登入</h1><p class="text-sm text-[#8c827a]">請先登入，再選擇要顯示的病床。</p><label class="block text-sm font-bold">帳號<input id="login-user" autocomplete="username" class="block w-full mt-2 p-3 border rounded-xl bg-[#f7f6f2]" placeholder="請輸入帳號"></label><label class="block text-sm font-bold">密碼<input id="login-pass" type="password" autocomplete="current-password" class="block w-full mt-2 p-3 border rounded-xl bg-[#f7f6f2]" placeholder="請輸入密碼"></label><p id="login-error" class="hidden text-rose-700 text-sm font-bold">帳號或密碼錯誤</p><button id="login-button" class="w-full p-3 rounded-xl bg-[#8c7a6b] text-white font-bold">登入</button></div></div>
+<div id="select-screen" class="hidden min-h-[85vh] flex items-center justify-center"><div class="panel p-8 w-full max-w-md space-y-5"><h2 class="text-2xl font-black">選擇病床</h2><p class="text-sm text-[#8c827a]">選擇後進入該床的唯讀床頭卡。</p><select id="initial-bed" class="w-full p-3 rounded-xl border bg-[#f7f6f2] font-bold"><option value="">等待床位資料</option></select><button id="enter-bed" class="w-full p-3 rounded-xl bg-[#8c7a6b] text-white font-bold">進入床頭卡</button><p id="select-error" class="hidden text-rose-700 text-sm">請先選擇床號</p></div></div>
+<div id="change-screen" class="hidden fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4"><div class="panel p-7 w-full max-w-sm space-y-4 shadow-xl"><h2 class="text-xl font-black">變更病床驗證</h2><p class="text-sm text-[#8c827a]">請輸入密碼後才能重新選擇床號。</p><input id="change-pass" type="password" class="w-full p-3 border rounded-xl" placeholder="密碼"><p id="change-error" class="hidden text-rose-700 text-sm font-bold">密碼錯誤</p><div class="flex gap-3"><button id="cancel-change" class="flex-1 p-3 rounded-xl bg-[#f0ede6] font-bold">取消</button><button id="confirm-change" class="flex-1 p-3 rounded-xl bg-[#8c7a6b] text-white font-bold">確認</button></div></div></div>
+<main id="card-screen" class="hidden max-w-6xl mx-auto space-y-5">
+<div class="flex justify-end"><button id="change-bed" class="px-4 py-2 rounded-xl bg-white border border-[#e5e0d8] font-bold text-sm">變更床號（需密碼）</button></div>
+<section class="panel p-5 md:p-8 space-y-5">
+ <div><div class="label">病人資訊</div><h1 id="name" class="patient-name text-4xl md:text-5xl font-black">—</h1><div class="text-sm mt-3 text-[#8c827a]">病歷號：<span id="mrn" class="font-bold text-[#383533]">未提供</span></div></div>
+ <div id="demographics" class="grid grid-cols-2 md:grid-cols-3 gap-3"></div>
+</section>
+<section class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+ <div class="panel p-5 md:p-7"><h2 class="text-lg font-black mb-4">照護警示與特殊注意事項</h2><div id="alerts" class="flex flex-wrap gap-2"><span class="text-[#8c827a]">等待資料</span></div><p class="text-xs text-[#8c827a] mt-4">依護理站電子白板警示標籤顯示；未登錄不代表沒有風險。</p></div>
+ <div class="panel p-5 md:p-7"><h2 class="text-lg font-black mb-4">醫療團隊</h2><div class="grid grid-cols-1 sm:grid-cols-3 gap-3" id="team"></div></div>
+</section>
+<footer class="text-xs text-[#8c827a] text-center pb-3">專題模擬展示用 · 唯讀 Firebase · 最後更新：<span id="updated">—</span> · <span id="sync-text">等待雲端資料</span></footer>
+</main>
+<script>
+'use strict';
+const DB='https://nursingapp-2c5eb-default-rtdb.asia-southeast1.firebasedatabase.app/femh_cloud_db_v12.json';
+const $=id=>document.getElementById(id);let patients={},assignments={},lastPayload=null,busy=false,selectedBed='',loggedIn=false;
+const safe=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const text=v=>(v===null||v===undefined||String(v).trim()==='')?'未提供':String(v);
+const pick=(p,keys)=>{for(const k of keys){if(p[k]!==undefined&&p[k]!==null&&String(p[k]).trim()!=='')return p[k]}return null};
+const field=(label,value)=>`<div class="field"><div class="label">${safe(label)}</div><div class="value">${safe(text(value))}</div></div>`;
+function getInfo(p){const info=String(p.info||'');const mrn=pick(p,['medicalRecordNo','medicalRecordNumber','medicalRecord','mrn','chartNo','patientId'])||info.match(/(?:病例號|病歷號)[:：]\s*([\w-]+)/)?.[1];const dob=pick(p,['birthDate','birthday','dob','dateOfBirth'])||info.match(/\b\d{4}[/-]\d{1,2}[/-]\d{1,2}\b/)?.[0];const age=pick(p,['age','patientAge'])||info.match(/\((\d+\s*[Yy歲])\)/)?.[1];return {mrn,dob,age};}
+function render(){
+ const bed=selectedBed,p=patients[bed];
+ if(!p||p.isEmpty){$('name').textContent=bed+'　空床';$('mrn').textContent='未提供';$('demographics').innerHTML='';$('alerts').innerHTML='<span class="text-[#8c827a]">無病人資料</span>';$('team').innerHTML='';return}
+ const info=getInfo(p);$('name').textContent=bed+'　'+displayPatientName(p);$('mrn').textContent=text(info.mrn);
+ const rawAge=info.age==null?'':String(info.age).trim();const age=rawAge?(/^\d+$/.test(rawAge)?rawAge+'歲':rawAge.replace(/\s*[Yy]$/,'歲')):null;
+ $('demographics').innerHTML=[['性別',pick(p,['gender','sex'])],['生日',info.dob],['年齡',age],['血型',pick(p,['bloodType','blood_type','bloodGroup','aboBloodType'])],['過敏史',pick(p,['allergy','allergies','allergyHistory'])],['疾病診斷',pick(p,['diag','diagnosis'])]].map(([a,b])=>field(a,b)).join('');
+ const alerts=[];
+ const add=(label,kind='caution')=>alerts.push(`<span class="warning ${kind}">${safe(label)}</span>`);
+ if(p.dnr===true||p.dnr==='true')add('DNR','dnr');
+ if(p.difficultIntubation===true)add('困難插管','urgent');
+ if(p.fallRisk===true)add('跌倒高風險','caution');
+ if(p.bleedingRisk===true)add('出血風險','urgent');
+ if(p.restraint===true)add('保護措施','caution');
+ if(p.npo===true)add('禁食','caution');
+ const iso=Array.isArray(p.isolation)?p.isolation:p.isolation?[p.isolation]:[];
+ for(const v of iso){const value=String(v);if(value.includes('接'))add('接觸隔離','iso-contact');else if(value.includes('疥'))add('疥瘡隔離','iso-scabies');else if(value.includes('氣'))add('空氣隔離','iso-air');else add('隔離：'+value,'urgent')}
+ $('alerts').innerHTML=alerts.join('')||'<span class="text-[#8c827a]">目前沒有已登錄的照護警示</span>';
+ $('team').innerHTML=[['主治醫師',pick(p,['doctor','attendingDoctor'])],['住院醫師',pick(p,['residentDoctor'])],['護理師',findNurse(bed,p)]].map(([a,b])=>field(a,b)).join('');
+}
+function displayPatientName(p){
+ const gender=String(p.gender||p.sex||'').trim();
+ if(p.isPublicName===false || p.isPublicName==='false') return `ＯＯＯ${gender?'（'+gender+'）':''}`;
+ const name=String(p.realName||p.name||p.patientName||'').trim();
+ if(!name)return '未提供';
+ // 姓名只遮蔽中間一字，單字姓名則直接遮蔽。
+ const chars=Array.from(name);
+ if(chars.length===1)return 'Ｏ';
+ if(chars.length===2)return chars[0]+'Ｏ';
+ return chars[0]+'Ｏ'+chars.slice(2).join('');
+}
+function findNurse(bed,p){
+ const names=Object.entries(assignments).filter(([name,beds])=>Array.isArray(beds)&&beds.includes(bed)).map(([name])=>name);
+ return names.length?names.join('、'):pick(p,['assignedNurse','nurse']);
+}
+function updateBedOptions(){
+ const keys=Object.keys(patients).sort((a,b)=>a.localeCompare(b,'zh-TW',{numeric:true}));
+ const el=$('initial-bed'),old=el.value;
+ el.innerHTML='<option value="">請選擇床號</option>'+keys.map(k=>`<option value="${safe(k)}">${safe(k)}</option>`).join('');
+ if(keys.includes(old))el.value=old;
+ else if(keys.includes(selectedBed))el.value=selectedBed;
+}
+function showScreen(id){for(const el of ['login-screen','select-screen','card-screen'])$(el).classList.toggle('hidden',el!==id)}
+function openSelectedBed(){const bed=$('initial-bed').value;if(!bed||!Object.prototype.hasOwnProperty.call(patients,bed)){$('select-error').classList.remove('hidden');return}selectedBed=bed;$('fixed-bed').textContent=bed;$('select-error').classList.add('hidden');showScreen('card-screen');render()}
+function verifyLogin(){const valid=$('login-user').value==='pa'&&$('login-pass').value==='pa';$('login-error').classList.toggle('hidden',valid);if(!valid)return;loggedIn=true;$('login-pass').value='';showScreen('select-screen');updateBedOptions()}
+$('login-button').addEventListener('click',verifyLogin);
+for(const id of ['login-user','login-pass'])$(id).addEventListener('keydown',e=>{if(e.key==='Enter')verifyLogin()});
+$('enter-bed').addEventListener('click',openSelectedBed);
+$('change-bed').addEventListener('click',()=>{$('change-pass').value='';$('change-error').classList.add('hidden');$('change-screen').classList.remove('hidden');$('change-pass').focus()});
+$('cancel-change').addEventListener('click',()=>{$('change-screen').classList.add('hidden');$('change-pass').value='' });
+function confirmChange(){if($('change-pass').value!=='pa'){$('change-error').classList.remove('hidden');return}$('change-screen').classList.add('hidden');$('change-pass').value='';$('initial-bed').value=selectedBed;showScreen('select-screen')}
+$('confirm-change').addEventListener('click',confirmChange);
+$('change-pass').addEventListener('keydown',e=>{if(e.key==='Enter')confirmChange()});
+async function poll(){if(busy)return;busy=true;try{const res=await fetch(DB,{cache:'no-store'});if(!res.ok)throw new Error('HTTP '+res.status);const data=await res.json();if(!data||typeof data!=='object')throw new Error('雲端尚無資料');const serial=JSON.stringify(data);if(serial!==lastPayload){lastPayload=serial;patients=data.patientsData||{};assignments=data.nurseBedAssignments||{};updateBedOptions();if(loggedIn&&selectedBed)render()}$('sync-text').textContent='雲端已連線 · 唯讀';$('updated').textContent=new Date().toLocaleString('zh-TW')}catch(err){$('sync-text').textContent='無法取得雲端資料';$('updated').textContent='讀取失敗：'+err.message}finally{busy=false}}
+showScreen('login-screen');poll();setInterval(poll,5000);
+</script></body></html>
