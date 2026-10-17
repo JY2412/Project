@@ -404,8 +404,13 @@
         }
 
         let hasActiveBlood = !!p.hasBlood || !!p.bloodRecord;
-        let isAbnormalVal = !!p.isAbnormal;
-        let ewsReasonVal = p.ewsReason || "";
+        
+        // 嚴格對齊手機端的 EWS 異常與原因判定
+        let isAbnormalVal = p.isAbnormal === true || p.isAbnormal === "true" || p.ewsAbnormal === true;
+        let ewsReasonVal = p.ewsReason || p.ewsDescription || p.abnormalReason || "";
+        if (!ewsReasonVal && p.extra && p.extra.includes("EWS")) {
+          ewsReasonVal = p.extra;
+        }
 
         sanitized[bedKey] = {
           ...p,
@@ -543,6 +548,7 @@
           if (p.isolation === '接') tagsHtml += `<span class="bg-pink-200 text-pink-950 border border-pink-300 px-3 py-1.5 text-sm rounded-lg font-bold">接觸隔離</span>`;
           else if (p.isolation === '氣') tagsHtml += `<span class="bg-sky-100 text-sky-900 border border-sky-300 px-3 py-1.5 text-sm rounded-lg font-bold">空氣隔離</span>`;
           if (p.hasBlood) tagsHtml += `<span class="bg-rose-100 text-rose-800 border border-rose-300 px-3 py-1.5 text-sm rounded-lg font-bold">輸血中/待輸血</span>`;
+          if (p.isAbnormal) tagsHtml += `<span class="bg-purple-100 text-purple-800 border border-purple-300 px-3 py-1.5 text-sm rounded-lg font-bold">早期警示</span>`;
           if (p.isDischarging) tagsHtml += `<span class="bg-sky-700 text-white px-3 py-1.5 text-sm rounded-lg font-bold">今辦明出</span>`;
           if (p.dnr) tagsHtml += `<span class="bg-yellow-200 text-yellow-900 border border-yellow-300 px-3 py-1.5 text-sm rounded-lg font-bold">DNR</span>`;
           tagsHtml += '</div>';
@@ -687,6 +693,7 @@
           const displayName = (p.isPublicName === false || p.isPublicName === "false") ? 'ＯＯＯ' : (p.realName || '未設定');
           let dischargingTag = p.isDischarging ? ' | <span class="text-blue-600 font-bold">今辦明出</span>' : '';
           let bloodTag = p.hasBlood ? ' | <span class="text-rose-600 font-bold">輸血中/待輸血</span>' : '';
+          let ewsTag = p.isAbnormal ? ' | <span class="text-purple-600 font-bold">早期警示</span>' : '';
           const unadmittedLocations = ['急診', 'ICU', '門診', '其他單位(轉床)'];
           const notInWard = unadmittedLocations.includes(p.location);
           const statusClass = notInWard ? 'inline-block rounded-md bg-amber-100 px-2 py-0.5 font-bold text-amber-800' : 'font-semibold text-slate-600';
@@ -696,7 +703,7 @@
           card.innerHTML = `
             <div class="space-y-1">
               <div class="font-bold text-slate-800">${bedKey} - ${displayName}</div>
-              <div class="text-xs text-slate-500">護理師: <span class="font-bold text-teal-800">${p.assignedNurse}</span> | 醫師: ${p.doctor} | 狀態: <span class="${statusClass}">${p.location || '在病房'}</span>${dischargingTag}${bloodTag}</div>
+              <div class="text-xs text-slate-500">護理師: <span class="font-bold text-teal-800">${p.assignedNurse}</span> | 醫師: ${p.doctor} | 狀態: <span class="${statusClass}">${p.location || '在病房'}</span>${dischargingTag}${bloodTag}${ewsTag}</div>
             </div>
             <div class="space-x-1 flex items-center">
               ${bloodCloseBtn}
@@ -866,6 +873,7 @@
       document.getElementById('edit-discharging-select').value = p.isDischarging ? 'true' : 'false';
       document.getElementById('edit-dnr-select').value = p.dnr ? 'true' : 'false';
       populateDoctorSelects(p.doctor || "陳大鈞");
+      document.getElementById('edit-patient-modal').classList.add('hidden'); // Fix typo
       document.getElementById('edit-patient-modal').classList.remove('hidden');
     }
     window.closeEditPatientModal = function() { document.getElementById('edit-patient-modal').classList.add('hidden'); }
