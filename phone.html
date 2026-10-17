@@ -104,7 +104,7 @@
                 </div>
                 <div class="pt-2">
                     <button onclick="handleLogin()" class="w-full bg-slate-800 hover:bg-slate-900 active:bg-slate-700 py-3 text-base font-semibold text-white transition-colors shadow-md rounded-lg flex items-center justify-center space-x-1">
-                        <span>登入</span><span class="text-[11px] font-normal opacity-75">_雲端</span>
+                        <span>登入</span><span class="text-[11px] font-normal opacity-75">_雲端同步版</span>
                     </button>
                 </div>
                 <div id="error-message" class="hidden mt-2 text-center text-rose-600 font-semibold bg-rose-50 py-2 border border-rose-200 rounded-lg text-xs">員編或密碼錯誤，請重新輸入</div>
@@ -247,6 +247,7 @@
                     </div>
                     <div id="detail-patient-info" class="text-[11px] text-slate-600">1985/04/12 (41Y) | 病例號：1031988001</div>
                     <div id="detail-patient-extra" class="text-[11px] text-rose-600 font-medium">血型：O+ | 過敏：Penicillin | 診斷：AMI</div>
+                    <div id="detail-care-tags" class="flex flex-wrap gap-1 pt-1" aria-label="病人照護標籤"></div>
                 </div>
 
                 <div class="w-full grid grid-cols-2 gap-2 pt-1">
@@ -384,6 +385,12 @@
                     <div><label class="font-bold text-slate-700">過去重大疾病史：</label><input type="text" id="edit-disease" class="w-full input-bg h-8 px-2 rounded outline-none font-medium"></div>
                     <div><label class="font-bold text-slate-700">緊急聯絡人：</label><input type="text" id="edit-contact" class="w-full input-bg h-8 px-2 rounded outline-none font-medium"></div>
                     <div><label class="font-bold text-slate-700">緊急聯絡電話：</label><input type="text" id="edit-phone" class="w-full input-bg h-8 px-2 rounded outline-none font-medium"></div>
+                    <div class="border-t pt-2 space-y-2"><div class="font-bold text-slate-700">照護標籤（同步電子白板）</div>
+                    <div class="font-bold text-slate-600">隔離措施（可複選）：</div><div id="mobile-edit-isolation" class="flex flex-wrap gap-2"><label><input type="checkbox" value="接"> 接觸隔離</label><label><input type="checkbox" value="疥"> 疥瘡隔離</label><label><input type="checkbox" value="氣"> 空氣隔離</label></div>
+                    <label class="block"><input id="mobile-edit-dnr" type="checkbox"> DNR</label>
+                    <label class="block"><input id="mobile-edit-fall" type="checkbox"> 跌倒高風險</label>
+                    <label class="block"><input id="mobile-edit-discharge" type="checkbox"> 今辦明出</label>
+                    <div class="text-[10px] text-slate-500">未入病房、不在病房與轉床狀態由電子白板原有病房管理流程維護，手機端同步顯示。</div></div>
                 </div>
                 <div class="flex justify-end shrink-0 pt-1">
                     <button onclick="savePatientEdit()" class="w-24 bg-slate-800 hover:bg-slate-900 text-white font-bold py-2 rounded-xl text-xs shadow">儲存修改</button>
@@ -967,6 +974,7 @@
                         continue;
                     }
 
+                    // 01-3 固定預設為鄭Ｏ心；單床與全病房重置皆透過 generateDefaultPatients() 還原此設定。
                     let pName = (bedKey === "01-1") ? "林Ｏ資" : (bedKey === "01-3" ? "鄭Ｏ心" : uniqueNames[nameIdx++ % uniqueNames.length]);
                     let profile = clinicalProfiles[(room + b) % clinicalProfiles.length];
 
@@ -1368,14 +1376,10 @@
                 if (p.ewsAlert) {
                     badgeHtml += '<span class="bg-purple-600 text-white font-bold px-1.5 py-0.5 rounded text-[10px] mr-1 shrink-0 animate-pulse">EWS警示</span>';
                 }
-                if (p.isolation === '接') badgeHtml += '<span class="bg-rose-500 text-white font-bold px-1.5 py-0.5 rounded text-[10px] mr-1 shrink-0">接</span>';
-                else if (p.isolation === '氣') badgeHtml += '<span class="bg-blue-600 text-white font-bold px-1.5 py-0.5 rounded text-[10px] mr-1 shrink-0">氣</span>';
-                
-                let currentStatus = p.location || p.status || p.transferTag || '';
-                if (['急診', 'ICU', '轉床', 'ICU轉入', '門診'].includes(currentStatus)) {
-                    let tagLabel = currentStatus === 'ICU' ? 'ICU轉入' : currentStatus;
-                    badgeHtml += `<span class="bg-amber-600 text-white font-bold px-1.5 py-0.5 rounded text-[10px] mr-1 shrink-0">${tagLabel}</span>`;
-                }
+                mobileCareTags(p).forEach(t => {
+                    const label = String(t.label).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+                    badgeHtml += `<span class="${t.css} font-bold px-1.5 py-0.5 rounded text-[10px] mr-1">${label}</span>`;
+                });
 
                 const nameParts = safeFullName.split(' ');
                 const bedNo = nameParts[0];
@@ -1397,6 +1401,49 @@
             }
             btn.onclick = () => selectPatient(bedKey);
             return btn;
+        }
+
+        // 與白板共用病人欄位；不改動手機既有定位物件及輸血執行流程。
+        function mobileIsolationTypes(value) {
+            if (Array.isArray(value)) return [...new Set(value.filter(v => ['接','疥','氣'].includes(v)))];
+            if (typeof value === 'string') return ['接','疥','氣'].filter(v => value.includes(v));
+            return [];
+        }
+        function mobileWardStatus(p) {
+            // 手機既有 location 可能是 {top,left,desc} 定位座標，不當成病房狀態。
+            return (typeof p.location === 'string' && p.location) || (typeof p.status === 'string' && p.status) || (typeof p.transferTag === 'string' && p.transferTag) || '';
+        }
+        function mobileCareTags(p) {
+            const tags = [];
+            const add = (label, css) => tags.push({label, css});
+            const colors = {'接':'bg-rose-100 text-rose-800','疥':'bg-green-100 text-green-800','氣':'bg-sky-100 text-sky-800'};
+            const names = {'接':'接觸隔離','疥':'疥瘡隔離','氣':'空氣隔離'};
+            mobileIsolationTypes(p.isolation).forEach(v => add(names[v], colors[v]));
+            if (p.dnr === true || p.dnr === 'true') add('DNR','bg-yellow-100 text-yellow-900');
+            if (p.fallRisk === true || p.fallRisk === 'true' || p.isFallRisk === true) add('跌倒高風險','bg-orange-100 text-orange-900');
+            if (p.isDischarging === true || p.isDischarging === 'true') add('今辦明出','bg-blue-100 text-blue-800');
+            const status = mobileWardStatus(p);
+            if (status && status !== '在病房') {
+                const unadmitted = ['急診','ICU','門診','其他單位(轉床)','ICU轉入','轉床'];
+                const outside = ['請假','檢查中','手術中','傳送中'];
+                add((unadmitted.includes(status) ? '未入病房：' : outside.includes(status) ? '不在病房：' : '病人狀態：') + status,'bg-slate-200 text-slate-800');
+            }
+            const bs = String(p.bloodStatus || '').trim();
+            if (bs === '輸血中' || (p.bloodRecord && p.bloodRecord.status === '輸血中')) add('輸血中','bg-rose-600 text-white');
+            else if (bs === '待輸血' || (p.hasBlood === true && bs !== '已完成' && bs !== '結案' && !p.bloodRecord)) add('待輸血','bg-amber-100 text-amber-900');
+            else if (bs === '已完成' || bs === '結案') add('輸血結束','bg-slate-200 text-slate-700');
+            return tags;
+        }
+        function renderMobileCareTags(p) {
+            const el = document.getElementById('detail-care-tags');
+            if (!el) return;
+            el.replaceChildren();
+            mobileCareTags(p).forEach(t => {
+                const span = document.createElement('span');
+                span.className = `text-[10px] px-2 py-1 rounded-md font-bold ${t.css}`;
+                span.textContent = t.label;
+                el.appendChild(span);
+            });
         }
 
         function selectPatient(bedNumber) {
@@ -1425,20 +1472,19 @@
                 ewsBanner.classList.add('hidden');
             }
 
+            renderMobileCareTags(p);
             const isolationEl = document.getElementById('detail-isolation-badge');
             const nfcIsolationEl = document.getElementById('nfc-isolation-badge');
             
             [isolationEl, nfcIsolationEl].forEach(el => {
                 if (!el) return;
-                let currentStatus = p.location || p.status || p.transferTag || '';
-                let badgeText = p.isolation || (['急診', 'ICU', '轉床', 'ICU轉入', '門診'].includes(currentStatus) ? (currentStatus === 'ICU' ? 'ICU轉入' : currentStatus) : '');
-                if (badgeText) {
+                const names = {'接':'接觸隔離','疥':'疥瘡隔離','氣':'空氣隔離'};
+                const labels = mobileIsolationTypes(p.isolation).map(t => names[t]);
+                if (labels.length) {
                     el.classList.remove('hidden');
-                    el.innerText = badgeText;
-                    el.className = `text-[10px] px-1.5 py-0.5 rounded font-bold text-white ${p.isolation === '接' ? 'bg-rose-500' : p.isolation === '氣' ? 'bg-blue-600' : 'bg-amber-600'}`;
-                } else {
-                    el.classList.add('hidden');
-                }
+                    el.textContent = labels.join('、');
+                    el.className = 'text-[10px] px-1.5 py-0.5 rounded font-bold text-white bg-slate-700';
+                } else { el.classList.add('hidden'); }
             });
 
             document.querySelectorAll('#detail-nurse-badge, #nfc-nurse-badge').forEach(el => el.innerText = p.assignedNurse || '-');
@@ -1467,6 +1513,10 @@
             document.getElementById('edit-disease').value = p.diag || (p.editInfo && p.editInfo.disease) || 'AMI';
             document.getElementById('edit-contact').value = (p.editInfo && p.editInfo.contact) || '家屬';
             document.getElementById('edit-phone').value = (p.editInfo && p.editInfo.phone) || '0912-345678';
+            document.querySelectorAll('#mobile-edit-isolation input').forEach(el => el.checked = mobileIsolationTypes(p.isolation).includes(el.value));
+            document.getElementById('mobile-edit-dnr').checked = p.dnr === true || p.dnr === 'true';
+            document.getElementById('mobile-edit-fall').checked = p.fallRisk === true || p.fallRisk === 'true' || p.isFallRisk === true;
+            document.getElementById('mobile-edit-discharge').checked = p.isDischarging === true || p.isDischarging === 'true';
         };
 
         window.savePatientEdit = function() {
@@ -1477,8 +1527,14 @@
             p.editInfo.contact = document.getElementById('edit-contact').value;
             p.editInfo.phone = document.getElementById('edit-phone').value;
             p.extra = `血型：${p.blood || 'O+'} | 過敏：${p.editInfo.allergy} | 診斷：${p.editInfo.disease}`;
+            const isolation = [...document.querySelectorAll('#mobile-edit-isolation input:checked')].map(el => el.value);
+            p.isolation = isolation.length > 1 ? isolation : (isolation[0] || '');
+            p.dnr = document.getElementById('mobile-edit-dnr').checked;
+            p.fallRisk = document.getElementById('mobile-edit-fall').checked;
+            p.isDischarging = document.getElementById('mobile-edit-discharge').checked;
             saveToCloud();
             alert('病人基本資料修改成功（已同步雲端）！');
+            renderMobileCareTags(p);
             switchView('patient-detail-view');
         };
 
