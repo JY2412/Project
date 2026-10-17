@@ -104,7 +104,7 @@
                 </div>
                 <div class="pt-2">
                     <button onclick="handleLogin()" class="w-full bg-slate-800 hover:bg-slate-900 active:bg-slate-700 py-3 text-base font-semibold text-white transition-colors shadow-md rounded-lg flex items-center justify-center space-x-1">
-                        <span>登入</span><span class="text-[11px] font-normal opacity-75">_雲端模擬版</span>
+                        <span>登入</span><span class="text-[11px] font-normal opacity-75">_雲端同步版</span>
                     </button>
                 </div>
                 <div id="error-message" class="hidden mt-2 text-center text-rose-600 font-semibold bg-rose-50 py-2 border border-rose-200 rounded-lg text-xs">員編或密碼錯誤，請重新輸入</div>
@@ -967,7 +967,7 @@
                         continue;
                     }
 
-                    let pName = (bedKey === "01-1") ? "林Ｏ資" : uniqueNames[nameIdx++ % uniqueNames.length];
+                    let pName = (bedKey === "01-1") ? "林Ｏ資" : (bedKey === "01-3" ? "鄭Ｏ心" : uniqueNames[nameIdx++ % uniqueNames.length]);
                     let profile = clinicalProfiles[(room + b) % clinicalProfiles.length];
 
                     let isolationTag = "";
@@ -980,7 +980,7 @@
                     else if (opdCount < 1 && bedKey === "04-1") { transferTag = "門診"; isArrived = false; opdCount++; }
                     else if (erCount < 2 && (room + b) % 7 === 0) { transferTag = "急診"; isArrived = false; erCount++; }
 
-                    let genderVal = (b % 2 === 0 ? '女' : '男');
+                    let genderVal = (bedKey === '01-3') ? '女' : (b % 2 === 0 ? '女' : '男');
 
                     data[bedKey] = {
                         isEmpty: false, isArrived: isArrived,
@@ -991,8 +991,8 @@
                         extra: `血型：O+ | 過敏：${profile.allergy} | 診斷：${profile.disease}`,
                         isolation: isolationTag, transferTag: transferTag,
                         assignedNurse: "",
-                        hasBlood: (bedKey === "01-1"),
-                        hasConsent: (bedKey === "01-1"),
+                        hasBlood: (bedKey === "01-1" || bedKey === "01-3"),
+                        hasConsent: (bedKey === "01-1" || bedKey === "01-3"),
                         hasIO: true, hasGCS: true, hasMP: true,
                         ewsAlert: false,
                         ewsReason: "",
@@ -1009,13 +1009,8 @@
                     };
                 }
             }
-            // 僅在建立/重置示範資料時抽取 3–4 床待輸血醫囑；不改動現有雲端病人。
-            const occupied = Object.keys(data).filter(k => !data[k].isEmpty);
-            for (let i = occupied.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [occupied[i], occupied[j]] = [occupied[j], occupied[i]];
-            }
-            const bloodBeds = new Set(occupied.slice(0, 3 + Math.floor(Math.random() * 2)));
+            // 初始化示範資料僅固定 01-1、01-3 有待輸血醫囑；兩床仍須另行簽署輸血治療同意書。
+            const bloodBeds = new Set(['01-1', '01-3']);
             const places = ['在病房', '在病房', '在病房', 'ICU', '門診', '檢查中', '請假', '手術中', '急診', '傳送中'];
             Object.entries(data).forEach(([key, patient]) => {
                 if (patient.isEmpty) return;
