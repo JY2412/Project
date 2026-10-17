@@ -104,7 +104,7 @@
                 </div>
                 <div class="pt-2">
                     <button onclick="handleLogin()" class="w-full bg-slate-800 hover:bg-slate-900 active:bg-slate-700 py-3 text-base font-semibold text-white transition-colors shadow-md rounded-lg flex items-center justify-center space-x-1">
-                        <span>登入</span><span class="text-[11px] font-normal opacity-75">_雲端同</span>
+                        <span>登入</span><span class="text-[11px] font-normal opacity-75">_雲端步</span>
                     </button>
                 </div>
                 <div id="error-message" class="hidden mt-2 text-center text-rose-600 font-semibold bg-rose-50 py-2 border border-rose-200 rounded-lg text-xs">員編或密碼錯誤，請重新輸入</div>
@@ -665,8 +665,7 @@
                     <div id="blood-paused-actions" class="hidden space-y-2 border border-amber-300 bg-amber-50 rounded-xl p-2 text-xs">
                         <div class="font-bold text-amber-900">輸血已暫停。疑似輸血反應時請停止輸注並依院內流程通報、評估與處置。</div>
                         <label class="flex gap-2 items-start text-slate-800"><input id="blood-doctor-approval" type="checkbox" class="mt-0.5"> 已經醫師評估，確認允許繼續本袋輸血（模擬確認）</label>
-                        <button onclick="prepareResumeBlood()" class="w-full bg-slate-800 text-white font-bold py-2 rounded-lg">重新進行兩位護理師核對</button>
-                        <button id="blood-resume-btn" onclick="resumeBloodTransfusion()" class="w-full bg-teal-700 text-white font-bold py-2 rounded-lg">確認繼續輸血</button>
+                        <button onclick="prepareResumeBlood()" class="w-full bg-slate-800 text-white font-bold py-2 rounded-lg">繼續輸血／兩位護理師重新核對</button>
                         <button onclick="cancelBloodTransfusion()" class="w-full bg-rose-700 text-white font-bold py-2 rounded-lg">取消輸血（不再繼續）</button>
                     </div>
                     <button id="blood-complete-btn" onclick="completeBloodRecord()" class="w-full bg-teal-700 hover:bg-teal-800 text-white font-bold py-2 rounded-xl shadow text-xs transition">輸血完畢 / 結案 (移除血品標籤)</button>
@@ -1438,7 +1437,8 @@
                 add((unadmitted.includes(status) ? '未入病房：' : outside.includes(status) ? '不在病房：' : '病人狀態：') + status,'bg-slate-200 text-slate-800');
             }
             const bs = String(p.bloodStatus || '').trim();
-            if (bs === '輸血中' || (p.bloodRecord && p.bloodRecord.status === '輸血中')) add('輸血中','bg-rose-600 text-white');
+            if (bs === '輸血暫停' || (p.bloodRecord && p.bloodRecord.status === '輸血暫停')) add('輸血暫停中','bg-amber-100 text-amber-900 border border-amber-300');
+            else if (bs === '輸血中' || (p.bloodRecord && p.bloodRecord.status === '輸血中')) add('輸血中','bg-rose-600 text-white');
             else if (bs === '待輸血' || (p.hasBlood === true && bs !== '已完成' && bs !== '結案' && !p.bloodRecord)) add('待輸血','bg-amber-100 text-amber-900');
             else if (bs === '已完成' || bs === '結案') add('輸血結束','bg-slate-200 text-slate-700');
             return tags;
@@ -2666,8 +2666,9 @@
             const saveBtn = document.getElementById('blood-save-btn');
 
             if (p.bloodRecord) {
-                bloodVerifiedNurse1 = p.bloodRecord.nurse1;
-                bloodVerifiedNurse2 = p.bloodRecord.nurse2;
+                bloodVerifiedNurse1 = p.bloodStatus === '輸血暫停' ? null : p.bloodRecord.nurse1;
+                bloodVerifiedNurse2 = p.bloodStatus === '輸血暫停' ? null : p.bloodRecord.nurse2;
+                if (p.bloodStatus === '輸血暫停') p.bloodRecord.resumeApproved = false;
                 bloodIsLocked = true;
                 
                 bloodSelect.value = p.bloodRecord.productType;
@@ -2679,11 +2680,11 @@
                 endTimeInput.value = p.bloodRecord.endTime || '';
                 endTimeInput.disabled = true;
 
-                btn1.innerText = `${p.bloodRecord.nurse1} (已核對)`;
+                btn1.innerText = p.bloodStatus === '輸血暫停' ? '護理師一 待重新核對' : `${p.bloodRecord.nurse1} (已核對)`;
                 btn1.disabled = true;
                 btn1.className = 'flex-1 bg-teal-50 text-teal-800 border border-teal-300 py-2 text-xs font-bold rounded-xl cursor-not-allowed';
 
-                btn2.innerText = `${p.bloodRecord.nurse2} (已核對)`;
+                btn2.innerText = p.bloodStatus === '輸血暫停' ? '護理師二 待重新核對' : `${p.bloodRecord.nurse2} (已核對)`;
                 btn2.disabled = true;
                 btn2.className = 'flex-1 bg-teal-50 text-teal-800 border border-teal-300 py-2 text-xs font-bold rounded-xl cursor-not-allowed';
 
@@ -2712,6 +2713,8 @@
                 saveBtn.disabled = false;
                 saveBtn.className = 'w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-2 rounded-xl shadow text-xs transition';
             }
+            const approvalCheckbox = document.getElementById('blood-doctor-approval');
+            if (approvalCheckbox) approvalCheckbox.checked = false;
             updateBloodSafetyUI();
         }
 
@@ -2772,7 +2775,7 @@
                 btn.innerText = `護理師${i === 1 ? '一' : '二'} 重新核對`;
                 btn.className = 'flex-1 bg-amber-100 border border-amber-300 py-2 text-xs font-bold rounded-xl';
             }
-            alert('請兩位不同護理師重新登入核對，再按「確認繼續輸血」。');
+            alert('請依序點選上方護理師一、護理師二，使用兩位不同護理師帳號重新核對；完成後系統自動恢復輸血。');
         };
         window.resumeBloodTransfusion = function() {
             const p = patientsData[currentSelectedBed];
@@ -2780,7 +2783,7 @@
             if (bloodDeadlineExceeded(p.bloodRecord)) { alert('輸注時間已逾時，禁止恢復。'); return; }
             if (!p.bloodRecord.resumeApproved || !document.getElementById('blood-doctor-approval').checked) { alert('尚未確認醫師評估允許繼續。'); return; }
             if (!bloodVerifiedNurse1 || !bloodVerifiedNurse2 || bloodVerifiedNurse1 === bloodVerifiedNurse2) { alert('必須由兩位不同護理師重新完成身分核對。'); return; }
-            if (!confirm('確認已完成醫師評估及雙人重新核對，繼續輸血？')) return;
+            if (!Array.isArray(p.bloodRecord.resumeChecks)) p.bloodRecord.resumeChecks = [];
             p.bloodRecord.resumeChecks.push({at:new Date().toISOString(), nurse1:bloodVerifiedNurse1, nurse2:bloodVerifiedNurse2});
             p.bloodRecord.resumedAt = new Date().toISOString();
             p.bloodRecord.status = '輸血中'; p.bloodStatus = '輸血中';
@@ -2832,6 +2835,10 @@
                 btn.innerText = `${nName} (已核對)`;
                 btn.disabled = true;
                 btn.className = 'flex-1 bg-teal-50 text-teal-800 border border-teal-300 py-2 text-xs font-bold rounded-xl cursor-not-allowed';
+                const currentBloodPatient = patientsData[currentSelectedBed];
+                if (currentBloodPatient && currentBloodPatient.bloodStatus === '輸血暫停' && currentBloodPatient.bloodRecord && currentBloodPatient.bloodRecord.resumeApproved && bloodVerifiedNurse1 && bloodVerifiedNurse2 && bloodVerifiedNurse1 !== bloodVerifiedNurse2) {
+                    resumeBloodTransfusion();
+                }
             } else {
                 document.getElementById('modal-err').classList.remove('hidden');
             }
