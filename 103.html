@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>亞東紀念醫院 - 11G 護理站電子白板系統</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Noto Sans TC', sans-serif; background-color: #F7F6F2; color: #383533; -webkit-font-smoothing: antialiased; }
+    .muji-card { background-color: #FFFFFF; border: 1px solid #E5E0D8; border-radius: 20px; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03); transition: all 0.2s ease-in-out; }
+    .muji-card-abnormal { border: 2px solid #8b5cf6 !important; background-color: #faf5ff !important; }
+    .btn-comfort { padding: 0.8rem 1.6rem; font-size: 1rem; border-radius: 14px; transition: all 0.15s ease; cursor: pointer; user-select: none; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; }
+    .btn-comfort:active { transform: scale(0.98); }
+    
+    .marquee-container { overflow: hidden; position: relative; width: 100%; display: flex; align-items: center; white-space: nowrap !important; }
+    .marquee-content { display: inline-block !important; white-space: nowrap !important; word-break: keep-all !important; animation: scroll-marquee 30s linear infinite; animation-duration: var(--marquee-duration, 30s); }
+    @keyframes scroll-marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+    
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-track { background: #F7F6F2; }
+    ::-webkit-scrollbar-thumb { background: #D5CFC7; border-radius: 5px; }
+
+    /* Responsive whiteboard layout: CSS only; no database or event changes. */
+    html, body { min-width: 0; }
+    .responsive-header { gap: 12px 20px; }
+    .responsive-header > div { min-width: 0; }
+    .responsive-header h1, #top-clock-date, #current-mode-label { white-space: nowrap; }
+    .responsive-stats { gap: 12px 18px; align-items: flex-start; flex-wrap: wrap; }
+    .stats-primary, .stats-secondary { flex-wrap: wrap; gap: 10px; min-width: 0; }
+    .stats-primary { flex: 1 1 650px; }
+    .stats-secondary { flex: 0 1 auto; }
+    .stats-primary > *, .stats-secondary > * { flex-shrink: 0; margin-left: 0 !important; white-space: nowrap; }
+    .stats-primary .btn-comfort, .stats-secondary .btn-comfort { white-space: nowrap; word-break: keep-all; }
+    /* Five columns maximum; cards remain landscape instead of squeezing into 8 columns. */
+    .responsive-bed-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+    .responsive-bed-grid { align-items: stretch; }
+    .responsive-bed-grid > .muji-card { min-width: 0; align-self: stretch; height: 100%; }
+    .responsive-bed-grid > .muji-card > .pl-4.flex.flex-col { flex: 1 1 auto; }
+    .responsive-bed-grid .bed-card-tags { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 10px; }
+    .responsive-bed-grid .bed-card-tags > span { white-space: nowrap; }
+    .responsive-bed-grid .flex-wrap > span { white-space: nowrap; word-break: keep-all; }
+    main { min-height: 0; min-width: 0; }
+    @media (max-width: 1650px) and (min-width: 1251px) {
+      .responsive-bed-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    }
+    @media (max-width: 1250px) and (min-width: 901px) {
+      .responsive-bed-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+    @media (max-width: 1500px) {
+      .responsive-header { flex-wrap: wrap; padding: 12px 20px; }
+      .responsive-stats { padding: 12px 20px; }
+      main { padding: 20px !important; }
+    }
+    @media (max-width: 900px) {
+      .responsive-header > div:first-child { flex-wrap: wrap; gap: 8px 12px; }
+      .responsive-header > div:first-child > * { margin-left: 0 !important; }
+      .responsive-header h1 { font-size: 1.05rem; }
+      .responsive-stats { max-height: 31vh; overflow-y: auto; overscroll-behavior: contain; }
+      .stats-primary { flex-basis: 100%; }
+      .responsive-bed-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+      .responsive-bed-grid > .muji-card { padding: 16px !important; }
+      main { padding: 14px !important; }
+    }
+    @media (min-width: 701px) and (max-width: 900px) {
+      .responsive-bed-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+    @media (max-width: 540px) {
+      .responsive-header { padding: 10px 12px; }
+      .responsive-stats { padding: 10px 12px; max-height: 35vh; }
+      .stats-primary, .stats-secondary { gap: 7px; }
+      .stats-primary .btn-comfort, .stats-secondary .btn-comfort { padding: 8px 10px; font-size: 0.85rem; }
+      .responsive-bed-grid { grid-template-columns: minmax(0, 1fr); }
+    }
+
+    /* Mobile-only layout: desktop and tablet rules above are unchanged. */
+    @media (max-width: 600px) {
+      html, body { width: 100%; max-width: 100%; overflow-x: hidden; }
+      body { min-height: 100dvh; height: 100dvh; }
+      .responsive-header { padding: 10px 12px !important; gap: 9px; align-items: stretch; flex-direction: column; }
+      .responsive-header > div:first-child { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 8px; align-items: center; }
+      .responsive-header > div:first-child img { grid-column: 1; max-width: 190px; max-height: 32px; width: auto; }
+      .responsive-header #sync-status-dot { grid-column: 2; grid-row: 1; }
+      .responsive-header h1 { grid-column: 1 / -1; font-size: 15px !important; white-space: normal; line-height: 1.4; }
+      .responsive-header #top-clock-date { grid-column: 1 / -1; margin: 0 !important; padding: 5px 9px; font-size: 11px; justify-self: start; }
+      .responsive-header > div:last-child { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-start; }
+      .responsive-header > div:last-child > * { margin-left: 0 !important; }
+      .responsive-header #current-mode-label { padding: 8px 10px; font-size: 12px; }
+      .responsive-header button { padding: 8px 12px; font-size: 13px; }
+      .marquee-container { min-width: 0; }
+      .responsive-stats { padding: 10px 12px !important; max-height: 25dvh; overflow-y: auto; overflow-x: hidden; align-items: stretch; gap: 8px; }
+      .stats-primary, .stats-secondary { flex: 1 1 100%; width: 100%; gap: 7px; }
+      .stats-primary > *, .stats-secondary > * { max-width: 100%; }
+      .stats-primary .btn-comfort, .stats-secondary .btn-comfort { padding: 7px 9px; font-size: 12px; }
+      .stats-secondary img { width: 22px; height: 22px; }
+      main { padding: 12px !important; min-height: 0; overflow-x: hidden; }
+      .responsive-bed-grid { grid-template-columns: minmax(0, 1fr) !important; gap: 12px; }
+      .responsive-bed-grid > .muji-card { min-height: 172px; padding: 14px !important; width: 100%; max-width: 100%; }
+      .responsive-bed-grid .bed-card-tags { gap: 5px; }
+      nav { display: flex !important; grid-template-columns: none !important; gap: 8px !important; padding: 9px 12px !important; overflow-x: auto; overflow-y: hidden; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; scrollbar-width: thin; }
+      nav > button { flex: 0 0 auto !important; min-width: 100px; padding: 10px 13px !important; font-size: 14px !important; white-space: nowrap !important; word-break: keep-all !important; }
+      #tab-content-scheduling > div:first-child, #tab-content-alarms > div:first-child { flex-wrap: wrap; gap: 12px; padding: 16px !important; }
+      #tab-content-scheduling h2, #tab-content-alarms h2 { font-size: 17px; }
+      #tab-content-scheduling .muji-card, #tab-content-secretary .muji-card { max-width: 100%; }
+    }
+  </style>
+</head>
+<body class="h-screen w-screen overflow-hidden flex flex-col justify-between select-none">
+
+  <!-- 1. 頂部標題列 -->
+  <header class="bg-white border-b border-[#E5E0D8] px-8 py-4 flex items-center justify-between shrink-0 shadow-xs z-10 responsive-header">
+    <div class="flex items-center space-x-4">
+      <img src="https://www.femh.org.tw/images/template/logo_g.svg" alt="亞東紀念醫院 Logo" class="h-10 object-contain">
+      <span id="sync-status-dot" class="w-3.5 h-3.5 rounded-full bg-emerald-500 animate-pulse" title="雲端同步中"></span>
+      <h1 class="text-xl font-bold tracking-wide text-[#383533]">11G 護理站電子白板系統</h1>
+      <span id="top-clock-date" class="text-sm text-[#8C827A] font-bold ml-4 bg-[#F7F6F2] px-4 py-2 rounded-xl border border-[#E5E0D8]">--</span>
+    </div>
+    <div class="flex items-center space-x-4">
+      <span id="current-mode-label" class="text-sm bg-[#F0EDE6] text-[#786759] font-bold px-4.5 py-2.5 rounded-xl border border-[#E5E0D8]">目前唯讀模式</span>
+      <button onclick="openUnlockModal()" class="btn-comfort bg-[#8C7A6B] hover:bg-[#786759] text-white shadow-xs">解鎖編輯</button>
+    </div>
+  </header>
+
+  <!-- 頂部跑馬燈 -->
+  <div class="bg-rose-50/90 border-b border-rose-200/80 px-8 py-3 flex items-center shrink-0">
+    <span class="text-sm font-bold text-rose-700 bg-rose-100 px-4 py-1.5 rounded-xl mr-6 shrink-0 shadow-xs">急救分機：999</span>
+    <div class="flex-1 marquee-container">
+      <div id="dynamic-marquee" class="marquee-content text-sm font-bold text-rose-800">
+        11G 護理站電子白板系統即時連線中...
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. 頂部數據統計與分類按鈕列 -->
+  <div class="bg-[#F7F6F2] border-b border-[#E5E0D8] px-8 py-4 shrink-0 flex items-center justify-between responsive-stats">
+    <div class="flex items-center space-x-3 text-sm font-bold text-[#5C554E] stats-primary">
+      <div onclick="filterBedStatus('all')" class="bg-white px-5 py-3 rounded-2xl border border-[#E5E0D8] cursor-pointer hover:bg-[#F0EDE6] btn-comfort shadow-xs">總床位數 <span id="stat-total" class="text-[#383533] font-extrabold ml-2">-- 床</span></div>
+      <div onclick="filterBedStatus('occupied')" class="bg-white px-5 py-3 rounded-2xl border border-[#E5E0D8] cursor-pointer hover:bg-[#F0EDE6] btn-comfort shadow-xs">現住院人數 <span id="stat-occ" class="text-teal-700 font-extrabold ml-2">-- 人</span></div>
+      <div onclick="filterBedStatus('empty')" class="bg-white px-5 py-3 rounded-2xl border border-[#E5E0D8] cursor-pointer hover:bg-[#F0EDE6] btn-comfort shadow-xs">空床待清 <span id="stat-empty" class="text-amber-600 font-extrabold ml-2">-- 床</span></div>
+      <div onclick="filterBedStatus('discharging')" class="bg-white px-5 py-3 rounded-2xl border border-[#E5E0D8] cursor-pointer hover:bg-[#F0EDE6] btn-comfort shadow-xs text-blue-600">今辦明出 <span id="stat-discharging" class="font-extrabold ml-2">-- 床</span></div>
+      <div onclick="filterBedStatus('isolation')" class="bg-white px-5 py-3 rounded-2xl border border-[#E5E0D8] cursor-pointer hover:bg-[#F0EDE6] btn-comfort shadow-xs">隔離管制 <span id="stat-iso" class="text-rose-600 font-extrabold ml-2">-- 床</span></div>
+      <div onclick="filterTag('ICU')" class="bg-white px-5 py-3 rounded-2xl border border-[#E5E0D8] cursor-pointer hover:bg-orange-50 btn-comfort shadow-xs text-orange-700">未入病房 <span id="stat-icu" class="font-extrabold ml-2">-- 床</span></div>
+      <div onclick="filterTag('OutOfWard')" class="bg-white px-5 py-3 rounded-2xl border border-[#E5E0D8] cursor-pointer hover:bg-cyan-50 btn-comfort shadow-xs text-cyan-800">不在病房 <span id="stat-outward" class="font-extrabold ml-2">-- 床</span></div>
+      <!-- 輸血功能列：按下去可展開切換或篩選待輸血與輸血中 -->
+      <div class="relative group">
+        <div class="bg-white px-5 py-3 rounded-2xl border border-[#E5E0D8] cursor-pointer hover:bg-indigo-50 btn-comfort shadow-xs text-indigo-700">
+          輸血 <span id="stat-blood-total" class="font-extrabold ml-2">-- 床</span> ▾
+        </div>
+        <div class="hidden group-hover:block absolute left-0 top-full mt-1 bg-white border border-[#E5E0D8] rounded-2xl shadow-xl p-2 z-30 space-y-1 min-w-[140px]">
+          <div onclick="filterTag('PendingBlood')" class="px-4 py-2 hover:bg-amber-50 rounded-xl cursor-pointer text-amber-800 font-bold text-xs flex justify-between"><span>待輸血</span><span id="stat-pending-blood">--</span></div>
+          <div onclick="filterTag('Transfusing')" class="px-4 py-2 hover:bg-rose-50 rounded-xl cursor-pointer text-rose-800 font-bold text-xs flex justify-between"><span>輸血中</span><span id="stat-transfusing">--</span></div>
+          <div onclick="filterTag('PausedBlood')" class="px-4 py-2 hover:bg-orange-50 rounded-xl cursor-pointer text-orange-800 font-bold text-xs flex justify-between"><span>輸血暫停中</span><span id="stat-paused-blood">--</span></div>
+        </div>
+      </div>
+      <div onclick="filterTag('EarlyWarning')" class="bg-white px-5 py-3 rounded-2xl border border-[#E5E0D8] cursor-pointer hover:bg-[#F0EDE6] btn-comfort shadow-xs text-purple-600">早期警示 <span id="stat-ew" class="font-extrabold ml-2">-- 床</span></div>
+    </div>
+
+    <div class="flex items-center space-x-3 stats-secondary">
+      <button onclick="filterGender('男')" class="btn-comfort bg-sky-100 hover:bg-sky-200 text-sky-800 border border-sky-200 text-sm py-2.5 px-4 font-bold">男（<span id="filter-male-count">0</span>）</button>
+      <button onclick="filterGender('女')" class="btn-comfort bg-rose-100 hover:bg-rose-200 text-rose-800 border border-rose-200 text-sm py-2.5 px-4 font-bold">女（<span id="filter-female-count">0</span>）</button>
+      <button onclick="filterTag('接')" class="btn-comfort bg-pink-100 hover:bg-pink-200 text-pink-800 font-bold border border-pink-300 text-sm py-2.5 px-4" aria-label="接觸隔離" title="接觸隔離"><img id="filter-iso-contact" alt="接觸隔離" class="w-8 h-8 object-contain" /></button>
+      <button onclick="filterTag('疥')" class="btn-comfort bg-green-100 hover:bg-green-200 text-green-800 font-bold border border-green-300 text-sm py-2.5 px-4" aria-label="疥瘡隔離" title="疥瘡隔離"><img id="filter-iso-scabies" alt="疥瘡隔離" class="w-8 h-8 object-contain" /></button>
+      <button onclick="filterTag('氣')" class="btn-comfort bg-sky-100 hover:bg-sky-200 text-sky-800 font-bold border border-sky-300 text-sm py-2.5 px-4" aria-label="空氣隔離" title="空氣隔離"><img id="filter-iso-air" alt="空氣隔離" class="w-8 h-8 object-contain" /></button>
+      <button onclick="filterTag('DNR')" class="btn-comfort bg-yellow-200 hover:bg-yellow-300 text-yellow-900 font-bold border border-yellow-300 text-sm py-2.5 px-4">DNR</button>
+      <button onclick="resetBedFilter()" class="btn-comfort bg-white hover:bg-[#F0EDE6] border border-[#E5E0D8] text-[#786759] font-bold shadow-xs text-sm py-2.5 px-4">重置篩選</button>
+    </div>
+  </div>
+
+  <!-- 3. 主內容展示區 -->
+  <main class="flex-1 p-8 overflow-y-auto bg-[#F7F6F2]">
+    <!-- Tab 1: 病床總覽 -->
+    <section id="tab-content-matrix" class="space-y-4">
+      <div id="bed-grid" class="grid gap-6 responsive-bed-grid"></div>
+    </section>
+
+    <!-- Tab 2: 護理排班 -->
+    <section id="tab-content-scheduling" class="hidden space-y-6">
+      <div class="muji-card p-8 flex justify-between items-center bg-white">
+        <div>
+          <h2 class="text-xl font-bold text-[#383533]">當班護理人員與責任床位工作分配</h2>
+          <p class="text-base text-[#8C827A] mt-2">解鎖後點擊卡片即可調整護理師負責床位</p>
+        </div>
+        <button onclick="openUnlockModal()" class="btn-comfort bg-[#8C7A6B] hover:bg-[#786759] text-white shadow-xs">解鎖並調整排班</button>
+      </div>
+      <div id="scheduling-cards-container" class="space-y-4"></div>
+    </section>
+
+    <!-- Tab 3: 即時警示 -->
+    <section id="tab-content-alarms" class="hidden space-y-6">
+      <div class="flex justify-between items-center bg-white p-8 muji-card">
+        <div>
+          <h2 class="text-xl font-bold text-[#383533]">即時警示與特殊風險通報</h2>
+          <p class="text-base text-[#8C827A] mt-2">依生命徵象、GCS 或 Muscle Power 數值異常自動觸發標記</p>
+        </div>
+      </div>
+      <div id="alarms-list-container" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+    </section>
+
+    <!-- Tab 4: 病房管理控制台 -->
+    <section id="tab-content-secretary" class="hidden space-y-6">
+      <div class="muji-card p-8 space-y-6 bg-white">
+        <div class="flex justify-between items-center border-b border-[#E5E0D8] pb-5">
+          <div>
+            <h2 class="text-xl font-bold text-[#383533]">病房管理控制台 (出入院 / 狀態 / 醫師 / 今辦明出 / 隱私)</h2>
+            <p class="text-base text-[#8C827A] mt-2">解鎖後可進行入院登記、修改狀態與辦理出院</p>
+          </div>
+          <div class="bg-[#F7F6F2] border border-[#E5E0D8] px-6 py-3.5 rounded-2xl flex items-center space-x-5 shadow-xs">
+            <div class="space-y-0.5 text-right">
+              <div class="text-xs font-bold text-[#8C827A]">11G 病房佔床率</div>
+              <div id="occupancy-rate-text" class="text-lg font-black text-teal-800">--%</div>
+            </div>
+            <div class="w-32 bg-stone-200 h-3.5 rounded-full overflow-hidden p-0.5 border border-stone-300">
+              <div id="occupancy-rate-bar" class="bg-teal-700 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+        <div id="secretary-bed-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+      </div>
+    </section>
+
+    <!-- Tab 5: 公告廣播與值班資訊 -->
+    <section id="tab-content-announcements" class="hidden space-y-6">
+      <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        <div class="muji-card p-8 space-y-6 bg-white xl:col-span-1">
+          <h2 class="text-xl font-bold text-[#383533] border-b border-[#E5E0D8] pb-4">病房公告與跑馬燈廣播管理</h2>
+          <textarea id="broadcast-text-input" placeholder="輸入要推播至全病房頂部的廣播公告..." class="w-full h-32 p-4 bg-[#F7F6F2] border border-[#E5E0D8] rounded-2xl text-base outline-none"></textarea>
+          <button onclick="publishBroadcast()" class="btn-comfort w-full bg-[#8C7A6B] text-white shadow-xs py-3.5 text-lg">發布公告</button>
+          <div class="rounded-2xl border border-[#E5E0D8] bg-[#F7F6F2] p-4 space-y-4">
+            <h3 class="font-bold">跑馬燈設定</h3>
+            <div>
+              <label for="marquee-speed-select" class="block text-sm font-bold mb-2">移動速度</label>
+              <select id="marquee-speed-select" onchange="updateMarqueeSettings()" class="w-full p-3 bg-white border border-[#E5E0D8] rounded-xl">
+                <option value="120">很慢（120 秒一輪）</option>
+                <option value="90">慢（90 秒一輪）</option>
+                <option value="60">適中（60 秒一輪）</option>
+                <option value="45">快（45 秒一輪）</option>
+                <option value="30" selected>一般（30 秒一輪）</option>
+                <option value="20">很快（20 秒一輪）</option>
+              </select>
+            </div>
+            <label class="flex items-center justify-between gap-3 text-sm font-bold"><span>公告自動輪播</span><input id="marquee-carousel-toggle" type="checkbox" checked onchange="updateMarqueeSettings()" class="w-5 h-5 accent-stone-600"></label>
+            <p class="text-xs text-[#8C827A]">開啟後會依公告歷史自動切換；關閉後固定顯示目前公告。</p>
+          </div>
+          <div id="marquee-history-list" class="space-y-2 max-h-48 overflow-y-auto pt-2"></div>
+        </div>
+        <div class="muji-card p-8 bg-white space-y-5 xl:col-span-2">
+          <div class="border-b border-[#E5E0D8] pb-4">
+            <h2 class="text-xl font-bold text-[#383533]">護理站值班與應變總覽</h2>
+          </div>
+          <p class="text-sm text-[#8C827A]">專題展示用模擬資料；醫療值班與聯絡資訊為固定唯讀內容，應變編組依護理排班名單產生。</p>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <section class="bg-[#F7F6F2] p-5 rounded-2xl border border-[#E5E0D8] space-y-3">
+              <h3 class="font-bold text-base">一、醫療值班資訊</h3>
+              <div class="text-sm"><strong>值班醫師姓名：</strong><span>林哲宇（模擬）</span></div>
+              <div class="text-sm"><strong>值班醫師聯絡方式：</strong><span>09XX-XXX-101（模擬）</span></div>
+              <div class="text-sm"><strong>值班護理長／護理長：</strong><span>陳雅雯（模擬）</span></div>
+              <div class="text-sm"><strong>護理長聯絡方式：</strong><span>09XX-XXX-202（模擬）</span></div>
+              <div class="text-sm"><strong>當班護理師姓名：</strong><div id="roster-on-duty-names" class="mt-1 leading-6">尚無排班資料</div></div>
+              <div class="text-sm"><strong>當班護理人員職務或分工：</strong><div id="roster-duty-roles" class="mt-1 leading-6">依責任床位排班顯示</div></div>
+            </section>
+            <section class="bg-[#F7F6F2] p-5 rounded-2xl border border-[#E5E0D8] space-y-3">
+              <h3 class="font-bold text-base">二、消防與緊急應變編組</h3>
+              <p class="text-xs text-[#8C827A]">依目前排班名單隨機分配且不重複；未上班護理師名單僅供滅火班安排。</p>
+              <div id="roster-emergency-teams" class="space-y-2 text-sm"></div>
+              <label class="block text-sm font-bold">未上班護理師名單（以逗號分隔）<input id="roster-off-duty" class="w-full mt-1 p-2.5 rounded-xl border bg-white font-normal" placeholder="輸入未上班護理師姓名"></label>
+              <button onclick="regenerateEmergencyTeams()" class="btn-comfort w-full bg-white border border-[#E5E0D8] text-[#5C554E]">重新安排應變編組</button>
+            </section>
+            <section class="bg-[#F7F6F2] p-5 rounded-2xl border border-[#E5E0D8] space-y-3">
+              <h3 class="font-bold text-base">三、緊急聯絡資訊</h3>
+              <div class="text-sm"><strong>院內緊急聯絡分機：</strong><span>模擬分機 8800</span></div>
+              <div class="text-sm"><strong>醫院總機：</strong><span>02-XXXX-XXXX（模擬）</span></div>
+              <div class="text-sm"><strong>保全／警衛聯絡方式：</strong><span>模擬分機 8811</span></div>
+              <div class="text-sm"><strong>工務或設備維修聯絡方式：</strong><span>模擬分機 8822</span></div>
+              <div class="text-sm"><strong>緊急事件通報窗口：</strong><span>護理站值班負責人（模擬）</span></div>
+            </section>
+            <section class="bg-[#F7F6F2] p-5 rounded-2xl border border-[#E5E0D8] space-y-3">
+              <h3 class="font-bold text-base">四、當班人力及工作分配</h3>
+              <div class="text-sm"><strong>當日日期、星期：</strong><span id="roster-date-weekday">--</span></div>
+              <div class="text-sm"><strong>班別：</strong><span>白班（模擬）</span></div>
+              <div class="text-sm"><strong>當班護理師名單與責任床區：</strong><div id="roster-nurse-beds" class="mt-1 leading-6">尚無排班資料</div></div>
+              <div class="text-sm"><strong>當班負責人：</strong><span id="roster-lead-person">依當班名單帶入</span></div>
+              <div class="text-sm"><strong>代理人：</strong><span id="roster-deputy-person">依當班名單帶入</span></div>
+              <div class="text-sm"><strong>交班或重要工作提醒：</strong><div class="mt-1 leading-6">完成高風險病人巡視；確認急救設備與氧氣設備狀態；交班前核對待辦檢查、用藥及特殊照護事項。（模擬）</div></div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 4. 底部主選單導覽列 -->
+  <nav class="bg-white border-t border-[#E5E0D8] px-8 py-4.5 grid grid-cols-5 gap-4 text-center shrink-0 shadow-lg">
+    <button onclick="switchTab('matrix')" id="btn-tab-matrix" class="btn-comfort font-bold bg-[#8C7A6B] text-white py-4.5 text-lg">病床總覽</button>
+    <button onclick="switchTab('scheduling')" id="btn-tab-scheduling" class="btn-comfort font-bold bg-[#F0EDE6] text-[#5C554E] py-4.5 text-lg">護理排班</button>
+    <button onclick="switchTab('alarms')" id="btn-tab-alarms" class="btn-comfort font-bold bg-[#F0EDE6] text-[#5C554E] py-4.5 text-lg">即時警示</button>
+    <button onclick="switchTab('secretary')" id="btn-tab-secretary" class="btn-comfort font-bold bg-[#F0EDE6] text-[#5C554E] py-4.5 text-lg">病房管理</button>
+    <button onclick="switchTab('announcements')" id="btn-tab-announcements" class="btn-comfort font-bold bg-[#F0EDE6] text-[#5C554E] py-4.5 text-lg">公告廣播</button>
+  </nav>
+
+  <!-- 5. 權限解鎖彈窗 -->
+  <div id="unlock-modal" class="hidden fixed inset-0 bg-black/40 backdrop-blur-2xs z-50 flex items-center justify-center p-6">
+    <div class="muji-card bg-white w-full max-w-md p-8 space-y-6 shadow-2xl text-center">
+      <h3 class="text-lg font-bold border-b pb-4">解鎖編輯權限</h3>
+      <input type="password" id="unlock-pw-input" placeholder="請輸入管理密碼" class="w-full p-4 bg-[#F7F6F2] border rounded-2xl text-center outline-none font-bold">
+      <div id="unlock-err" class="hidden text-rose-600 font-bold bg-rose-50 py-2 border rounded-xl">密碼錯誤</div>
+      <div class="flex space-x-4">
+        <button onclick="closeUnlockModal()" class="btn-comfort flex-1 bg-[#F0EDE6]">取消</button>
+        <button onclick="verifyUnlockPassword()" class="btn-comfort flex-1 bg-[#8C7A6B] text-white">確認解鎖</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. 入院登記彈窗 -->
+  <div id="add-patient-modal" class="hidden fixed inset-0 bg-black/40 backdrop-blur-2xs z-50 flex items-center justify-center p-6">
+    <div class="muji-card bg-white w-full max-w-lg p-8 space-y-4 shadow-2xl text-base max-h-[90vh] overflow-y-auto">
+      <h3 class="text-lg font-bold border-b pb-3">辦理病人入住：<span id="add-modal-bedlabel" class="text-teal-800"></span></h3>
+      <input type="hidden" id="add-target-bedkey">
+      <div><label class="font-bold">姓名：</label><input type="text" id="add-name-input" placeholder="例如：張Ｏ明" class="w-full p-3 bg-[#F7F6F2] border rounded-xl mt-1"></div>
+      <div><label class="font-bold">性別：</label><select id="add-gender-select" class="w-full p-3 bg-[#F7F6F2] border rounded-xl mt-1 font-bold"><option value="男">男性</option><option value="女">女性</option></select></div>
+      <div><label class="font-bold">主治醫師：</label><select id="add-doctor-select" class="w-full p-3 bg-[#F7F6F2] border rounded-xl mt-1 font-bold"></select></div>
+      <div><label class="font-bold">疾病診斷：</label><input type="text" id="add-diag-input" class="w-full p-3 bg-[#F7F6F2] border rounded-xl mt-1 font-bold" value="Acute Myocardial Infarction (AMI)"></div>
+      <div><label class="font-bold">病人現在狀態：</label><select id="add-loc-select" class="w-full p-3 bg-[#F7F6F2] border rounded-xl mt-1 font-bold"><option value="ICU">I入</option><option value="急診">急</option><option value="門診">門</option><option value="其他單位(轉床)">轉</option><option value="在病房">在病房</option></select></div>
+      <div><label class="font-bold">白板姓名隱私：</label><select id="add-public-select" class="w-full p-3 bg-[#F7F6F2] border rounded-xl mt-1 font-bold"><option value="true">公開真實姓名</option><option value="false">不公開 (顯示 ＯＯＯ)</option></select></div>
+      <div class="flex space-x-4 pt-2">
+        <button onclick="closeAddPatientModal()" class="btn-comfort flex-1 bg-[#F0EDE6]">取消</button>
+        <button onclick="saveNewPatient()" class="btn-comfort flex-1 bg-teal-700 text-white">確認入住</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. 詳細設定與修改彈窗 -->
+  <div id="edit-patient-modal" class="hidden fixed inset-0 bg-black/40 backdrop-blur-2xs z-50 flex items-center justify-center p-6">
+    <div class="muji-card bg-white w-full max-w-lg p-8 space-y-4 shadow-2xl text-base max-h-[90vh] overflow-y-auto">
+      <h3 class="text-lg font-bold border-b pb-3">修改病人詳細資料：<span id="edit-modal-bed" class="text-teal-800"></span></h3>
+      <input type="hidden" id="edit-modal-bedkey">
+      <div><label class="font-bold">姓名：</label><input type="text" id="edit-name-input" class="w-full p-3 bg-[#F7F6F2] border rounded-xl mt-1 font-bold"></div>
+      <div><label class="font-bold">主治醫師：</label><select id="edit-doctor-select" class="w-full p-3 bg-[#F7F6F2] border rounded-xl mt-1 font-bold"></select></div>
+      <div><label class="font-bold">疾病診斷：</label><input type="text" id="edit-diag-input" class="w-full p-3 bg-[#F7F6F2] border rounded-xl mt-1 font-bold"></div>
+      <div><label class="font-bold">病人現在狀態：</label><select id="edit-loc-select" class="w-full p-3 bg-[#F7F6F2] border rounded-xl mt-1 font-bold"><option value="在病房">在病房</option><option value="請假">請假</option><option value="檢查中">檢查中</option><option value="手術中">手術中</option><option value="傳送中">傳送中</option></select></div>
+      <div><label class="font-bold">白板姓名隱私：</label><select id="edit-public-select" class="w-full p-3 bg-[#F7F6F2] border rounded-xl mt-1 font-bold"><option value="true">公開真實姓名</option><option value="false">不公開 (顯示 ＯＯＯ)</option></select></div>
+      <div><label class="font-bold">隔離管制（可複選）：</label><div id="edit-iso-select" class="flex flex-wrap gap-3 p-3 bg-[#F7F6F2] border rounded-xl mt-1 font-bold"><label><input type="checkbox" value="接"> 接觸隔離</label><label><input type="checkbox" value="疥"> 疥瘡</label><label><input type="checkbox" value="氣"> 空氣隔離</label></div></div>
+      <div><label class="font-bold">今辦明出：</label><select id="edit-discharging-select" class="w-full p-3 bg-[#F7F6F2] border rounded-xl mt-1 font-bold text-blue-800"><option value="false">否</option><option value="true">是 (今辦明出)</option></select></div>
+      <div><label class="font-bold">DNR：</label><select id="edit-dnr-select" class="w-full p-3 bg-[#F7F6F2] border rounded-xl mt-1 font-bold"><option value="false">否</option><option value="true">是 (DNR)</option></select></div>
+      <div class="flex space-x-4 pt-2">
+        <button onclick="closeEditPatientModal()" class="btn-comfort flex-1 bg-[#F0EDE6]">取消</button>
+        <button onclick="saveEditedPatient()" class="btn-comfort flex-1 bg-[#8C7A6B] text-white">儲存設定</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8. 護理師排班編輯彈窗 -->
+  <div id="edit-schedule-modal" class="hidden fixed inset-0 bg-black/40 backdrop-blur-2xs z-50 flex items-center justify-center p-6">
+    <div class="muji-card bg-white w-full max-w-md p-8 space-y-5 shadow-2xl text-base">
+      <h3 class="text-lg font-bold border-b pb-3">調整護理師負責床位：<span id="sched-modal-nurse" class="text-teal-800 font-bold"></span></h3>
+      <input type="hidden" id="sched-modal-nursename">
+      <div>
+        <label class="font-bold">負責床位 (用逗號分隔，例如: 01-1, 01-3)：</label>
+        <input type="text" id="sched-beds-input" class="w-full p-4 bg-[#F7F6F2] border rounded-xl mt-2 outline-none font-bold">
+      </div>
+      <div class="flex space-x-4 pt-2">
+        <button onclick="closeScheduleModal()" class="btn-comfort flex-1 bg-[#F0EDE6]">取消</button>
+        <button onclick="saveScheduleEdit()" class="btn-comfort flex-1 bg-[#8C7A6B] text-white">儲存排班</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 床位詳細資料視窗 -->
+  <div id="bed-detail-modal" class="hidden fixed inset-0 bg-black/50 z-[60] flex items-center justify-center p-4" onclick="if(event.target===this) closeBedDetailModal()">
+    <div class="muji-card bg-white w-full max-w-lg p-6 sm:p-8 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto" role="dialog" aria-modal="true" aria-labelledby="bed-detail-title">
+      <div class="flex items-center justify-between border-b pb-3">
+        <h3 id="bed-detail-title" class="text-xl font-black">床位詳細資料</h3>
+        <button onclick="closeBedDetailModal()" class="btn-comfort bg-[#F0EDE6] px-3 py-2" aria-label="關閉詳細資料">關閉</button>
+      </div>
+      <div id="bed-detail-content" class="space-y-3"></div>
+      <div class="flex gap-3 pt-2">
+        <button id="bed-detail-edit-btn" onclick="editBedFromDetail()" class="btn-comfort flex-1 bg-[#8C7A6B] text-white">詳細設定／編輯</button>
+        <button onclick="closeBedDetailModal()" class="btn-comfort flex-1 bg-[#F0EDE6]">關閉</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBe__9-uFJkSrN2m5_qldgS2UgtQzcb9EQ",
+      authDomain: "nursingapp-2c5eb.firebaseapp.com",
+      databaseURL: "https://nursingapp-2c5eb-default-rtdb.asia-southeast1.firebasedatabase.app/",
+      projectId: "nursingapp-2c5eb",
+      storageBucket: "nursingapp-2c5eb.firebasestorage.app",
+      messagingSenderId: "731250223633",
+      appId: "1:731250223633:web:c9a28e673e719fb3811fb0"
+    };
+
+    // 與手機端使用相同 REST 連線方式，避免本機 HTML 載入 Firebase ES module 失敗。
+    const db = firebaseConfig.databaseURL.replace(/\/$/, '');
+    const SYNC_DB_PATH = 'femh_cloud_db_v12';
+    const dbRef = SYNC_DB_PATH;
+    const dbUrl = path => db + '/' + path + '.json';
+    let cloudReady = false;
+    const set = async (path, value) => {
+      const response = await fetch(dbUrl(path), {method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(value)});
+      if (!response.ok) throw new Error('HTTP ' + response.status);
+    };
+    const onValue = (path, callback, onError) => {
+      let previous = null, inFlight = false;
+      const poll = async () => {
+        if (inFlight) return;
+        inFlight = true;
+        try {
+          const response = await fetch(dbUrl(path), {cache:'no-store'});
+          if (!response.ok) throw new Error('HTTP ' + response.status);
+          const value = await response.json();
+          const serialized = JSON.stringify(value);
+          if (serialized !== previous) { previous = serialized; callback({val:()=>value}); }
+        } catch(err) { if (onError) onError(err); }
+        finally { inFlight = false; }
+      };
+      poll(); setInterval(poll, 5000);
+    };
+    const isolationTypes = value => {
+      if (Array.isArray(value)) return value.filter(v=>['接','疥','氣'].includes(v));
+      if (typeof value === 'string') return ['接','疥','氣'].filter(v=>value.includes(v) || (v==='疥' && value.includes('Scabies')));
+      return [];
+    };
+    const isolationIcons = {
+      '接': 'data:image/png;base64,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',
+      '疥': 'data:image/png;base64,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',
+      '氣': 'data:image/png;base64,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'
+    };
+    const isolationNames = {'接':'接觸隔離','疥':'疥瘡','氣':'空氣隔離'};
+    [['filter-iso-contact','接'],['filter-iso-scabies','疥'],['filter-iso-air','氣']].forEach(([id,type]) => { const el = document.getElementById(id); if (el) el.src = isolationIcons[type]; });
+
+    let masterCloudData = {};
+    let patientsData = {};
+    let nurseBedAssignments = {};
+    let marqueeHistory = [];
+    let marqueeCarouselTimer = null;
+    let marqueeCarouselIndex = 0;
+    let marqueeSettings = { speed: 30, carousel: true };
+    let stationRoster = {};
+    let currentFilterStatus = 'all';
+    let currentFilterGender = null;
+    let currentFilterTag = null;
+    let isUnlocked = false;
+
+    const doctorList = ["陳大鈞", "林哲宇", "張志豪", "黃建勳", "許智勝", "鄭博文", "王立峰"];
+
+    function populateDoctorSelects(selectedDoc = "") {
+      ['add-doctor-select', 'edit-doctor-select'].forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.innerHTML = '';
+        doctorList.forEach(doc => {
+          const opt = document.createElement('option');
+          opt.value = doc; opt.text = doc;
+          if (doc === selectedDoc) opt.selected = true;
+          el.appendChild(opt);
+        });
+      });
+    }
+
+    function updateClock() {
+      const now = new Date();
+      const dateStr = `${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日`;
+      const timeStr = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
+      const clockEl = document.getElementById('top-clock-date');
+      if (clockEl) clockEl.innerText = `${dateStr} ${timeStr}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    onValue(dbRef, (snapshot) => {
+      const cloudData = snapshot.val();
+      const dot = document.getElementById('sync-status-dot');
+      if (cloudData && (cloudData.patientsData || typeof cloudData === 'object')) {
+        masterCloudData = cloudData;
+        cloudReady = true;
+        patientsData = sanitizeData(cloudData.patientsData || cloudData);
+        nurseBedAssignments = cloudData.nurseBedAssignments || {};
+        marqueeHistory = cloudData.marquee || [];
+        marqueeSettings = { ...marqueeSettings, ...(cloudData.marqueeSettings || {}) };
+        applyMarqueeSettings();
+        stationRoster = cloudData.stationRoster || stationRoster || {};
+        if (marqueeHistory.length > 0) {
+          let cleanText = marqueeHistory[0].text.replace(/[\r\n]+/g, ' ');
+          document.getElementById('dynamic-marquee').innerText = cleanText;
+        }
+        if (dot) dot.className = "w-3.5 h-3.5 rounded-full bg-emerald-500 animate-pulse";
+        syncNurseAssignments();
+        renderBedGrid();
+        renderScheduling();
+        renderAlarmsTab();
+        renderSecretary();
+        renderMarqueeHistory();
+        renderStationRoster();
+      }
+    }, (err) => {
+      cloudReady = false;
+      const dot = document.getElementById('sync-status-dot');
+      if (dot) { dot.className = 'w-3.5 h-3.5 rounded-full bg-rose-500'; dot.title = '雲端連線失敗：' + err.message; }
+      console.error('白板雲端讀取失敗', err);
+    });
+
+    function sanitizeData(rawPatients) {
+      let sanitized = {};
+      if (!rawPatients || typeof rawPatients !== 'object') return sanitized;
+
+      Object.keys(rawPatients).sort().forEach(bedKey => {
+        let p = rawPatients[bedKey] || {};
+
+        const nameCandidates = [p.realName, p.name, p.patientName];
+        const rawNameValue = nameCandidates.find(value =>
+          value !== null && value !== undefined && String(value).trim() !== ""
+        );
+        const rawName = rawNameValue === undefined ? "" : String(rawNameValue).trim();
+        const cleanedName = rawName
+          .replace(/^[\d\-]+\s*/, '')
+          .replace(/\s*\([男女]\)$/, '')
+          .trim();
+
+        let isEmpty = (p.isEmpty === true);
+        if (!cleanedName || cleanedName.includes("空床") || cleanedName.includes("待清") || cleanedName === "〔空床待清〕") {
+          isEmpty = true;
+        }
+
+        let allergyVal = (p.editInfo && p.editInfo.allergy) || "";
+        if (!allergyVal && p.extra) {
+          const allergyMatch = p.extra.match(/過敏：([^|]+)/);
+          if (allergyMatch) allergyVal = allergyMatch[1].trim();
+        }
+
+        let diagVal = p.diag || p.diagnosis || "";
+        if ((!diagVal || diagVal === "Stroke") && p.extra) {
+          const diagMatch = p.extra.match(/診斷：([^|]+)/);
+          if (diagMatch) diagVal = diagMatch[1].trim();
+        }
+
+        // 直接採用手機端逐項保留的 EWS 狀態；不以歷史紀錄或描述文字推測警示。
+        const activeEwsItems = p.ewsItems && typeof p.ewsItems === 'object' ? Object.values(p.ewsItems).filter(Boolean) : [];
+        const isAbnormalVal = activeEwsItems.length > 0 || (p.ewsItems == null && p.ewsAlert === true);
+        const ewsReasonVal = activeEwsItems.join('；') || (isAbnormalVal ? (p.ewsReason || '早期警示') : '');
+
+        // 有輸血醫囑但尚未開始 = 待輸血；完成儲存且仍有執行紀錄 = 輸血中。
+        const bloodStatusVal = String(p.bloodStatus || '').trim();
+        const bloodRecordActive = !!p.bloodRecord && p.bloodRecord.status !== '已完成' && p.bloodRecord.status !== '結案';
+        const hasPausedBlood = !isEmpty && bloodRecordActive && (bloodStatusVal === '輸血暫停' || p.bloodRecord.status === '輸血暫停');
+        const hasTransfusing = !isEmpty && !hasPausedBlood && bloodRecordActive && (bloodStatusVal === '輸血中' || p.bloodRecord.status === '輸血中');
+        const hasPendingBlood = !isEmpty && !hasPausedBlood && !hasTransfusing && !bloodRecordActive && (bloodStatusVal === '待輸血' || (!!p.hasBlood && !['已完成', '結案', '已取消', '輸血暫停'].includes(bloodStatusVal)));
+
+        sanitized[bedKey] = {
+          ...p,
+          isEmpty: isEmpty,
+          realName: isEmpty ? "" : cleanedName,
+          isPublicName: p.isPublicName === true || p.isPublicName === "true" || (p.isPublicName !== false && p.isPublicName !== "false"),
+          gender: p.gender || (rawName.includes('女') ? '女' : '男'),
+          isolation: p.isolation || "",
+          isDischarging: !!p.isDischarging,
+          dnr: !!p.dnr,
+          isAbnormal: isAbnormalVal,
+          ewsReason: ewsReasonVal,
+          hasPendingBlood: hasPendingBlood,
+          hasPausedBlood: hasPausedBlood,
+          hasBlood: hasTransfusing,
+          diag: isEmpty ? "" : (diagVal || "Acute Myocardial Infarction (AMI)"),
+          allergy: allergyVal || "Penicillin",
+          info: p.info || `1985/04/12 (41Y) | 病例號：103198${bedKey.replace('-','')}`,
+          doctor: p.doctor || "陳大鈞",
+          location: p.location || p.status || "在病房",
+          assignedNurse: p.assignedNurse || "-"
+        };
+      });
+      return sanitized;
+    }
+
+    function saveAndSyncToCloud() {
+      if (!cloudReady) { alert('雲端資料尚未成功讀取，為避免覆蓋資料，暫停儲存。'); return; }
+      syncNurseAssignments();
+      // 僅回寫白板可編輯欄位，保留手機端原始 EWS、輸血及量測資料。
+      const originalPatients = masterCloudData.patientsData || {};
+      const editableFields = ['realName','doctor','diag','location','isPublicName','isolation','isDischarging','dnr','isEmpty','gender','info'];
+      Object.keys(patientsData).forEach(b => {
+        const view = patientsData[b];
+        const original = originalPatients[b] || {};
+        const next = {...original};
+        editableFields.forEach(key => { if (view[key] !== undefined) next[key] = view[key]; });
+        originalPatients[b] = next;
+      });
+      masterCloudData.patientsData = originalPatients;
+      masterCloudData.nurseBedAssignments = nurseBedAssignments;
+      masterCloudData.marquee = marqueeHistory;
+      masterCloudData.marqueeSettings = marqueeSettings;
+      masterCloudData.stationRoster = stationRoster;
+      masterCloudData.updatedAt = new Date().toISOString();
+      set(dbRef, masterCloudData).catch(err => console.log('Save Error:', err));
+      renderBedGrid();
+      renderScheduling();
+      renderAlarmsTab();
+      renderSecretary();
+      renderMarqueeHistory();
+      renderStationRoster();
+    }
+
+    function syncNurseAssignments() {
+      Object.keys(patientsData).forEach(b => { if(patientsData[b]) patientsData[b].assignedNurse = "-"; });
+      Object.keys(nurseBedAssignments).forEach(nurse => {
+        (nurseBedAssignments[nurse] || []).forEach(b => {
+          if (patientsData[b]) patientsData[b].assignedNurse = nurse;
+        });
+      });
+    }
+
+    window.switchTab = function(tab) {
+      ['matrix', 'scheduling', 'alarms', 'secretary', 'announcements'].forEach(t => {
+        const el = document.getElementById(`tab-content-${t}`);
+        const btn = document.getElementById(`btn-tab-${t}`);
+        if(el) el.classList.add('hidden');
+        if(btn) btn.className = "btn-comfort font-bold bg-[#F0EDE6] text-[#5C554E] py-4.5 text-lg";
+      });
+      const targetEl = document.getElementById(`tab-content-${tab}`);
+      const targetBtn = document.getElementById(`btn-tab-${tab}`);
+      if(targetEl) targetEl.classList.remove('hidden');
+      if(targetBtn) targetBtn.className = "btn-comfort font-bold bg-[#8C7A6B] text-white py-4.5 text-lg";
+
+      if (tab === 'matrix') renderBedGrid();
+      else if (tab === 'scheduling') renderScheduling();
+      else if (tab === 'alarms') renderAlarmsTab();
+      else if (tab === 'secretary') renderSecretary();
+      else if (tab === 'announcements') { renderMarqueeHistory(); renderStationRoster(); }
+    };
+
+    function renderBedGrid() {
+      const grid = document.getElementById('bed-grid');
+      if(!grid) return;
+      grid.innerHTML = '';
+      let total = 0, occ = 0, empty = 0, maleCount = 0, femaleCount = 0, iso = 0, dischargingCount = 0, icuCount = 0, outOfWardCount = 0, pendingBloodCount = 0, transfusingCount = 0, pausedBloodCount = 0, ewCount = 0;
+
+      const unadmittedLocations = ['急診', 'ICU', '門診', '其他單位(轉床)'];
+      const outOfWardLocations = ['請假', '檢查中', '手術中', '傳送中'];
+
+      Object.keys(patientsData).sort().forEach(bedKey => {
+        const p = patientsData[bedKey];
+        total++;
+        if (p.isEmpty) {
+          empty++;
+        } else {
+          occ++;
+          if (p.gender === '男') maleCount++;
+          if (p.gender === '女') femaleCount++;
+          if (p.isolation) iso++;
+          if (p.isDischarging) dischargingCount++;
+          if (unadmittedLocations.includes(p.location)) icuCount++;
+          if (outOfWardLocations.includes(p.location)) outOfWardCount++;
+          if (p.hasPendingBlood) pendingBloodCount++;
+          if (p.hasBlood) transfusingCount++;
+          if (p.hasPausedBlood) pausedBloodCount++;
+          if (p.isAbnormal) ewCount++;
+        }
+
+        if (currentFilterStatus === 'empty' && !p.isEmpty) return;
+        if (currentFilterStatus === 'occupied' && p.isEmpty) return;
+        if (currentFilterStatus === 'isolation' && !p.isolation) return;
+        if (currentFilterStatus === 'discharging' && !p.isDischarging) return;
+        if (currentFilterGender && p.gender !== currentFilterGender) return;
+        if (currentFilterTag === '接' && !isolationTypes(p.isolation).includes('接')) return;
+        if (currentFilterTag === '氣' && !isolationTypes(p.isolation).includes('氣')) return;
+        if (currentFilterTag === '疥' && !isolationTypes(p.isolation).includes('疥')) return;
+        if (currentFilterTag === 'DNR' && !p.dnr) return;
+        if (currentFilterTag === 'ICU' && !unadmittedLocations.includes(p.location)) return;
+        if (currentFilterTag === 'OutOfWard' && !outOfWardLocations.includes(p.location)) return;
+        if (currentFilterTag === 'PendingBlood' && !p.hasPendingBlood) return;
+        if (currentFilterTag === 'Transfusing' && !p.hasBlood) return;
+        if (currentFilterTag === 'PausedBlood' && !p.hasPausedBlood) return;
+        if (currentFilterTag === 'EarlyWarning' && !p.isAbnormal) return;
+
+        const card = document.createElement('div');
+
+        if (p.isEmpty) {
+          card.className = "muji-card p-6 flex flex-col justify-between h-56 relative overflow-hidden bg-white opacity-75";
+          card.innerHTML = `
+            <div class="absolute left-0 top-0 bottom-0 w-3.5 bg-[#94a3b8]"></div>
+            <div class="pl-4 w-full flex flex-col justify-between h-full">
+              <div class="flex justify-between items-center">
+                <span class="font-black text-2xl text-stone-500 bg-stone-100 px-4 py-1 rounded-2xl border border-stone-200 shadow-xs">${bedKey}</span>
+                <span class="text-xs text-stone-400 font-bold">護理師: -</span>
+              </div>
+              <div class="text-center text-stone-400 text-base font-bold py-6">〔空床待清〕</div>
+              <div class="text-xs text-stone-400 text-right">-</div>
+            </div>`;
+        } else {
+          let leftColorBarClass = !cloudReady ? 'bg-slate-400' : ((p.gender === '女') ? 'bg-rose-400' : 'bg-sky-400');
+          const tagStyles = {
+            'ICU': 'bg-orange-200 text-orange-900 border border-orange-300',
+            '急診': 'bg-red-700 text-white',
+            '其他單位(轉床)': 'bg-slate-200 text-slate-700 border border-slate-300',
+            '門診': 'bg-lime-700 text-white',
+            '請假': 'bg-slate-700 text-white',
+            '檢查中': 'bg-[#CCFBF1] text-[#115E59] border border-[#99F6E4]',
+            '手術中': 'bg-fuchsia-700 text-white',
+            '傳送中': 'bg-green-700 text-white'
+          };
+          let tagsHtml = '<div class="flex flex-wrap gap-2 items-center">';
+          if (tagStyles[p.location]) { const sourceBadge = {'ICU':'I入','急診':'急','門診':'門','其他單位(轉床)':'轉'}; tagsHtml += `<span class="${tagStyles[p.location]} px-3 py-1.5 text-sm rounded-lg font-bold">${sourceBadge[p.location] || p.location}</span>`; }
+          isolationTypes(p.isolation).forEach(type => {
+            tagsHtml += `<img src="${isolationIcons[type]}" alt="${isolationNames[type]}" title="${isolationNames[type]}" class="w-10 h-10 object-contain shrink-0" />`;
+          });
+          // 待輸血與輸血中採用極高辨識度且不重複的配色
+          if (p.hasPendingBlood) tagsHtml += `<span class="bg-amber-200 text-amber-950 border border-amber-400 px-3 py-1.5 text-sm rounded-lg font-bold shadow-xs">待輸血</span>`;
+          if (p.hasBlood) tagsHtml += `<span class="bg-rose-600 text-white border border-rose-700 px-3 py-1.5 text-sm rounded-lg font-bold shadow-xs">輸血中</span>`;
+          if (p.hasPausedBlood) tagsHtml += `<span class="bg-amber-100 text-amber-900 border border-amber-400 px-3 py-1.5 text-sm rounded-lg font-bold shadow-xs">輸血暫停中</span>`;
+          if (p.isAbnormal) tagsHtml += `<span class="bg-purple-100 text-purple-800 border border-purple-300 px-3 py-1.5 text-sm rounded-lg font-bold">早期警示</span>`;
+          if (p.isDischarging) tagsHtml += `<span class="bg-sky-700 text-white px-3 py-1.5 text-sm rounded-lg font-bold">今辦明出</span>`;
+          if (p.dnr) tagsHtml += `<span class="bg-yellow-200 text-yellow-900 border border-yellow-300 px-3 py-1.5 text-sm rounded-lg font-bold">DNR</span>`;
+          tagsHtml += '</div>';
+
+          card.className = p.isAbnormal ? "muji-card muji-card-abnormal p-6 flex flex-col min-h-56 h-auto relative" : "muji-card p-6 flex flex-col min-h-56 h-auto relative bg-white";
+          card.innerHTML = `
+            <div class="absolute left-0 top-0 bottom-0 w-3.5 ${leftColorBarClass}"></div>
+            <div class="pl-4 w-full flex flex-col min-h-44">
+              <div class="flex justify-end items-start">
+                <span class="shrink-0 text-3xl font-black text-stone-900 bg-stone-100 px-4 py-1 rounded-2xl border border-stone-300 shadow-sm">${bedKey}</span>
+              </div>
+              <div class="bed-card-tags">${tagsHtml}</div>
+              <div class="mt-3 flex-1 min-h-2"></div>
+              <div class="pt-2.5 border-t border-[#E5E0D8] flex justify-between items-center text-sm text-[#786759]">
+                <span class="font-bold text-stone-500">床位狀態</span>
+                <span class="font-bold ${tagStyles[p.location] ? tagStyles[p.location].split(' ')[0].replace('bg-', 'text-') : 'text-teal-800'}">${p.location || '在病房'}</span>
+              </div>
+            </div>
+          `;
+        }
+        card.style.cursor = "pointer";
+        card.setAttribute("role", "button");
+        card.setAttribute("tabindex", "0");
+        card.addEventListener("click", () => openBedDetailModal(bedKey));
+        card.addEventListener("keydown", (event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); openBedDetailModal(bedKey); } });
+        grid.appendChild(card);
+      });
+
+      document.getElementById('filter-male-count').textContent = maleCount;
+      document.getElementById('filter-female-count').textContent = femaleCount;
+      document.getElementById('stat-total').innerText = `${total} 床`;
+      document.getElementById('stat-occ').innerText = `${occ} 人`;
+      document.getElementById('stat-empty').innerText = `${empty} 床`;
+      document.getElementById('stat-discharging').innerText = `${dischargingCount} 床`;
+      document.getElementById('stat-iso').innerText = `${iso} 床`;
+      document.getElementById('stat-icu').innerText = `${icuCount} 床`;
+      document.getElementById('stat-outward').innerText = `${outOfWardCount} 床`;
+      document.getElementById('stat-blood-total').innerText = `${pendingBloodCount + transfusingCount + pausedBloodCount} 床`;
+      document.getElementById('stat-pending-blood').innerText = `${pendingBloodCount} 床`;
+      document.getElementById('stat-transfusing').innerText = `${transfusingCount} 床`;
+      document.getElementById('stat-paused-blood').innerText = `${pausedBloodCount} 床`;
+      document.getElementById('stat-ew').innerText = `${ewCount} 床`;
+    }
+
+    window.filterBedStatus = function(s) { currentFilterStatus = s; currentFilterGender = null; currentFilterTag = null; renderBedGrid(); }
+    window.filterGender = function(g) { currentFilterGender = g; currentFilterTag = null; renderBedGrid(); }
+    window.filterTag = function(t) { currentFilterTag = t; currentFilterGender = null; renderBedGrid(); }
+    window.resetBedFilter = function() { currentFilterStatus = 'all'; currentFilterGender = null; currentFilterTag = null; renderBedGrid(); }
+
+    function renderScheduling() {
+      const container = document.getElementById('scheduling-cards-container');
+      if(!container) return;
+      container.innerHTML = '';
+      const activeNurses = Object.keys(nurseBedAssignments).filter(n => (nurseBedAssignments[n] || []).length > 0);
+
+      if (activeNurses.length === 0) {
+        container.innerHTML = `<div class="muji-card p-8 bg-white text-center text-[#8C827A] font-bold">目前無排班資料</div>`;
+        return;
+      }
+
+      activeNurses.forEach(nurse => {
+        const beds = nurseBedAssignments[nurse];
+        const card = document.createElement('div');
+        card.className = "muji-card p-7 flex justify-between items-center text-base bg-white cursor-pointer hover:bg-[#F0EDE6]";
+        card.onclick = () => { if(isUnlocked) openScheduleModal(nurse); else alert('請先解鎖權限！'); };
+        card.innerHTML = `
+          <div>
+            <div class="font-bold text-lg text-[#383533]">護理師：${nurse}</div>
+            <div class="text-sm text-[#8C827A] mt-1">點擊修改責任床位</div>
+          </div>
+          <div class="font-bold text-teal-800 text-lg bg-[#F7F6F2] px-6 py-3 rounded-2xl border border-[#E5E0D8]">${beds.join(', ')} (${beds.length} 床)</div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function openScheduleModal(nurse) {
+      document.getElementById('sched-modal-nurse').innerText = nurse;
+      document.getElementById('sched-modal-nursename').value = nurse;
+      document.getElementById('sched-beds-input').value = (nurseBedAssignments[nurse] || []).join(', ');
+      document.getElementById('edit-schedule-modal').classList.remove('hidden');
+    }
+    window.closeScheduleModal = function() { document.getElementById('edit-schedule-modal').classList.add('hidden'); }
+
+    window.saveScheduleEdit = function() {
+      const nurse = document.getElementById('sched-modal-nursename').value;
+      const inputVal = document.getElementById('sched-beds-input').value.trim();
+      const newBeds = inputVal ? inputVal.split(',').map(s => s.trim()).filter(s => s) : [];
+      if (newBeds.length === 0) delete nurseBedAssignments[nurse];
+      else nurseBedAssignments[nurse] = newBeds;
+      closeScheduleModal();
+      saveAndSyncToCloud();
+      alert(`${nurse} 的責任床位已更新！`);
+    }
+
+    function renderAlarmsTab() {
+      const container = document.getElementById('alarms-list-container');
+      if(!container) return;
+      container.innerHTML = '';
+      let abnormalBeds = Object.keys(patientsData).filter(b => patientsData[b] && !patientsData[b].isEmpty && patientsData[b].isAbnormal);
+
+      if(abnormalBeds.length === 0) {
+        container.innerHTML = `<div class="col-span-2 muji-card p-8 bg-white text-center text-[#8C827A] font-bold">目前無早期警示通報</div>`;
+        return;
+      }
+
+      abnormalBeds.forEach(bedKey => {
+        const p = patientsData[bedKey];
+        const card = document.createElement('div');
+        card.className = "muji-card p-8 bg-white border-l-8 border-purple-500 space-y-4";
+        card.innerHTML = `
+          <div class="flex justify-between items-center">
+            <span class="font-bold text-purple-900 text-lg">${bedKey} 床 (${p.realName})：生理數據或神經學評估早期警示</span>
+            <span class="bg-purple-100 text-purple-800 px-4 py-1.5 rounded-xl font-bold">早期警示</span>
+          </div>
+          <div class="text-sm text-stone-700 bg-purple-50 p-3 rounded-xl border border-purple-200">
+            <strong>觸發原因：</strong>${p.ewsReason || '生命徵象、GCS 或 Muscle Power 數值異常'}
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function renderSecretary() {
+      const container = document.getElementById('secretary-bed-list');
+      if(!container) return;
+      container.innerHTML = '';
+      let total = 0, occ = 0;
+
+      Object.keys(patientsData).sort().forEach(bedKey => {
+        const p = patientsData[bedKey];
+        total++;
+        if (!p.isEmpty) occ++;
+
+        const card = document.createElement('div');
+        card.className = "bg-[#F7F6F2] border border-[#E5E0D8] p-5 rounded-2xl flex justify-between items-center text-base shadow-xs";
+        
+        if (p.isEmpty) {
+          card.innerHTML = `
+            <div class="space-y-1">
+              <div class="font-bold text-slate-400">${bedKey} - 〔空床待清〕</div>
+              <div class="text-xs text-slate-400">護理師: -</div>
+            </div>
+            <button onclick="openAddPatientModal('${bedKey}')" class="btn-comfort bg-white border text-sm py-2 px-4 text-teal-800 font-bold">入院登記</button>
+          `;
+        } else {
+          const displayName = (p.isPublicName === false || p.isPublicName === "false") ? 'ＯＯＯ' : (p.realName || '未設定');
+          let dischargingTag = p.isDischarging ? ' | <span class="text-blue-600 font-bold">今辦明出</span>' : '';
+          let pendingBloodTag = p.hasPendingBlood ? ' | <span class="text-amber-700 font-bold">待輸血</span>' : '';
+          let bloodTag = p.hasBlood ? ' | <span class="text-rose-600 font-bold">輸血中</span>' : '';
+          let pausedBloodTag = p.hasPausedBlood ? ' | <span class="text-amber-800 font-bold">輸血暫停中</span>' : '';
+          let ewsTag = p.isAbnormal ? ' | <span class="text-purple-600 font-bold">早期警示</span>' : '';
+          const unadmittedLocations = ['急診', 'ICU', '門診', '其他單位(轉床)'];
+          const notInWard = unadmittedLocations.includes(p.location);
+          const statusClass = notInWard ? 'inline-block rounded-md bg-amber-100 px-2 py-0.5 font-bold text-amber-800' : 'font-semibold text-slate-600';
+          
+          let arrivalBtn = notInWard ? `<button onclick="confirmWardArrival('${bedKey}')" class="btn-comfort bg-teal-700 text-white text-xs py-2 px-3">確認抵達病房</button>` : '';
+
+          card.innerHTML = `
+            <div class="space-y-1">
+              <div class="font-bold text-slate-800">${bedKey} - ${displayName}</div>
+              <div class="text-xs text-slate-500">護理師: <span class="font-bold text-teal-800">${p.assignedNurse}</span> | 醫師: ${p.doctor} | 狀態: <span class="${statusClass}">${p.location || '在病房'}</span>${dischargingTag}${pendingBloodTag}${bloodTag}${pausedBloodTag}${ewsTag}</div>
+            </div>
+            <div class="space-x-1 flex items-center">
+              ${arrivalBtn}
+              <button onclick="openEditPatientModal('${bedKey}')" class="btn-comfort bg-white border text-xs py-2 px-3">詳細設定</button>
+              <button onclick="dischargeBed('${bedKey}')" class="btn-comfort bg-white border text-sm py-2 px-4 text-rose-700 font-bold">辦理出院</button>
+            </div>
+          `;
+        }
+        container.appendChild(card);
+      });
+
+      const rate = total > 0 ? Math.round((occ / total) * 100) : 0;
+      const rateTextEl = document.getElementById('occupancy-rate-text');
+      const rateBarEl = document.getElementById('occupancy-rate-bar');
+      if (rateTextEl) rateTextEl.innerText = `${rate}% (${occ}/${total}床)`;
+      if (rateBarEl) rateBarEl.style.width = `${rate}%`;
+    }
+
+    // 僅由電子白板病房管理確認抵達；只 PATCH 單床位置，保留其他雲端欄位。
+    window.confirmWardArrival = async function(bedKey) {
+      if (!isUnlocked) { alert('請先解鎖權限！'); return; }
+      if (!cloudReady) { alert('雲端尚未連線，無法確認抵達。'); return; }
+      const patient = patientsData[bedKey];
+      const origins = ['ICU', '急診', '門診', '其他單位(轉床)'];
+      if (!patient || patient.isEmpty || !origins.includes(patient.location)) return;
+      if (!confirm(`確認 ${bedKey} 床病人已從「${patient.location}」抵達病房？`)) return;
+      try {
+        const response = await fetch(dbUrl(`${SYNC_DB_PATH}/patientsData/${encodeURIComponent(bedKey)}`), {
+          method: 'PATCH', headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({location:'在病房', isArrived:true})
+        });
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+        patient.location = '在病房';
+        patient.isArrived = true;
+        if (masterCloudData.patientsData && masterCloudData.patientsData[bedKey]) {
+          masterCloudData.patientsData[bedKey].location = '在病房';
+          masterCloudData.patientsData[bedKey].isArrived = true;
+        }
+        renderBedGrid(); renderSecretary();
+      } catch (error) { alert('雲端更新失敗：' + error.message); }
+    };
+
+    window.openAddPatientModal = function(bedKey) {
+      if(!isUnlocked) { alert('請先解鎖權限！'); return; }
+      document.getElementById('add-target-bedkey').value = bedKey;
+      document.getElementById('add-modal-bedlabel').innerText = `${bedKey} 床`;
+      document.getElementById('add-name-input').value = '';
+      document.getElementById('add-diag-input').value = 'Acute Myocardial Infarction (AMI)';
+      document.getElementById('add-loc-select').value = '在病房';
+      document.getElementById('add-public-select').value = 'true';
+      populateDoctorSelects("陳大鈞");
+      document.getElementById('add-patient-modal').classList.remove('hidden');
+    }
+    window.closeAddPatientModal = function() { document.getElementById('add-patient-modal').classList.add('hidden'); }
+
+    window.saveNewPatient = function() {
+      const b = document.getElementById('add-target-bedkey').value;
+      const name = document.getElementById('add-name-input').value.trim();
+      if(!name) { alert('請輸入姓名！'); return; }
+
+      patientsData[b] = {
+        isEmpty: false,
+        realName: name,
+        gender: document.getElementById('add-gender-select').value,
+        doctor: document.getElementById('add-doctor-select').value,
+        diag: document.getElementById('add-diag-input').value.trim() || "Acute Myocardial Infarction (AMI)",
+        allergy: "Penicillin",
+        info: `1985/04/12 (41Y) | 病例號：103198${b.replace('-','')}`,
+        location: document.getElementById('add-loc-select').value,
+        isArrived: document.getElementById('add-loc-select').value === '在病房',
+        isPublicName: (document.getElementById('add-public-select').value === 'true'),
+        isolation: "", isDischarging: false, dnr: false, isAbnormal: false, hasPendingBlood: false, hasBlood: false, ewsReason: ""
+      };
+      saveAndSyncToCloud();
+      closeAddPatientModal();
+      renderBedGrid();
+      renderSecretary();
+      alert(`${b} 床已完成入住登記並同步白板！`);
+    }
+
+    let currentDetailBedKey = null;
+    window.openBedDetailModal = function(bedKey) {
+      const p = patientsData[bedKey];
+      if (!p) return;
+      currentDetailBedKey = bedKey;
+      const content = document.getElementById('bed-detail-content');
+      const safe = (value) => String(value ?? '-').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+      
+      if (p.isEmpty) {
+        content.innerHTML = `<div class="rounded-xl bg-slate-50 p-4"><div class="text-lg font-bold">${safe(bedKey)} 床</div><div class="mt-2 text-slate-600">空床待清</div></div>`;
+        document.getElementById('bed-detail-edit-btn').textContent = '入院登記';
+      } else {
+        const displayPatientName = p.isPublicName === false ? 'ＯＯＯ' : (p.realName || p.name || p.patientName || '未設定');
+        const status = safe(p.location || '在病房');
+        const notes = [];
+        isolationTypes(p.isolation).forEach(type => notes.push(isolationNames[type]));
+        if (p.hasPendingBlood) notes.push('待輸血');
+        if (p.hasBlood) notes.push('輸血中');
+        if (p.hasPausedBlood) notes.push('輸血暫停中');
+        if (p.isDischarging) notes.push('今辦明出');
+        if (p.dnr) notes.push('DNR');
+        if (p.isAbnormal) notes.push('早期警示');
+
+        const patientInfoStr = p.info || `1985/04/12 (41Y) | 病例號：103198${bedKey.replace('-','')}`;
+        const patientAllergy = p.allergy || 'Penicillin';
+        const patientDiag = p.diag || '一般照護';
+
+        let ewsDetailHtml = '';
+        if (p.isAbnormal) {
+          ewsDetailHtml = `
+            <div class="rounded-xl border border-purple-300 bg-purple-50 p-3 sm:col-span-2">
+              <div class="text-xs text-purple-800 font-bold">早期警示 (EWS) 觸發原因詳情</div>
+              <div class="mt-1 font-bold text-purple-900">${safe(p.ewsReason || '生命徵象、GCS 或 Muscle Power 數值異常')}</div>
+              ${isUnlocked ? `<button onclick="dismissEwsAlert('${bedKey}')" class="mt-2 btn-comfort bg-purple-700 text-white text-xs py-1.5 px-3">解除此警示狀態</button>` : ''}
+            </div>
+          `;
+        }
+
+        content.innerHTML = `
+          <div class="rounded-xl bg-[#F7F6F2] p-4">
+            <div class="text-xl font-black">${safe(bedKey)} 床 - ${safe(displayPatientName)}</div>
+            <div class="mt-1 text-xs text-stone-600">${safe(patientInfoStr)}</div>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="rounded-xl border p-3"><div class="text-xs text-stone-500">性別</div><div class="mt-1 font-bold">${safe(p.gender || '-')}</div></div>
+            <div class="rounded-xl border p-3"><div class="text-xs text-stone-500">主治醫師</div><div class="mt-1 font-bold">${safe(p.doctor || '-')}</div></div>
+            <div class="rounded-xl border p-3 sm:col-span-2"><div class="text-xs text-stone-500">疾病診斷 (Diag)</div><div class="mt-1 font-bold text-rose-700">${safe(patientDiag)}</div></div>
+            <div class="rounded-xl border p-3 sm:col-span-2"><div class="text-xs text-stone-500">過敏記錄 (Allergy)</div><div class="mt-1 font-bold text-amber-700">${safe(patientAllergy)}</div></div>
+            <div class="rounded-xl border p-3"><div class="text-xs text-stone-500">病人狀態</div><div class="mt-1 font-bold">${status}</div></div>
+            <div class="rounded-xl border p-3"><div class="text-xs text-stone-500">負責護理師</div><div class="mt-1 font-bold">${safe(p.assignedNurse || '-')}</div></div>
+            ${ewsDetailHtml}
+          </div>
+          <div class="rounded-xl border p-3">
+            <div class="text-xs text-stone-500 mb-2">特殊事項</div>
+            <div class="flex flex-wrap gap-2">${notes.length ? notes.map(n => { const tagColors = { '接觸隔離': 'bg-pink-100 text-pink-800 border-pink-300', '空氣隔離': 'bg-sky-100 text-sky-800 border-sky-300', '待輸血': 'bg-amber-200 text-amber-950 border-amber-400', '輸血中': 'bg-rose-600 text-white border-rose-700', '輸血暫停中': 'bg-amber-100 text-amber-900 border-amber-400', '今辦明出': 'bg-blue-100 text-blue-800 border-blue-300', 'DNR': 'bg-yellow-100 text-yellow-900 border-yellow-300', '早期警示': 'bg-purple-100 text-purple-800 border-purple-300' }; return `<span class="rounded-lg border ${tagColors[n] || 'bg-stone-100 text-stone-700 border-stone-300'} px-3 py-1.5 text-sm font-bold">${n}</span>`; }).join('') : '<span class="text-sm text-stone-400">目前沒有特殊事項標記</span>'}</div>
+          </div>`;
+        document.getElementById('bed-detail-edit-btn').textContent = '詳細設定／編輯';
+      }
+      document.getElementById('bed-detail-modal').classList.remove('hidden');
+    };
+
+    window.closeBedDetailModal = function() {
+      document.getElementById('bed-detail-modal').classList.add('hidden');
+      currentDetailBedKey = null;
+    };
+    document.addEventListener('keydown', (event) => { if (event.key === 'Escape') closeBedDetailModal(); });
+    
+    window.editBedFromDetail = function() {
+      const bedKey = currentDetailBedKey;
+      if (!bedKey) return;
+      closeBedDetailModal();
+      const p = patientsData[bedKey];
+      if (p && p.isEmpty) openAddPatientModal(bedKey);
+      else if (isUnlocked) openEditPatientModal(bedKey);
+      else { alert('請先解鎖權限！'); openUnlockModal(); }
+    };
+
+    window.dismissEwsAlert = function(bedKey) {
+      if(!isUnlocked) { alert('請先解鎖權限！'); return; }
+      if(patientsData[bedKey]) {
+        alert('早期警示需由手機端重新測量相同項目且恢復正常後自動解除，白板不能直接清除。');
+      }
+    };
+
+    window.closeBloodRecord = async function(bedKey) {
+      if(!isUnlocked) { alert('請先解鎖權限！'); return; }
+      if(!cloudReady) { alert('雲端尚未連線，無法進行輸血結案。'); return; }
+      if (!patientsData[bedKey]) return;
+      if (patientsData[bedKey].hasPausedBlood || patientsData[bedKey].bloodStatus === '輸血暫停') { alert('輸血暫停中，請先由手機端依院內流程處理，不可從白板直接結案。'); return; }
+      if (!confirm(`確定將 ${bedKey} 床的輸血作業標記為結案並清除待輸血/輸血中標籤嗎？`)) return;
+      try {
+        // 只更新該床的輸血欄位，不覆蓋手機端的其他病人資料。
+        const response = await fetch(dbUrl(`${SYNC_DB_PATH}/patientsData/${bedKey}`), {
+          method: 'PATCH',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({hasBlood: false, bloodStatus: '已完成', bloodRecord: null})
+        });
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+        patientsData[bedKey].hasPendingBlood = false;
+        patientsData[bedKey].hasBlood = false;
+        patientsData[bedKey].bloodStatus = '已完成';
+        patientsData[bedKey].bloodRecord = null;
+        renderSecretary();
+        renderBedGrid();
+        alert(`${bedKey} 床輸血作業已結案並同步雲端！`);
+      } catch (err) {
+        alert('輸血結案同步失敗：' + err.message);
+      }
+    };
+
+    window.openEditPatientModal = function(bedKey) {
+      if(!isUnlocked) { alert('請先解鎖權限！'); return; }
+      const p = patientsData[bedKey];
+      document.getElementById('edit-modal-bed').innerText = bedKey;
+      document.getElementById('edit-modal-bedkey').value = bedKey;
+      document.getElementById('edit-name-input').value = p.realName || '';
+      document.getElementById('edit-diag-input').value = p.diag || '';
+      const editLocationSelect = document.getElementById('edit-loc-select');
+      const awaitingArrival = ['ICU','急診','門診','其他單位(轉床)'].includes(p.location);
+      editLocationSelect.value = awaitingArrival ? '在病房' : (p.location || '在病房');
+      editLocationSelect.disabled = awaitingArrival;
+      editLocationSelect.title = awaitingArrival ? '病人尚未抵達，請先在病房管理確認抵達病房' : '';
+      document.getElementById('edit-public-select').value = p.isPublicName ? 'true' : 'false';
+      document.querySelectorAll('#edit-iso-select input[type=checkbox]').forEach(el => { el.checked = isolationTypes(p.isolation).includes(el.value); });
+      document.getElementById('edit-discharging-select').value = p.isDischarging ? 'true' : 'false';
+      document.getElementById('edit-dnr-select').value = p.dnr ? 'true' : 'false';
+      populateDoctorSelects(p.doctor || "陳大鈞");
+      document.getElementById('edit-patient-modal').classList.remove('hidden');
+    }
+    window.closeEditPatientModal = function() { document.getElementById('edit-patient-modal').classList.add('hidden'); }
+
+    window.saveEditedPatient = function() {
+      const b = document.getElementById('edit-modal-bedkey').value;
+      const name = document.getElementById('edit-name-input').value.trim();
+      if(!name) { alert('姓名不得為空！'); return; }
+
+      patientsData[b].realName = name;
+      patientsData[b].doctor = document.getElementById('edit-doctor-select').value;
+      patientsData[b].diag = document.getElementById('edit-diag-input').value.trim();
+      // 尚未抵達的病人不得透過狀態選單改為在病房，必須使用「確認抵達病房」。
+      if (!document.getElementById('edit-loc-select').disabled) {
+        patientsData[b].location = document.getElementById('edit-loc-select').value;
+      }
+      patientsData[b].isPublicName = (document.getElementById('edit-public-select').value === 'true');
+      const selectedIsolation = [...document.querySelectorAll('#edit-iso-select input:checked')].map(el=>el.value);
+      patientsData[b].isolation = selectedIsolation.length <= 1 ? (selectedIsolation[0] || '') : selectedIsolation;
+      patientsData[b].isDischarging = (document.getElementById('edit-discharging-select').value === 'true');
+      patientsData[b].dnr = (document.getElementById('edit-dnr-select').value === 'true');
+
+      saveAndSyncToCloud();
+      closeEditPatientModal();
+      renderBedGrid();
+      renderSecretary();
+      alert(`${b} 床詳細資料已更新！`);
+    }
+
+    window.dischargeBed = function(b) {
+      if(!isUnlocked) { alert('請先解鎖權限！'); return; }
+      if (confirm(`確定為 ${b} 床辦理出院嗎？`)) {
+        patientsData[b] = { isEmpty: true, realName: "", doctor: "-", location: "在病房" };
+        saveAndSyncToCloud();
+        renderBedGrid();
+        renderSecretary();
+        alert(`${b} 床已完成出院處理！`);
+      }
+    }
+
+    window.publishBroadcast = function() {
+      let txt = document.getElementById('broadcast-text-input').value.trim();
+      if(!txt) return;
+      txt = txt.replace(/[\r\n]+/g, ' ');
+      marqueeHistory.unshift({ id: Date.now(), text: txt, time: new Date().toLocaleTimeString() });
+      document.getElementById('dynamic-marquee').innerText = txt;
+      marqueeCarouselIndex = 0;
+      applyMarqueeSettings();
+      document.getElementById('broadcast-text-input').value = '';
+      saveAndSyncToCloud();
+    }
+
+    window.deleteMarqueeItem = function(id) {
+      if(!isUnlocked) { alert('請先解鎖權限！'); return; }
+      if(confirm('確定要刪除這筆廣播公告紀錄嗎？')) {
+        marqueeHistory = marqueeHistory.filter(item => item.id !== id);
+        saveAndSyncToCloud();
+        renderMarqueeHistory();
+      }
+    };
+
+    const emergencyRoleLabels = [
+      ['command', '指揮班／指揮官', 2, 'on'], ['notify', '通報班', 2, 'on'],
+      ['fire', '滅火班', 1, 'off'], ['evacuation', '避難引導班', 2, 'on'],
+      ['safety', '安全防護班', 2, 'on'], ['rescue', '救護班', 2, 'on']
+    ];
+    function getOnDutyNurses() {
+      return Object.keys(nurseBedAssignments).filter(name => Array.isArray(nurseBedAssignments[name]) && nurseBedAssignments[name].length > 0);
+    }
+    function shuffleList(list) {
+      const out = [...list];
+      for (let i = out.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [out[i], out[j]] = [out[j], out[i]];
+      }
+      return out;
+    }
+    function buildEmergencyTeams(force = false) {
+      const onDuty = getOnDutyNurses();
+      const onDutySet = new Set(getOnDutyNurses());
+      const offDuty = [...new Set(String(stationRoster.offDuty || '').split(/[，,、]/).map(x => x.trim()).filter(Boolean))].filter(name => !onDutySet.has(name));
+      const signature = JSON.stringify({onDuty: [...onDuty].sort(), offDuty: [...offDuty].sort()});
+      if (!force && stationRoster.emergencyTeams && stationRoster.teamSignature === signature) return;
+      const shuffled = shuffleList(onDuty);
+      const teams = {};
+      let cursor = 0;
+      emergencyRoleLabels.forEach(([key, label, max, kind]) => {
+        if (kind === 'off') {
+          const candidates = shuffleList([...new Set(offDuty)]);
+          teams[key] = candidates.length ? [candidates[0]] : [];
+          return;
+        }
+        const remaining = shuffled.length - cursor;
+        const rolesLeft = emergencyRoleLabels.filter(r => r[3] === 'on').length - emergencyRoleLabels.slice(0, emergencyRoleLabels.findIndex(r => r[0] === key)).filter(r => r[3] === 'on').length;
+        if (remaining <= 0) { teams[key] = []; return; }
+        const count = remaining >= rolesLeft + 1 && max > 1 ? 2 : 1;
+        teams[key] = shuffled.slice(cursor, cursor + Math.min(count, remaining));
+        cursor += teams[key].length;
+      });
+      stationRoster.emergencyTeams = teams;
+      stationRoster.teamSignature = signature;
+    }
+    function renderStationRoster() {
+      const dateEl = document.getElementById('roster-date-weekday');
+      if (dateEl) {
+        const now = new Date();
+        dateEl.textContent = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日（${['日','一','二','三','四','五','六'][now.getDay()]}）`;
+      }
+      const offDutyInput = document.getElementById('roster-off-duty');
+      if (offDutyInput && document.activeElement !== offDutyInput && stationRoster.offDuty !== undefined) offDutyInput.value = stationRoster.offDuty;
+      const onDuty = getOnDutyNurses();
+      const lead = document.getElementById('roster-lead-person');
+      const deputy = document.getElementById('roster-deputy-person');
+      if (lead) lead.textContent = onDuty[0] || '－';
+      if (deputy) deputy.textContent = onDuty[1] || '－';
+      const names = document.getElementById('roster-on-duty-names');
+      const roles = document.getElementById('roster-duty-roles');
+      const beds = document.getElementById('roster-nurse-beds');
+      if (names) names.textContent = onDuty.length ? onDuty.join('、') : '尚無排班資料';
+      if (roles) roles.textContent = onDuty.length ? onDuty.map(n => `${n}：責任床區照護／依單位分工執行`).join('；') : '尚無排班資料';
+      if (beds) beds.innerHTML = onDuty.length ? onDuty.map(n => `${escapeRosterText(n)}：${(nurseBedAssignments[n] || []).map(escapeRosterText).join('、')}`).join('<br>') : '尚無排班資料';
+      buildEmergencyTeams(false);
+      const teamBox = document.getElementById('roster-emergency-teams');
+      if (teamBox) {
+        const hasOnDuty = onDuty.length > 0;
+        const rolesToShow = hasOnDuty ? emergencyRoleLabels : emergencyRoleLabels.filter(r => ['notify','fire','evacuation'].includes(r[0]));
+        teamBox.innerHTML = rolesToShow.map(([key, label]) => {
+          const assigned = (stationRoster.emergencyTeams?.[key] || []).map(escapeRosterText);
+          return `<div class="flex justify-between gap-3 border-b border-[#E5E0D8] pb-2"><strong>${label}</strong><span class="text-right">${assigned.length ? assigned.join('、') : '－'}</span></div>`;
+        }).join('');
+      }
+    }
+    function escapeRosterText(value) {
+      return String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+    }
+    window.regenerateEmergencyTeams = function() {
+      stationRoster.offDuty = document.getElementById('roster-off-duty')?.value.trim() || '';
+      buildEmergencyTeams(true);
+      saveAndSyncToCloud();
+    };
+
+    window.updateMarqueeSettings = function() {
+      const speedEl = document.getElementById('marquee-speed-select');
+      const carouselEl = document.getElementById('marquee-carousel-toggle');
+      if (speedEl) marqueeSettings.speed = Number(speedEl.value) || 30;
+      if (carouselEl) marqueeSettings.carousel = carouselEl.checked;
+      applyMarqueeSettings();
+      saveAndSyncToCloud();
+    };
+
+    function applyMarqueeSettings() {
+      const marquee = document.getElementById('dynamic-marquee');
+      if (!marquee) return;
+      marquee.style.setProperty('--marquee-duration', `${Number(marqueeSettings.speed) || 30}s`);
+      const speedEl = document.getElementById('marquee-speed-select');
+      const carouselEl = document.getElementById('marquee-carousel-toggle');
+      if (speedEl) speedEl.value = String(marqueeSettings.speed || 30);
+      if (carouselEl) carouselEl.checked = marqueeSettings.carousel !== false;
+      if (marqueeCarouselTimer) { clearInterval(marqueeCarouselTimer); marqueeCarouselTimer = null; }
+      if (marqueeSettings.carousel !== false && marqueeHistory.length > 1) {
+        marqueeCarouselTimer = setInterval(() => {
+          if (!marqueeHistory.length) return;
+          marqueeCarouselIndex = (marqueeCarouselIndex + 1) % marqueeHistory.length;
+          const item = marqueeHistory[marqueeCarouselIndex];
+          if (item && item.text) marquee.innerText = String(item.text).replace(/[\r\n]+/g, ' ');
+        }, 8000);
+      }
+    }
+
+    function renderMarqueeHistory() {
+      const list = document.getElementById('marquee-history-list');
+      if(!list) return;
+      list.innerHTML = '';
+      marqueeHistory.forEach(item => {
+        const div = document.createElement('div');
+        div.className = "bg-[#F7F6F2] p-3 rounded-xl text-xs flex justify-between items-center";
+        div.innerHTML = `<span>[${item.time}] ${item.text}</span><div class="space-x-1"><button onclick="replayMarquee('${encodeURIComponent(item.text)}')" class="btn-comfort bg-teal-700 text-white text-xs py-1 px-3">重播</button><button onclick="deleteMarqueeItem(${item.id})" class="btn-comfort bg-rose-700 text-white text-xs py-1 px-3">刪除</button></div>`;
+        list.appendChild(div);
+      });
+    }
+
+    window.replayMarquee = function(encodedText) {
+      let decoded = decodeURIComponent(encodedText).replace(/[\r\n]+/g, ' ');
+      document.getElementById('dynamic-marquee').innerText = decoded;
+      applyMarqueeSettings();
+    }
+
+    window.openUnlockModal = function() { document.getElementById('unlock-modal').classList.remove('hidden'); }
+    window.closeUnlockModal = function() { document.getElementById('unlock-modal').classList.add('hidden'); }
+    window.verifyUnlockPassword = function() {
+      if (document.getElementById('unlock-pw-input').value.trim() === 'nst') {
+        isUnlocked = true;
+        closeUnlockModal();
+        document.getElementById('current-mode-label').innerText = "已解鎖編輯模式";
+        alert('權限解鎖成功！');
+      } else {
+        document.getElementById('unlock-err').classList.remove('hidden');
+      }
+    }
+  </script>
+</body>
+</html>
