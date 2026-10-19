@@ -72,6 +72,37 @@
       .stats-primary .btn-comfort, .stats-secondary .btn-comfort { padding: 8px 10px; font-size: 0.85rem; }
       .responsive-bed-grid { grid-template-columns: minmax(0, 1fr); }
     }
+
+    /* Mobile-only layout: desktop and tablet rules above are unchanged. */
+    @media (max-width: 600px) {
+      html, body { width: 100%; max-width: 100%; overflow-x: hidden; }
+      body { min-height: 100dvh; height: 100dvh; }
+      .responsive-header { padding: 10px 12px !important; gap: 9px; align-items: stretch; flex-direction: column; }
+      .responsive-header > div:first-child { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 8px; align-items: center; }
+      .responsive-header > div:first-child img { grid-column: 1; max-width: 190px; max-height: 32px; width: auto; }
+      .responsive-header #sync-status-dot { grid-column: 2; grid-row: 1; }
+      .responsive-header h1 { grid-column: 1 / -1; font-size: 15px !important; white-space: normal; line-height: 1.4; }
+      .responsive-header #top-clock-date { grid-column: 1 / -1; margin: 0 !important; padding: 5px 9px; font-size: 11px; justify-self: start; }
+      .responsive-header > div:last-child { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-start; }
+      .responsive-header > div:last-child > * { margin-left: 0 !important; }
+      .responsive-header #current-mode-label { padding: 8px 10px; font-size: 12px; }
+      .responsive-header button { padding: 8px 12px; font-size: 13px; }
+      .marquee-container { min-width: 0; }
+      .responsive-stats { padding: 10px 12px !important; max-height: 25dvh; overflow-y: auto; overflow-x: hidden; align-items: stretch; gap: 8px; }
+      .stats-primary, .stats-secondary { flex: 1 1 100%; width: 100%; gap: 7px; }
+      .stats-primary > *, .stats-secondary > * { max-width: 100%; }
+      .stats-primary .btn-comfort, .stats-secondary .btn-comfort { padding: 7px 9px; font-size: 12px; }
+      .stats-secondary img { width: 22px; height: 22px; }
+      main { padding: 12px !important; min-height: 0; overflow-x: hidden; }
+      .responsive-bed-grid { grid-template-columns: minmax(0, 1fr) !important; gap: 12px; }
+      .responsive-bed-grid > .muji-card { min-height: 172px; padding: 14px !important; width: 100%; max-width: 100%; }
+      .responsive-bed-grid .bed-card-tags { gap: 5px; }
+      nav { display: flex !important; grid-template-columns: none !important; gap: 8px !important; padding: 9px 12px !important; overflow-x: auto; overflow-y: hidden; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; scrollbar-width: thin; }
+      nav > button { flex: 0 0 auto !important; min-width: 100px; padding: 10px 13px !important; font-size: 14px !important; white-space: nowrap !important; word-break: keep-all !important; }
+      #tab-content-scheduling > div:first-child, #tab-content-alarms > div:first-child { flex-wrap: wrap; gap: 12px; padding: 16px !important; }
+      #tab-content-scheduling h2, #tab-content-alarms h2 { font-size: 17px; }
+      #tab-content-scheduling .muji-card, #tab-content-secretary .muji-card { max-width: 100%; }
+    }
   </style>
 </head>
 <body class="h-screen w-screen overflow-hidden flex flex-col justify-between select-none">
