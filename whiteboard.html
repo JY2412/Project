@@ -20,12 +20,64 @@
     ::-webkit-scrollbar { width: 10px; height: 10px; }
     ::-webkit-scrollbar-track { background: #F7F6F2; }
     ::-webkit-scrollbar-thumb { background: #D5CFC7; border-radius: 5px; }
+
+    /* Responsive whiteboard layout: CSS only; no database or event changes. */
+    html, body { min-width: 0; }
+    .responsive-header { gap: 12px 20px; }
+    .responsive-header > div { min-width: 0; }
+    .responsive-header h1, #top-clock-date, #current-mode-label { white-space: nowrap; }
+    .responsive-stats { gap: 12px 18px; align-items: flex-start; flex-wrap: wrap; }
+    .stats-primary, .stats-secondary { flex-wrap: wrap; gap: 10px; min-width: 0; }
+    .stats-primary { flex: 1 1 650px; }
+    .stats-secondary { flex: 0 1 auto; }
+    .stats-primary > *, .stats-secondary > * { flex-shrink: 0; margin-left: 0 !important; white-space: nowrap; }
+    .stats-primary .btn-comfort, .stats-secondary .btn-comfort { white-space: nowrap; word-break: keep-all; }
+    /* Five columns maximum; cards remain landscape instead of squeezing into 8 columns. */
+    .responsive-bed-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+    .responsive-bed-grid { align-items: stretch; }
+    .responsive-bed-grid > .muji-card { min-width: 0; align-self: stretch; height: 100%; }
+    .responsive-bed-grid > .muji-card > .pl-4.flex.flex-col { flex: 1 1 auto; }
+    .responsive-bed-grid .bed-card-tags { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 10px; }
+    .responsive-bed-grid .bed-card-tags > span { white-space: nowrap; }
+    .responsive-bed-grid .flex-wrap > span { white-space: nowrap; word-break: keep-all; }
+    main { min-height: 0; min-width: 0; }
+    @media (max-width: 1650px) and (min-width: 1251px) {
+      .responsive-bed-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    }
+    @media (max-width: 1250px) and (min-width: 901px) {
+      .responsive-bed-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+    @media (max-width: 1500px) {
+      .responsive-header { flex-wrap: wrap; padding: 12px 20px; }
+      .responsive-stats { padding: 12px 20px; }
+      main { padding: 20px !important; }
+    }
+    @media (max-width: 900px) {
+      .responsive-header > div:first-child { flex-wrap: wrap; gap: 8px 12px; }
+      .responsive-header > div:first-child > * { margin-left: 0 !important; }
+      .responsive-header h1 { font-size: 1.05rem; }
+      .responsive-stats { max-height: 31vh; overflow-y: auto; overscroll-behavior: contain; }
+      .stats-primary { flex-basis: 100%; }
+      .responsive-bed-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+      .responsive-bed-grid > .muji-card { padding: 16px !important; }
+      main { padding: 14px !important; }
+    }
+    @media (min-width: 701px) and (max-width: 900px) {
+      .responsive-bed-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+    @media (max-width: 540px) {
+      .responsive-header { padding: 10px 12px; }
+      .responsive-stats { padding: 10px 12px; max-height: 35vh; }
+      .stats-primary, .stats-secondary { gap: 7px; }
+      .stats-primary .btn-comfort, .stats-secondary .btn-comfort { padding: 8px 10px; font-size: 0.85rem; }
+      .responsive-bed-grid { grid-template-columns: minmax(0, 1fr); }
+    }
   </style>
 </head>
 <body class="h-screen w-screen overflow-hidden flex flex-col justify-between select-none">
 
   <!-- 1. 頂部標題列 -->
-  <header class="bg-white border-b border-[#E5E0D8] px-8 py-4 flex items-center justify-between shrink-0 shadow-xs z-10">
+  <header class="bg-white border-b border-[#E5E0D8] px-8 py-4 flex items-center justify-between shrink-0 shadow-xs z-10 responsive-header">
     <div class="flex items-center space-x-4">
       <img src="https://www.femh.org.tw/images/template/logo_g.svg" alt="亞東紀念醫院 Logo" class="h-10 object-contain">
       <span id="sync-status-dot" class="w-3.5 h-3.5 rounded-full bg-emerald-500 animate-pulse" title="雲端同步中"></span>
@@ -49,8 +101,8 @@
   </div>
 
   <!-- 2. 頂部數據統計與分類按鈕列 -->
-  <div class="bg-[#F7F6F2] border-b border-[#E5E0D8] px-8 py-4 shrink-0 flex items-center justify-between">
-    <div class="flex items-center space-x-3 text-sm font-bold text-[#5C554E]">
+  <div class="bg-[#F7F6F2] border-b border-[#E5E0D8] px-8 py-4 shrink-0 flex items-center justify-between responsive-stats">
+    <div class="flex items-center space-x-3 text-sm font-bold text-[#5C554E] stats-primary">
       <div onclick="filterBedStatus('all')" class="bg-white px-5 py-3 rounded-2xl border border-[#E5E0D8] cursor-pointer hover:bg-[#F0EDE6] btn-comfort shadow-xs">總床位數 <span id="stat-total" class="text-[#383533] font-extrabold ml-2">-- 床</span></div>
       <div onclick="filterBedStatus('occupied')" class="bg-white px-5 py-3 rounded-2xl border border-[#E5E0D8] cursor-pointer hover:bg-[#F0EDE6] btn-comfort shadow-xs">現住院人數 <span id="stat-occ" class="text-teal-700 font-extrabold ml-2">-- 人</span></div>
       <div onclick="filterBedStatus('empty')" class="bg-white px-5 py-3 rounded-2xl border border-[#E5E0D8] cursor-pointer hover:bg-[#F0EDE6] btn-comfort shadow-xs">空床待清 <span id="stat-empty" class="text-amber-600 font-extrabold ml-2">-- 床</span></div>
@@ -72,7 +124,7 @@
       <div onclick="filterTag('EarlyWarning')" class="bg-white px-5 py-3 rounded-2xl border border-[#E5E0D8] cursor-pointer hover:bg-[#F0EDE6] btn-comfort shadow-xs text-purple-600">早期警示 <span id="stat-ew" class="font-extrabold ml-2">-- 床</span></div>
     </div>
 
-    <div class="flex items-center space-x-3">
+    <div class="flex items-center space-x-3 stats-secondary">
       <button onclick="filterGender('男')" class="btn-comfort bg-sky-100 hover:bg-sky-200 text-sky-800 border border-sky-200 text-sm py-2.5 px-4 font-bold">男（<span id="filter-male-count">0</span>）</button>
       <button onclick="filterGender('女')" class="btn-comfort bg-rose-100 hover:bg-rose-200 text-rose-800 border border-rose-200 text-sm py-2.5 px-4 font-bold">女（<span id="filter-female-count">0</span>）</button>
       <button onclick="filterTag('接')" class="btn-comfort bg-pink-100 hover:bg-pink-200 text-pink-800 font-bold border border-pink-300 text-sm py-2.5 px-4" aria-label="接觸隔離" title="接觸隔離"><img id="filter-iso-contact" alt="接觸隔離" class="w-8 h-8 object-contain" /></button>
@@ -87,7 +139,7 @@
   <main class="flex-1 p-8 overflow-y-auto bg-[#F7F6F2]">
     <!-- Tab 1: 病床總覽 -->
     <section id="tab-content-matrix" class="space-y-4">
-      <div id="bed-grid" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6"></div>
+      <div id="bed-grid" class="grid gap-6 responsive-bed-grid"></div>
     </section>
 
     <!-- Tab 2: 護理排班 -->
@@ -614,7 +666,7 @@
             '手術中': 'bg-fuchsia-700 text-white',
             '傳送中': 'bg-green-700 text-white'
           };
-          let tagsHtml = '<div class="flex flex-wrap gap-2 items-center mb-1">';
+          let tagsHtml = '<div class="flex flex-wrap gap-2 items-center">';
           if (tagStyles[p.location]) { const sourceBadge = {'ICU':'I入','急診':'急','門診':'門','其他單位(轉床)':'轉'}; tagsHtml += `<span class="${tagStyles[p.location]} px-3 py-1.5 text-sm rounded-lg font-bold">${sourceBadge[p.location] || p.location}</span>`; }
           isolationTypes(p.isolation).forEach(type => {
             tagsHtml += `<img src="${isolationIcons[type]}" alt="${isolationNames[type]}" title="${isolationNames[type]}" class="w-10 h-10 object-contain shrink-0" />`;
@@ -628,15 +680,15 @@
           if (p.dnr) tagsHtml += `<span class="bg-yellow-200 text-yellow-900 border border-yellow-300 px-3 py-1.5 text-sm rounded-lg font-bold">DNR</span>`;
           tagsHtml += '</div>';
 
-          card.className = p.isAbnormal ? "muji-card muji-card-abnormal p-6 flex flex-col justify-between h-56 relative overflow-hidden" : "muji-card p-6 flex flex-col justify-between h-56 relative overflow-hidden bg-white";
+          card.className = p.isAbnormal ? "muji-card muji-card-abnormal p-6 flex flex-col min-h-56 h-auto relative" : "muji-card p-6 flex flex-col min-h-56 h-auto relative bg-white";
           card.innerHTML = `
             <div class="absolute left-0 top-0 bottom-0 w-3.5 ${leftColorBarClass}"></div>
-            <div class="pl-4 w-full flex flex-col justify-between h-full">
-              <div class="flex justify-between items-start gap-3">
-                <div class="flex-1 min-w-0">${tagsHtml}</div>
+            <div class="pl-4 w-full flex flex-col min-h-44">
+              <div class="flex justify-end items-start">
                 <span class="shrink-0 text-3xl font-black text-stone-900 bg-stone-100 px-4 py-1 rounded-2xl border border-stone-300 shadow-sm">${bedKey}</span>
               </div>
-              <div class="mt-3 flex-1"></div>
+              <div class="bed-card-tags">${tagsHtml}</div>
+              <div class="mt-3 flex-1 min-h-2"></div>
               <div class="pt-2.5 border-t border-[#E5E0D8] flex justify-between items-center text-sm text-[#786759]">
                 <span class="font-bold text-stone-500">床位狀態</span>
                 <span class="font-bold ${tagStyles[p.location] ? tagStyles[p.location].split(' ')[0].replace('bg-', 'text-') : 'text-teal-800'}">${p.location || '在病房'}</span>
