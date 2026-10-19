@@ -310,8 +310,8 @@
                 </div>
                 <div class="grid grid-cols-3 gap-2 pt-1 shrink-0">
                     <button onclick="switchView('nursing-notes-list-view')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2.5 rounded-xl text-xs transition">取消</button>
-                    <button onclick="saveNoteData('draft')" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 rounded-xl text-xs transition">暫存</button>
-                    <button onclick="saveNoteData('saved')" class="bg-rose-500 hover:bg-rose-600 text-white font-bold py-2.5 rounded-xl text-xs transition">儲存送出</button>
+                    <button onclick="return guardedSave(this, () => saveNoteData('draft'))" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 rounded-xl text-xs transition">暫存</button>
+                    <button onclick="return guardedSave(this, () => saveNoteData('saved'))" class="bg-rose-500 hover:bg-rose-600 text-white font-bold py-2.5 rounded-xl text-xs transition">儲存送出</button>
                 </div>
             </div>
             <div class="w-full px-2 mb-2 flex items-center shrink-0">
@@ -394,7 +394,7 @@
                     <div class="text-[10px] text-slate-500">未入病房、不在病房與轉床狀態由電子白板原有病房管理流程維護，手機端同步顯示。</div></div>
                 </div>
                 <div class="flex justify-end shrink-0 pt-1">
-                    <button onclick="savePatientEdit()" class="w-24 bg-slate-800 hover:bg-slate-900 text-white font-bold py-2 rounded-xl text-xs shadow">儲存修改</button>
+                    <button onclick="return guardedSave(this, () => savePatientEdit())" class="w-24 bg-slate-800 hover:bg-slate-900 text-white font-bold py-2 rounded-xl text-xs shadow">儲存修改</button>
                 </div>
             </div>
             <div class="w-full px-2 mb-2 flex items-center shrink-0">
@@ -410,7 +410,7 @@
                     <textarea id="memo-textarea" placeholder="請輸入交班 Memo..." class="w-full flex-1 input-bg p-2.5 rounded-lg text-xs outline-none resize-none font-medium text-slate-800"></textarea>
                 </div>
                 <div class="flex justify-end shrink-0">
-                    <button onclick="saveSpecialMemo()" class="w-28 bg-slate-800 hover:bg-slate-900 text-white font-bold py-2 rounded-xl text-xs shadow">儲存注意事項</button>
+                    <button onclick="return guardedSave(this, () => saveSpecialMemo())" class="w-28 bg-slate-800 hover:bg-slate-900 text-white font-bold py-2 rounded-xl text-xs shadow">儲存注意事項</button>
                 </div>
             </div>
             <div class="w-full px-2 mb-2 flex items-center shrink-0">
@@ -440,7 +440,7 @@
                     <div class="flex items-center justify-between"><span>SPO2 (max 100%):</span><input type="number" min="0" max="100" id="input-spo2" placeholder="請輸入" class="w-24 input-bg px-2 py-1 rounded text-center"></div>
                     <div class="flex items-center justify-between"><span>Pain (0-10):</span><input type="number" min="0" max="10" id="input-pain" placeholder="請輸入" class="w-24 input-bg px-2 py-1 rounded text-center"></div>
                 </div>
-                <button onclick="saveVitalsData()" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-2.5 rounded-xl shadow text-xs">儲存</button>
+                <button onclick="return guardedSave(this, () => saveVitalsData())" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-2.5 rounded-xl shadow text-xs">儲存</button>
             </div>
             <div class="w-full px-2 mb-2 flex items-center shrink-0">
                 <button onclick="switchView('upload-menu-view')" class="w-10 h-10 bg-slate-800 hover:bg-slate-900 text-white rounded-full flex items-center justify-center text-sm">❮</button>
@@ -474,7 +474,7 @@
                     <div class="flex items-center justify-between"><span>嘔吐物 (ml):</span><input type="number" id="io-out-vomit" placeholder="" class="w-24 input-bg px-2 py-1 rounded text-center"></div>
                     <div class="flex items-center justify-between"><span>其他輸出 (ml):</span><input type="number" id="io-out-other" placeholder="" class="w-24 input-bg px-2 py-1 rounded text-center"></div>
                 </div>
-                <button onclick="saveIOData()" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-2.5 rounded-xl shadow text-xs">儲存</button>
+                <button onclick="return guardedSave(this, () => saveIOData())" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-2.5 rounded-xl shadow text-xs">儲存</button>
             </div>
             <div class="w-full px-2 mb-2 flex items-center shrink-0">
                 <button onclick="switchView('upload-menu-view')" class="w-10 h-10 bg-slate-800 hover:bg-slate-900 text-white rounded-full flex items-center justify-center text-sm">❮</button>
@@ -493,7 +493,7 @@
                     <div class="flex items-center justify-between"><span>身高 (CM):</span><input type="number" step="0.1" id="input-height" placeholder="請輸入身高" class="w-28 input-bg px-2 py-1.5 rounded text-center"></div>
                     <div class="flex items-center justify-between"><span>體重 (KG):</span><input type="number" step="0.1" id="input-weight" placeholder="請輸入體重" class="w-28 input-bg px-2 py-1.5 rounded text-center"></div>
                 </div>
-                <button onclick="saveWHData()" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-2.5 rounded-xl shadow text-xs">儲存</button>
+                <button onclick="return guardedSave(this, () => saveWHData())" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-2.5 rounded-xl shadow text-xs">儲存</button>
             </div>
             <div class="w-full px-2 mb-2 flex items-center shrink-0">
                 <button onclick="switchView('upload-menu-view')" class="w-10 h-10 bg-slate-800 hover:bg-slate-900 text-white rounded-full flex items-center justify-center text-sm">❮</button>
@@ -513,7 +513,7 @@
                     <div class="flex items-center justify-between"><span>語言 V (1-5):</span><input type="number" min="1" max="5" id="gcs-v" oninput="checkGCSLimit(this, 1, 5)" placeholder="請輸入" class="w-24 input-bg px-2 py-1.5 rounded text-center"></div>
                     <div class="flex items-center justify-between"><span>運動 M (1-6):</span><input type="number" min="1" max="6" id="gcs-m" oninput="checkGCSLimit(this, 1, 6)" placeholder="請輸入" class="w-24 input-bg px-2 py-1.5 rounded text-center"></div>
                 </div>
-                <button onclick="saveGCSData()" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-2.5 rounded-xl shadow text-xs">儲存</button>
+                <button onclick="return guardedSave(this, () => saveGCSData())" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-2.5 rounded-xl shadow text-xs">儲存</button>
             </div>
             <div class="w-full px-2 mb-2 flex items-center shrink-0">
                 <button onclick="switchView('upload-menu-view')" class="w-10 h-10 bg-slate-800 hover:bg-slate-900 text-white rounded-full flex items-center justify-center text-sm">❮</button>
@@ -536,7 +536,7 @@
                         <div class="flex items-center justify-between"><span>右下肢:</span><input type="number" min="0" max="5" id="mp-rle" oninput="checkMPLimit(this)" placeholder="0-5" class="w-16 input-bg px-1 py-1 rounded text-center"></div>
                     </div>
                 </div>
-                <button onclick="saveMPData()" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-2.5 rounded-xl shadow text-xs">儲存</button>
+                <button onclick="return guardedSave(this, () => saveMPData())" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-2.5 rounded-xl shadow text-xs">儲存</button>
             </div>
             <div class="w-full px-2 mb-2 flex items-center shrink-0">
                 <button onclick="switchView('upload-menu-view')" class="w-10 h-10 bg-slate-800 hover:bg-slate-900 text-white rounded-full flex items-center justify-center text-sm">❮</button>
@@ -585,7 +585,7 @@
                     <div id="med-bed-dob" class="text-[11px] text-slate-600 font-medium">出生年月日：1985/04/12</div>
                 </div>
                 <div id="med-form" class="space-y-2 overflow-y-auto flex-1 pr-1"></div>
-                <button onclick="saveMedications()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl shadow text-sm shrink-0">已完成給藥</button>
+                <button onclick="return guardedSave(this, () => saveMedications())" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl shadow text-sm shrink-0">已完成給藥</button>
             </div>
             <div class="w-full px-2 mb-2 flex items-center shrink-0">
                 <button onclick="switchView('nfc-view')" class="w-10 h-10 bg-slate-800 hover:bg-slate-900 text-white rounded-full flex items-center justify-center text-sm">❮</button>
@@ -600,7 +600,7 @@
                     <div id="treat-bed-name" class="font-bold text-slate-900">01-1 林Ｏ資 (男)</div>
                 </div>
                 <div id="treat-form" class="space-y-2 bg-white border border-slate-200 p-3 rounded-xl shadow-sm text-xs"></div>
-                <button onclick="saveTreatments()" class="w-full bg-rose-500 hover:bg-rose-600 text-white font-bold py-2.5 rounded-xl shadow text-sm shrink-0">確認儲存治療處置</button>
+                <button onclick="return guardedSave(this, () => saveTreatments())" class="w-full bg-rose-500 hover:bg-rose-600 text-white font-bold py-2.5 rounded-xl shadow text-sm shrink-0">確認儲存治療處置</button>
             </div>
             <div class="w-full px-2 mb-2 flex items-center shrink-0">
                 <button onclick="switchView('nfc-view')" class="w-10 h-10 bg-slate-800 hover:bg-slate-900 text-white rounded-full flex items-center justify-center text-sm">❮</button>
@@ -660,7 +660,7 @@
                 </div>
 
                 <div class="space-y-1.5 shrink-0 pt-1">
-                    <button id="blood-save-btn" onclick="saveBloodRecord()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-2 rounded-xl shadow text-xs transition">確認儲存輸血作業</button>
+                    <button id="blood-save-btn" onclick="return guardedSave(this, () => saveBloodRecord())" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-2 rounded-xl shadow text-xs transition">確認儲存輸血作業</button>
                     <div id="blood-safety-status" class="hidden text-[11px] font-bold p-2 rounded-lg border border-amber-200 bg-amber-50 text-amber-900"></div>
                     <button id="blood-pause-btn" onclick="pauseBloodTransfusion()" class="hidden w-full bg-amber-600 text-white font-bold py-2 rounded-xl text-xs">暫停輸血</button>
                     <div id="blood-paused-actions" class="hidden space-y-2 border border-amber-300 bg-amber-50 rounded-xl p-2 text-xs">
@@ -702,7 +702,7 @@
                         <div class="border-2 border-slate-300 bg-white rounded-xl overflow-hidden shadow-inner relative h-32">
                             <canvas id="sig-canvas" class="w-full h-full cursor-crosshair touch-none block"></canvas>
                         </div>
-                        <button onclick="saveSignatureData()" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 rounded-xl text-xs transition shadow">完成簽名並鎖定儲存</button>
+                        <button onclick="return guardedSave(this, () => saveSignatureData())" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 rounded-xl text-xs transition shadow">完成簽名並鎖定儲存</button>
                     </div>
                     <div id="signed-status-section" class="hidden border border-teal-300 bg-teal-50 p-3 rounded-xl text-center space-y-1">
                         <div class="text-xs font-bold text-teal-800">此同意書已完成簽署：</div>
@@ -767,7 +767,7 @@
                     <button onclick="quickSelectBeds(7)" class="text-teal-700 hover:underline text-[11px]">快速選取前7床</button>
                 </div>
                 <div id="schedule-beds-checkboxes" class="flex-1 overflow-y-auto space-y-1.5 pr-1 max-h-[200px] border border-slate-200 p-2.5 rounded-xl bg-slate-50"></div>
-                <button onclick="saveNurseSchedule()" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-2.5 rounded-xl text-xs transition">儲存排班設定</button>
+                <button onclick="return guardedSave(this, () => saveNurseSchedule())" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-2.5 rounded-xl text-xs transition">儲存排班設定</button>
             </div>
         </div>
 
@@ -844,6 +844,25 @@
     <!-- Firebase SDK 引入與完整邏輯 -->
     <script>
 
+
+        // 僅攔截儲存按鈕：等待伺服器回覆，禁止同次操作重複點擊。
+        async function guardedSave(button, action) {
+            if (button.dataset.saving === '1') return;
+            button.dataset.saving = '1';
+            button.disabled = true;
+            const oldLabel = button.textContent;
+            button.textContent = '儲存中…';
+            try {
+                await action();
+            } catch (error) {
+                console.error('儲存失敗', error);
+                alert('儲存失敗，請檢查網路後重試。\n' + (error?.message || '未知錯誤'));
+            } finally {
+                button.textContent = oldLabel;
+                button.disabled = false;
+                delete button.dataset.saving;
+            }
+        }
 
         const firebaseConfig = {
             apiKey: "AIzaSyBe__9-uFJkSrN2m5_qldgS2UgtQzcb9EQ",
@@ -1095,6 +1114,11 @@
                 globalSharedMemo = cloudData.globalSharedMemo || globalSharedMemo;
                 cloudMarquee = cloudData.marquee || cloudMarquee;
                 syncNurseAssignments();
+                const activePatientViews = ['nfc-view','patient-detail-view','orders-status-view','nursing-notes-list-view','nursing-notes-edit-view','patient-location-view','map-view','alarm-view','patient-edit-view','special-memo-view','vitals-upload-view','io-upload-view','wh-upload-view','gcs-upload-view','mp-upload-view','advanced-query-view','med-view','treat-view','blood-view','consent-view'];
+                if (patientsData[currentSelectedBed]?.isEmpty && activePatientViews.some(id => !document.getElementById(id).classList.contains('hidden'))) {
+                    alert('此病人已出院，床位資料已清空，請重新選擇床位。');
+                    switchView('patient-list-view');
+                }
                 if (!document.getElementById('patient-list-view').classList.contains('hidden')) renderPatientList();
                 if (!document.getElementById('map-view').classList.contains('hidden')) refreshWatchLocationView('map-view');
                 if (!document.getElementById('alarm-view').classList.contains('hidden')) refreshWatchLocationView('alarm-view');
@@ -1103,21 +1127,30 @@
             }
         });
 
+        // 串列化寫入，避免同一裝置連續儲存時舊請求覆蓋新資料。
+        let cloudWriteQueue = Promise.resolve();
         function saveToCloud() {
-            if (!cloudLoaded) { alert('雲端資料尚未完成讀取，為保護既有病人資料，暫不允許儲存。'); return; }
+            if (!cloudLoaded) return Promise.reject(new Error('雲端資料尚未完成讀取，暫不允許儲存。'));
             const payload = {
-                patientsData: patientsData,
-                nurseBedAssignments: nurseBedAssignments,
-                userDatabase: userDatabase,
+                patientsData: JSON.parse(JSON.stringify(patientsData)),
+                nurseBedAssignments: JSON.parse(JSON.stringify(nurseBedAssignments)),
+                userDatabase: JSON.parse(JSON.stringify(userDatabase)),
                 globalSharedMemo: globalSharedMemo,
-                marquee: cloudMarquee,
+                marquee: JSON.parse(JSON.stringify(cloudMarquee)),
                 lastUpdated: new Date().toISOString()
             };
-            set(dbRef, payload).catch(err => (console.error('Cloud save err:', err), document.getElementById('cloud-sync-status').textContent='雲端寫入失敗：'+err.message));
-            localStorage.setItem('femh_45beds_vFixed12', JSON.stringify(patientsData));
-            localStorage.setItem('femh_shared_memo_vFixed12', globalSharedMemo);
-            localStorage.setItem('femh_nurse_schedule_vFixed12', JSON.stringify(nurseBedAssignments));
-            localStorage.setItem('femh_user_db_vFixed12', JSON.stringify(userDatabase));
+            const pending = cloudWriteQueue.catch(() => {}).then(() => set(dbRef, payload));
+            cloudWriteQueue = pending;
+            pending.then(() => {
+                localStorage.setItem('femh_45beds_vFixed12', JSON.stringify(payload.patientsData));
+                localStorage.setItem('femh_shared_memo_vFixed12', payload.globalSharedMemo);
+                localStorage.setItem('femh_nurse_schedule_vFixed12', JSON.stringify(payload.nurseBedAssignments));
+                localStorage.setItem('femh_user_db_vFixed12', JSON.stringify(payload.userDatabase));
+            }).catch(err => {
+                console.error('Cloud save err:', err);
+                document.getElementById('cloud-sync-status').textContent = '雲端寫入失敗：' + err.message;
+            });
+            return pending;
         }
 
         window.saveToLocalStorage = saveToCloud;
@@ -1523,11 +1556,16 @@
         function selectPatient(bedNumber) {
             currentSelectedBed = bedNumber;
             const p = patientsData[bedNumber];
+            if (!p || p.isEmpty) {
+                alert('此床位已出院／空床待清，無可查詢的住院病人資料。');
+                switchView('patient-list-view');
+                return;
+            }
             let safeFullName = getSafePatientName(p, bedNumber);
             
             document.querySelectorAll('#detail-bed-name, #nfc-bed-patient, #orders-bed-name, #loc-bed-name, #med-bed-name, #treat-bed-name, #blood-bed-name, #consent-bed-name').forEach(el => el.innerText = safeFullName);
-            document.querySelectorAll('#detail-patient-info, #nfc-patient-info, #blood-patient-info, #consent-patient-info').forEach(el => el.innerText = p.info || '1985/04/12 (41Y) | 病例號：1031988001');
-            document.querySelectorAll('#detail-patient-extra, #nfc-patient-extra, #blood-patient-extra, #consent-patient-extra').forEach(el => el.innerText = p.extra || `診斷：${p.diag || '一般照護'}`);
+            document.querySelectorAll('#detail-patient-info, #nfc-patient-info, #blood-patient-info, #consent-patient-info').forEach(el => el.innerText = p.info || '無病人基本資料');
+            document.querySelectorAll('#detail-patient-extra, #nfc-patient-extra, #blood-patient-extra, #consent-patient-extra').forEach(el => el.innerText = p.extra || '無診斷資料');
             
             const bagTypeLabel = document.getElementById('blood-bag-type-label');
             if (bagTypeLabel) {
@@ -1593,7 +1631,8 @@
             document.getElementById('mobile-edit-discharge').checked = p.isDischarging === true || p.isDischarging === 'true';
         };
 
-        window.savePatientEdit = function() {
+        window.savePatientEdit = async function() {
+            if (!patientsData[currentSelectedBed] || patientsData[currentSelectedBed].isEmpty) { alert('此床位已出院，禁止新增或修改護理紀錄。'); return; }
             const p = patientsData[currentSelectedBed];
             if (!p.editInfo) p.editInfo = {};
             p.editInfo.allergy = document.getElementById('edit-allergy').value;
@@ -1606,16 +1645,16 @@
             p.dnr = document.getElementById('mobile-edit-dnr').checked;
             p.fallRisk = document.getElementById('mobile-edit-fall').checked;
             p.isDischarging = document.getElementById('mobile-edit-discharge').checked;
-            saveToCloud();
+            await saveToCloud();
             alert('病人基本資料修改成功（已同步雲端）！');
             renderMobileCareTags(p);
             switchView('patient-detail-view');
         };
 
         window.openSpecialMemo = function() { document.getElementById('memo-textarea').value = globalSharedMemo; };
-        window.saveSpecialMemo = function() {
+        window.saveSpecialMemo = async function() {
             globalSharedMemo = document.getElementById('memo-textarea').value;
-            saveToCloud();
+            await saveToCloud();
             alert('交班注意事項已儲存並同步至雲端！');
             switchView('patient-detail-view');
         };
@@ -1715,7 +1754,7 @@
             }
         };
 
-        window.saveNurseSchedule = function() {
+        window.saveNurseSchedule = async function() {
             const nurseName = document.getElementById('schedule-nurse-select').value;
             const chks = document.querySelectorAll('.schedule-bed-chk:checked');
             if (chks.length > 7) { alert('每位護理人員最多只能負責 7 個病人！'); return; }
@@ -1724,7 +1763,7 @@
             chks.forEach(chk => newBeds.push(chk.value));
             nurseBedAssignments[nurseName] = newBeds;
             syncNurseAssignments();
-            saveToCloud();
+            await saveToCloud();
             alert(`已成功儲存【${nurseName}】的責任床位排班（已同步雲端）！`);
             closeNSAdminModal();
         };
@@ -2021,7 +2060,8 @@
             });
         }
 
-        window.saveMedications = function() {
+        window.saveMedications = async function() {
+            if (!patientsData[currentSelectedBed] || patientsData[currentSelectedBed].isEmpty) { alert('此床位已出院，禁止新增或修改護理紀錄。'); return; }
             const p = patientsData[currentSelectedBed];
             if (!p.medChecked) p.medChecked = {};
             let savedAny = false;
@@ -2033,7 +2073,7 @@
                     autoAddDraftNote(`給予藥物：${med.name} (${med.dose})，途徑: ${med.route}`);
                 }
             });
-            saveToCloud();
+            await saveToCloud();
             alert('給藥作業儲存成功（已同步雲端並自動暫存至護理紀錄）！');
             switchView('nfc-view');
         };
@@ -2061,7 +2101,8 @@
             }
         }
 
-        window.saveTreatments = function() {
+        window.saveTreatments = async function() {
+            if (!patientsData[currentSelectedBed] || patientsData[currentSelectedBed].isEmpty) { alert('此床位已出院，禁止新增或修改護理紀錄。'); return; }
             const p = patientsData[currentSelectedBed];
             if (!p.treatChecked) p.treatChecked = {};
             if (!p.treatTimestamps) p.treatTimestamps = {};
@@ -2077,12 +2118,13 @@
                     }
                 });
             }
-            saveToCloud();
+            await saveToCloud();
             alert('治療處置儲存成功（已同步雲端並自動暫存至護理紀錄）！');
             switchView('nfc-view');
         };
 
-        window.saveVitalsData = function() {
+        window.saveVitalsData = async function() {
+            if (!patientsData[currentSelectedBed] || patientsData[currentSelectedBed].isEmpty) { alert('此床位已出院，禁止新增或修改護理紀錄。'); return; }
             const p = patientsData[currentSelectedBed];
             if (!p.vitals) p.vitals = [];
             
@@ -2124,7 +2166,7 @@
                 spo2Val !== '' ? `SpO₂:${spo2Val}%` : null,
                 painVal !== '' ? `Pain:${painVal}分` : null
             ].filter(item => item !== null).join('，')}）`);
-            saveToCloud();
+            await saveToCloud();
 
             document.getElementById('input-t').value = '';
             document.getElementById('input-p').value = '';
@@ -2142,7 +2184,8 @@
             switchView('nfc-view');
         };
 
-        window.saveIOData = function() {
+        window.saveIOData = async function() {
+            if (!patientsData[currentSelectedBed] || patientsData[currentSelectedBed].isEmpty) { alert('此床位已出院，禁止新增或修改護理紀錄。'); return; }
             const dateInputVal = document.getElementById('io-input-date').value;
             const timeInputVal = document.getElementById('io-input-time').value || getActiveTime();
             let rawDateStr = dateInputVal || `${new Date().getFullYear()}-${String(new Date().getMonth()+1).padStart(2,'0')}-${String(new Date().getDate()).padStart(2,'0')}`;
@@ -2176,7 +2219,7 @@
                 creator: creatorName
             });
             autoAddDraftNote(`上傳 I/O 紀錄（紀錄日期時間:${rawDateStr} ${timeInputVal}，輸入：食物${inFood}ml、飲水${inW}ml、靜脈點滴${inIV}ml、血品${inB}ml、其他${inO}ml；輸出：尿液${outU}ml、糞便${outStool}ml、引流${outD}ml、嘔吐物${outV}ml、其他${outO}ml；總進量:${totalIn}ml，總出量:${totalOut}ml，淨平衡:${net >= 0 ? '+' : ''}${net}ml）`);
-            saveToCloud();
+            await saveToCloud();
 
             document.getElementById('io-in-food').value = '';
             document.getElementById('io-in-water').value = '';
@@ -2193,7 +2236,8 @@
             switchView('nfc-view');
         };
 
-        window.saveWHData = function() {
+        window.saveWHData = async function() {
+            if (!patientsData[currentSelectedBed] || patientsData[currentSelectedBed].isEmpty) { alert('此床位已出院，禁止新增或修改護理紀錄。'); return; }
             const hVal = document.getElementById('input-height').value;
             const wVal = document.getElementById('input-weight').value;
             if (!hVal && !wVal) { alert('請填寫身高或體重！'); return; }
@@ -2212,7 +2256,7 @@
                 creator: creatorName
             });
             autoAddDraftNote(`上傳身高體重（測量時間:${timeVal}，身高:${h !== null ? h + 'cm' : '未測'}，體重:${w !== null ? w + 'kg' : '未測'}）`);
-            saveToCloud();
+            await saveToCloud();
             document.getElementById('input-height').value = '';
             document.getElementById('input-weight').value = '';
             
@@ -2226,7 +2270,8 @@
             else if (val < min && el.value !== '') el.value = min;
         };
 
-        window.saveGCSData = function() {
+        window.saveGCSData = async function() {
+            if (!patientsData[currentSelectedBed] || patientsData[currentSelectedBed].isEmpty) { alert('此床位已出院，禁止新增或修改護理紀錄。'); return; }
             const eVal = document.getElementById('gcs-e').value;
             const vVal = document.getElementById('gcs-v').value;
             const mVal = document.getElementById('gcs-m').value;
@@ -2251,7 +2296,7 @@
             p.advancedVitals.unshift(newGcs);
             evaluateEWS(p, null, newGcs, null);
             autoAddDraftNote(`上傳 GCS 昏迷指數（評估時間:${timeVal}，E:${eVal !== '' ? eVal : '未測'}，V:${vVal !== '' ? vVal : '未測'}，M:${mVal !== '' ? mVal : '未測'}${eVal !== '' && vVal !== '' && mVal !== '' ? `，總分:${newGcs.total}` : '，總分:未完整評估'}）`);
-            saveToCloud();
+            await saveToCloud();
 
             document.getElementById('gcs-e').value = '';
             document.getElementById('gcs-v').value = '';
@@ -2267,7 +2312,8 @@
             else if (val < 0) el.value = 0;
         };
 
-        window.saveMPData = function() {
+        window.saveMPData = async function() {
+            if (!patientsData[currentSelectedBed] || patientsData[currentSelectedBed].isEmpty) { alert('此床位已出院，禁止新增或修改護理紀錄。'); return; }
             const rueVal = document.getElementById('mp-rue').value;
             const lueVal = document.getElementById('mp-lue').value;
             const rleVal = document.getElementById('mp-rle').value;
@@ -2300,7 +2346,7 @@
                 rue !== null ? `右上肢:${rue}分` : null,
                 rle !== null ? `右下肢:${rle}分` : null
             ].filter(item => item !== null).join('，')}）`);
-            saveToCloud();
+            await saveToCloud();
 
             document.getElementById('mp-rue').value = '';
             document.getElementById('mp-lue').value = '';
@@ -2636,7 +2682,8 @@
             switchView('nursing-notes-edit-view');
         };
 
-        window.saveNoteData = function(statusType) {
+        window.saveNoteData = async function(statusType) {
+            if (!patientsData[currentSelectedBed] || patientsData[currentSelectedBed].isEmpty) { alert('此床位已出院，禁止新增或修改護理紀錄。'); return; }
             const content = document.getElementById('note-textarea').value.trim();
             if (!content) { alert('請輸入內容！'); return; }
             const p = patientsData[currentSelectedBed];
@@ -2655,7 +2702,8 @@
                     content: content, status: statusType, creator: currentUser ? currentUser.name : "護理師", photo: null, part: ""
                 });
             }
-            saveToCloud();
+            await saveToCloud();
+            alert(statusType === 'draft' ? '護理紀錄暫存成功！' : '護理紀錄儲存成功！');
             loadNursingNotes();
             switchView('nursing-notes-list-view');
         };
@@ -2903,7 +2951,8 @@
             }
         };
 
-        window.saveBloodRecord = function() {
+        window.saveBloodRecord = async function() {
+            if (!patientsData[currentSelectedBed] || patientsData[currentSelectedBed].isEmpty) { alert('此床位已出院，禁止新增或修改護理紀錄。'); return; }
             const p = patientsData[currentSelectedBed];
             const patientBlood = p.blood || 'O+';
             const bagBlood = document.getElementById('blood-bag-type-label').innerText;
@@ -2982,7 +3031,7 @@
             p.bloodStatus = '輸血中';
 
             autoAddDraftNote(`進行輸血作業 (${selectedProduct}, 血袋號碼:${bagNo}, ${startTime}~${endTime})`);
-            saveToCloud();
+            await saveToCloud();
 
             document.getElementById('blood-product-type').disabled = true;
             document.getElementById('blood-start-time').disabled = true;
@@ -3079,7 +3128,8 @@
             }
         };
 
-        window.saveSignatureData = function() {
+        window.saveSignatureData = async function() {
+            if (!patientsData[currentSelectedBed] || patientsData[currentSelectedBed].isEmpty) { alert('此床位已出院，禁止新增或修改護理紀錄。'); return; }
             if (!sigCanvas) return;
             const cType = document.getElementById('consent-type-select').value;
             const p = patientsData[currentSelectedBed];
@@ -3087,7 +3137,7 @@
             
             p.consents[cType] = sigCanvas.toDataURL('image/png');
             autoAddDraftNote(`完成電子簽署：${cType}`);
-            saveToCloud();
+            await saveToCloud();
             alert(`【${cType}】電子簽名完成並安全鎖定（已同步雲端）！`);
             checkConsentStatus();
         };
