@@ -1,0 +1,227 @@
+{
+  "reviewedAt": "2026-11-02",
+  "scope": "Illustrative sourced clinical checks, not complete institutional order sets or a validated clinical decision engine. A diagnosis alone does not establish indication or contraindication. Unknown patient factors must remain pending verification.",
+  "contraindications": {
+    "ATORVASTATIN": {
+      "text": "急性肝衰竭、失代償性肝硬化，或對 atorvastatin／製劑成分過敏。妊娠需另依本品仿單與個別效益風險評估，不把舊版所有 statin 妊娠禁忌一律套用。",
+      "source": "https://www.dailymed.nlm.nih.gov/dailymed/fda/fdaDrugXsl.cfm?setid=1914264b-4c95-4066-91ca-b5c91d8b741e&type=display",
+      "caution": "肌病、肝功能異常與 CYP3A4 交互作用屬另項評估。"
+    },
+    "ACETAMINOPHEN": {
+      "text": "對 acetaminophen／本品成分過敏；此注射劑仿單亦列嚴重肝功能損害或嚴重活動性肝病。口服、注射等製劑應分別核對仿單，不直接視為完全相同。",
+      "source": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2023/206968Orig1s000lbl.pdf",
+      "caution": "一般肝病、酒精使用、營養不良、低血容量及嚴重腎功能損害需要審查；不可把一般肝病都當作已確定絕對禁忌。"
+    },
+    "CLOPIDOGREL": {
+      "text": "活動性病理性出血（例如消化性潰瘍出血或顱內出血），或對 clopidogrel／製劑成分過敏。",
+      "source": "https://www.dailymed.nlm.nih.gov/dailymed/fda/fdaDrugXsl.cfm?setid=9c0263c5-97bd-4fcc-8b0c-c825dbefa4c1",
+      "caution": "Omeprazole／esomeprazole 屬應避免併用的交互作用；不要把單純潰瘍病史等同活動性出血。"
+    },
+    "OMEPRAZOLE": {
+      "text": "對本品或 substituted benzimidazole 類成分過敏；與含 rilpivirine 製劑併用禁忌。",
+      "source": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=63b3982a-b541-4b0d-99d4-93a673e57d46",
+      "caution": "Clopidogrel 併用應避免；腎炎、低血鎂等風險另列注意事項。"
+    },
+    "METOPROLOL": {
+      "text": "此 metoprolol tartrate 錠劑仿單列嚴重心搏過慢、二或三度房室傳導阻滯、心因性休克、收縮壓低於 100 mmHg、失代償性心衰竭、無永久節律器的病竇症候群，或本品成分過敏。",
+      "source": "https://www.dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=809c6386-0039-42ff-a03e-e42733e229b8",
+      "caution": "不能把所有 beta blocker／所有劑型共用同一禁忌或以任意單次脈搏值替代完整判斷。"
+    },
+    "LEVOFLOXACIN": {
+      "text": "已知對 levofloxacin 或其他 quinolone 抗菌藥過敏。",
+      "source": "https://www.dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=b9dc8bf3-97d9-4d1c-9a68-3ae553acdada",
+      "caution": "重症肌無力、QT 延長、低血鉀、肌腱／神經病變風險及腎功能調整另屬重要警語，不應漏掉或混稱全部為禁忌章節。"
+    },
+    "NIMODIPINE": {
+      "text": "此口服膠囊禁與強效 CYP3A4 抑制劑併用；不得把膠囊內容物以靜脈或其他注射途徑給藥。",
+      "source": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=a323ebd8-ef1b-439b-93d1-ba73a5b0127d",
+      "caution": "低血壓、肝硬化及中弱效 CYP3A4 交互作用需個別調整。不得把口服製劑的注射禁令誤套到其他國家核准的專用注射製劑。"
+    },
+    "MANNITOL": {
+      "text": "此靜脈製劑列對 mannitol 過敏、無尿、嚴重低血容量、既存嚴重肺血管鬱血或肺水腫，以及除開顱術中外的活動性顱內出血。",
+      "source": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=8ad3145e-00e7-4412-b9a5-06f00f264f30",
+      "caution": "靜脈、吸入或灌洗製劑用途與禁忌不同；先確認製劑。"
+    },
+    "NITROGLYCERIN": {
+      "text": "此舌下噴劑禁與 PDE5 抑制劑或 sGC 刺激劑併用；嚴重貧血、可能顱內壓升高、對 nitrates／nitrites 或本品成分過敏、急性循環衰竭或休克亦列禁忌。",
+      "source": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=d19b5f51-ca85-48d6-9ccd-8ae26249cdc3",
+      "caution": "未提供 PDE5 最近使用時間時不可自行假設安全；不同藥物的間隔不相同。"
+    },
+    "ACETYLCYSTEINE": {
+      "text": "製劑與用途須分開：吸入黏液溶解用途對本品敏感者禁用；同一仿單對 acetaminophen 過量的口服解毒用途記載無禁忌，仍須個別權衡反應風險。不可把口服／吸入溶液拿去注射。",
+      "source": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=d50c8ab6-26f8-4669-89d1-c4d26698159a",
+      "caution": "氣喘、分泌物增多或支氣管痙攣需監測；中毒解毒流程須專科處理。"
+    },
+    "COMBIVENT": {
+      "text": "目前 Respimat 仿單列對本品成分、atropine 或其衍生物過敏。UDV 仿單可另列肥厚阻塞性心肌病或心搏過速性心律不整；須依選定製劑，不能跨劑型套用。",
+      "source": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=9832312e-0310-4ab6-8501-afa976fc7eb2",
+      "additionalSource": "https://www.cth.org.tw/?aid=606&iid=1744&page_name=detail&pid=0",
+      "caution": "舊 CFC aerosol 的大豆／花生過敏敘述不可直接套到現在 Respimat。青光眼、尿滯留等另列注意事項。"
+    },
+    "ASPIRIN": {
+      "text": "對 aspirin／NSAID 過敏，或具 aspirin 相關氣喘、鼻炎、鼻息肉症候群者須依本品仿單禁用；出血風險與兒少病毒感染相關雷氏症候群警語另外核對。",
+      "source": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2023/011483s035lbl.pdf",
+      "caution": "此來源為含 aspirin 複方仿單的 aspirin 相關禁忌，不可照搬其他成分禁忌；不能說懷孕一律不能用 aspirin，產科有低劑量適應症。"
+    }
+  },
+  "orderSets": [
+    {
+      "code": "FEVER",
+      "name": "Fever assessment and monitoring",
+      "department": "Medicine / Pediatrics",
+      "steps": [
+        "Measure and record temperature, heart rate, respiratory rate and clinical appearance.",
+        "Assess hydration, urine output and red flags; hydration only if swallowing is safe and no fluid restriction applies.",
+        "Escalate for deterioration; antipyretic drug orders require a separate prescription and pharmacist review."
+      ],
+      "required": [
+        "age",
+        "current observations",
+        "hydration status",
+        "swallowing status",
+        "fluid restriction"
+      ],
+      "source": "https://www.nice.org.uk/guidance/NG143/chapter/recommendations",
+      "notes": "Pediatric source; adult thresholds must not be inferred from it. Under-5 fever: no routine tepid sponging; very young infants require urgent age-specific evaluation. Do not confuse fever with heat stroke/hyperthermia."
+    },
+    {
+      "code": "STROKE",
+      "name": "Stroke swallowing and neurological care",
+      "department": "Medicine / Neurology",
+      "steps": [
+        "Neurological observation and escalation plan.",
+        "Swallow screen by a trained professional before oral food, fluids or medication.",
+        "Review hydration/nutrition route and oral care."
+      ],
+      "required": [
+        "acute stroke status",
+        "swallow screen result",
+        "consciousness",
+        "nutrition plan"
+      ],
+      "source": "https://www.nice.org.uk/guidance/NG128/chapter/recommendations"
+    },
+    {
+      "code": "PERIOP",
+      "name": "Perioperative assessment and safety",
+      "department": "Surgery",
+      "steps": [
+        "Review procedure, consent and surgical safety checklist.",
+        "Document individualized fasting, fluid and nutrition plan.",
+        "Assess VTE risk and postoperative recovery setting.",
+        "Assess pain and functional recovery; medication orders remain separate."
+      ],
+      "required": [
+        "procedure",
+        "surgery time",
+        "fasting plan",
+        "bleeding/VTE risk",
+        "comorbidity",
+        "allergy"
+      ],
+      "source": "https://www.nice.org.uk/guidance/ng180/chapter/Recommendations"
+    },
+    {
+      "code": "POSTPARTUM",
+      "name": "Postpartum assessment",
+      "department": "Obstetrics",
+      "steps": [
+        "Assess vaginal bleeding, uterine tone/fundal height and vital signs.",
+        "Document voiding, pain, wound/perineal recovery and feeding support.",
+        "Escalate for heavy bleeding, suspected infection or other deterioration."
+      ],
+      "required": [
+        "postpartum status",
+        "delivery time",
+        "delivery mode",
+        "current observations",
+        "bleeding"
+      ],
+      "source": "https://www.ncbi.nlm.nih.gov/books/NBK579650/"
+    },
+    {
+      "code": "NEWBORN",
+      "name": "Newborn danger-sign observation",
+      "department": "Pediatrics / Neonatal",
+      "steps": [
+        "Assess feeding, activity, breathing, temperature, jaundice and history of convulsion.",
+        "Escalate for danger signs; do not substitute a generic adult routine."
+      ],
+      "required": [
+        "age in days",
+        "gestation",
+        "weight",
+        "current observations",
+        "feeding"
+      ],
+      "source": "https://www.ncbi.nlm.nih.gov/books/NBK579650/"
+    },
+    {
+      "code": "PEDS_GI",
+      "name": "Pediatric gastroenteritis and hydration assessment",
+      "department": "Pediatrics",
+      "steps": [
+        "Assess dehydration and shock signs, urine output, intake and vomiting/stool history.",
+        "Use an individualized rehydration plan with recorded weight; no automatic adult volume.",
+        "Reassess response and escalate for shock, deterioration or inability to tolerate planned fluids."
+      ],
+      "required": [
+        "age",
+        "weight",
+        "dehydration assessment",
+        "urine output",
+        "fluid tolerance"
+      ],
+      "source": "https://www.nice.org.uk/guidance/cg84/chapter/Recommendations"
+    },
+    {
+      "code": "PSYCH_SAFETY",
+      "name": "Mental-health safety and observation plan",
+      "department": "Psychiatry",
+      "steps": [
+        "Assess current distress and immediate physical/mental healthcare needs.",
+        "Request age-appropriate mental-health assessment.",
+        "Individualize observation level, responsible staff and review time with the patient/team.",
+        "Document consent or appropriate framework; observation is not an automatic restraint order."
+      ],
+      "required": [
+        "current assessment",
+        "observation level",
+        "review time",
+        "responsible team",
+        "consent/capacity context"
+      ],
+      "source": "https://www.nice.org.uk/guidance/ng225/chapter/recommendations"
+    }
+  ],
+  "ruleCandidates": [
+    {
+      "id": "acute-stroke-oral-intake",
+      "level": "hold-not-free-text-override",
+      "condition": "Acute stroke and proposed oral food/fluid/medication without a documented safe swallow result",
+      "action": "Pending swallow assessment; if screen failed, block oral route until appropriate reassessment and documented feeding plan. Do not apply a blanket permanent ban to all historical stroke patients or palliative exceptions.",
+      "source": "https://www.nice.org.uk/guidance/NG128/chapter/recommendations"
+    },
+    {
+      "id": "pediatric-tepid-sponging",
+      "level": "block-default-fever-routine-item",
+      "condition": "Routine tepid sponging selected to treat fever in a child under 5",
+      "action": "Do not include as routine fever treatment; hyperthermia/heatstroke is a distinct pathway.",
+      "source": "https://www.nice.org.uk/guidance/NG143/chapter/recommendations"
+    },
+    {
+      "id": "universal-psychiatric-restraint",
+      "level": "block-automatic-order",
+      "condition": "Psych diagnosis alone is used to generate physical restraint or forced care",
+      "action": "Do not automatically generate. Require separate individualized assessment, institutional policy and applicable framework; a generic rationale box is insufficient.",
+      "source": "https://www.nice.org.uk/guidance/ng225/chapter/recommendations"
+    },
+    {
+      "id": "unknown-ob-peds-factors",
+      "level": "hold",
+      "condition": "Obstetric/neonatal/pediatric order set lacks pregnancy/postpartum/age/weight or required observation data",
+      "action": "Save pending verification, not executable; mismatched specialty is a reason-required warning, not proof of absolute contraindication.",
+      "source": "Implementation constraint; no claim of a universal hospital clinical rule"
+    }
+  ]
+}

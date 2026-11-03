@@ -1,0 +1,14 @@
+{
+  "source": "衛生福利部食品藥物管理署",
+  "dataset": "https://data.gov.tw/dataset/9122",
+  "leafletDataset": "https://data.gov.tw/dataset/9117",
+  "retrievedAt": "2026-11-02",
+  "total": 72096,
+  "leafletRecords": 29903,
+  "linked": 32048,
+  "orderable": 20111,
+  "chunks": 25,
+  "chunkSize": 3000,
+  "rawSha256": "a2beb6983aea766419e3801c19e8d0b678ddb020f3de0ec5cbb454c912cb6cbc",
+  "license": "政府資料開放授權條款－第1版"
+}

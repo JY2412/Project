@@ -1,0 +1,29 @@
+<!doctype html><html lang="zh-Hant"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>院內系統整合圖</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#edf4f3;color:#173333;font:16px/1.65 system-ui,sans-serif}main{max-width:1000px;margin:auto;padding:24px}header,section{background:white;border:1px solid #d7e5e3;border-radius:18px;padding:clamp(16px,4vw,36px);margin-bottom:18px}header{background:#143e42;color:#fff}h1,h2,p{margin:0 0 12px}small{letter-spacing:.16em;color:#b9e3dd}a{color:#08695c}header a{color:#d5fff6}.map{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;text-align:center}.map div{padding:16px;background:#eaf2fa;border-radius:12px}.map .core{grid-column:1/-1;background:#14675d;color:white}.flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:12px 0}.flow span{background:#e4f2ee;padding:6px 10px;border-radius:6px}table{width:100%;border-collapse:collapse;text-align:left}th,td{padding:10px;border-bottom:1px solid #d7e5e3;vertical-align:top}thead{background:#eaf2fa}@media(max-width:580px){.map{grid-template-columns:1fr}.map .core{grid-column:auto}th,td{padding:7px}}
+</style><main>
+<header><small>11G · INPATIENT WORKFLOW</small><h1>院內系統整合圖</h1><p>以病歷號辨識病人，以住院識別碼區分每次住院。</p><a href="systems.html">院內入口</a> · <a href="his.html">HIS</a> · <a href="nis.html">NIS</a></header>
+<section><h2>三個工作視角，共用住院資料</h2><div class="map">
+<div><strong>HIS</strong><br>依職務查看住院、醫囑、結果及計價</div>
+<div><strong>NIS／護理手機</strong><br>責任床位、執行、量測、交班</div>
+<div><strong>電子白板／床頭卡</strong><br>病房動態、照護與警示顯示</div>
+<div class="core"><strong>共用病人與本次住院紀錄</strong><br>床位 · 照護團隊 · 醫囑 · 報告 · 執行紀錄 · 帳務</div></div></section>
+<section><h2>從開立到執行</h2>
+<p><b>處置</b></p><div class="flow"><span>主治簽署／住院醫師或 NP 送覆核</span>→<span>生效</span>→<span>護理待辦</span>→<span>床旁回報</span></div>
+<p><b>用藥</b></p><div class="flow"><span>醫師簽署</span>→<span>藥師核對與發藥</span>→<span>護理給藥</span></div>
+<p><b>檢驗／檢查</b></p><div class="flow"><span>醫師開立</span>→<span>採檢／排程與準備</span>→<span>LIS／RIS 發布</span>→<span>醫師與 NIS 查閱</span></div>
+<p><b>輸血</b></p><div class="flow"><span>醫師醫囑與同意書</span>→<span>血庫配血備血</span>→<span>兩位護理師核對</span>→<span>輸血與監測</span></div>
+<p><b>住院與離院</b></p><div class="flow"><span>書記登記與確認抵達</span>→<span>白板更新</span>→<span>醫師出院計畫</span>→<span>書記結算、確認離院與清床</span></div></section>
+<section><h2>帳號與職務權限</h2><p>HIS 使用既有職務帳號。下表的代碼為展示用帳號範例。</p>
+<div style="overflow:auto"><table style="min-width:670px"><thead><tr><th>角色</th><th>帳號來源</th><th>操作權限</th><th>交接對象</th></tr></thead><tbody>
+<tr><th>主治／住院醫師</th><td>a01／r01</td><td>照護範圍內開立醫囑。主治可覆核及登錄血型，住院醫師送覆核。</td><td>護理、藥局、檢驗、檢查、血庫</td></tr>
+<tr><th>專科護理師 NP</th><td>np01</td><td>限受指派病人，依指示送處置或用藥草稿。</td><td>指定監督主治</td></tr>
+<tr><th>護理師</th><td>既有護理帳號</td><td>依責任床位執行、量測、交班、記錄及查閱結果。</td><td>醫師、白板、床頭卡</td></tr>
+<tr><th>藥師</th><td>p01</td><td>處方核對、發藥。</td><td>醫師、護理</td></tr>
+<tr><th>醫檢師／檢查人員</th><td>l01／x01</td><td>分別處理檢體或檢查排程並發布結果。</td><td>醫師、NIS</td></tr>
+<tr><th>血庫</th><td>b01</td><td>配血、備血與血袋登錄。</td><td>醫師、床旁雙人核對</td></tr>
+<tr><th>會診人員</th><td>cs01 等科別帳號</td><td>查看與回覆本科會診。</td><td>開立醫師</td></tr>
+<tr><th>病房書記</th><td>s01</td><td>入院、抵達、轉床申請、計價收款、結算與離院清床。</td><td>HIS、電子白板</td></tr>
+<tr><th>護理站／管理員</th><td>NS／Jia</td><td>依身分管理排班、責任床位與發布。Jia 另有展示資料初始化權限。</td><td>白板、NIS、護理手機</td></tr>
+<tr><th>床頭卡／電子白板</th><td>床頭卡登入／白板管理解鎖</td><td>床頭卡唯讀。白板管理操作須解鎖。</td><td>病房共同資訊</td></tr>
+</tbody></table></div></section></main></html>

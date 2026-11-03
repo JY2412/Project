@@ -1,0 +1,7 @@
+資料來源：衛生福利部中央健康保險署
+ICD-10-CM 中文版_2023年版（中文名稱更新日期 1150827）
+https://data.gov.tw/dataset/177507
+https://info.nhi.gov.tw/api/iode0000s01/Dataset?rId=A21030000I-D20025-005
+政府資料開放授權條款第1版
+https://data.gov.tw/license
+96,802 entries: 73,681 leaf codes, 23,121 category headings.

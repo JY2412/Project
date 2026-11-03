@@ -1,0 +1,1753 @@
+{
+  "reviewedAt": "2026-11-02",
+  "scope": "Common cross-specialty assessment and care templates; no claim of complete institutional order database",
+  "items": [
+    {
+      "code": "VS",
+      "department": "General",
+      "name": "Vital signs monitoring",
+      "zh": "生命徵象監測",
+      "steps": [
+        "Verify the patient, indication and individualized care plan.",
+        "Perform the specified assessment or care at the prescribed interval.",
+        "Document findings, tolerance and escalation criteria."
+      ],
+      "required": [],
+      "indications": [],
+      "source": "https://www.nice.org.uk/guidance/ng180/chapter/Recommendations",
+      "stepsZh": [
+        "核對病人、適應症與個別照護計畫。",
+        "依開立頻率執行指定評估或照護。",
+        "記錄評估結果、耐受情形及需通報的條件。"
+      ],
+      "aliases": [
+        "V/S",
+        "TPR",
+        "生命徵象"
+      ]
+    },
+    {
+      "code": "SPO2",
+      "department": "General",
+      "name": "Pulse oximetry monitoring",
+      "zh": "血氧監測",
+      "steps": [
+        "Verify the patient, indication and individualized care plan.",
+        "Perform the specified assessment or care at the prescribed interval.",
+        "Document findings, tolerance and escalation criteria."
+      ],
+      "required": [],
+      "indications": [],
+      "source": "https://www.nice.org.uk/guidance/ng180/chapter/Recommendations",
+      "stepsZh": [
+        "核對病人、適應症與個別照護計畫。",
+        "依開立頻率執行指定評估或照護。",
+        "記錄評估結果、耐受情形及需通報的條件。"
+      ],
+      "aliases": [
+        "SpO2",
+        "血氧"
+      ]
+    },
+    {
+      "code": "ECG",
+      "department": "Medicine",
+      "name": "Cardiac monitoring",
+      "zh": "心電監測",
+      "steps": [
+        "Verify the patient, indication and individualized care plan.",
+        "Perform the specified assessment or care at the prescribed interval.",
+        "Document findings, tolerance and escalation criteria."
+      ],
+      "required": [],
+      "indications": [],
+      "source": "https://www.nice.org.uk/guidance/ng180/chapter/Recommendations",
+      "stepsZh": [
+        "核對病人、適應症與個別照護計畫。",
+        "依開立頻率執行指定評估或照護。",
+        "記錄評估結果、耐受情形及需通報的條件。"
+      ],
+      "aliases": [
+        "心電圖監測",
+        "EKG",
+        "telemetry"
+      ]
+    },
+    {
+      "code": "FS",
+      "department": "Medicine",
+      "name": "Capillary blood glucose monitoring",
+      "zh": "床邊血糖監測",
+      "steps": [
+        "Verify the patient, indication and individualized care plan.",
+        "Perform the specified assessment or care at the prescribed interval.",
+        "Document findings, tolerance and escalation criteria."
+      ],
+      "required": [],
+      "indications": [],
+      "source": "https://www.nice.org.uk/guidance/ng180/chapter/Recommendations",
+      "stepsZh": [
+        "核對病人、適應症與個別照護計畫。",
+        "依開立頻率執行指定評估或照護。",
+        "記錄評估結果、耐受情形及需通報的條件。"
+      ],
+      "aliases": [
+        "血糖",
+        "指尖血糖",
+        "AC sugar"
+      ]
+    },
+    {
+      "code": "IO",
+      "department": "General",
+      "name": "Intake and output monitoring",
+      "zh": "輸出入量",
+      "steps": [
+        "Verify the patient, indication and individualized care plan.",
+        "Perform the specified assessment or care at the prescribed interval.",
+        "Document findings, tolerance and escalation criteria."
+      ],
+      "required": [],
+      "indications": [],
+      "source": "https://www.nice.org.uk/guidance/ng180/chapter/Recommendations",
+      "stepsZh": [
+        "核對病人、適應症與個別照護計畫。",
+        "依開立頻率執行指定評估或照護。",
+        "記錄評估結果、耐受情形及需通報的條件。"
+      ],
+      "aliases": [
+        "I/O",
+        "輸入輸出",
+        "出入量",
+        "尿量"
+      ]
+    },
+    {
+      "code": "BW",
+      "department": "General",
+      "name": "Body weight monitoring",
+      "zh": "體重監測",
+      "steps": [
+        "Verify the patient, indication and individualized care plan.",
+        "Perform the specified assessment or care at the prescribed interval.",
+        "Document findings, tolerance and escalation criteria."
+      ],
+      "required": [],
+      "indications": [],
+      "source": "https://www.nice.org.uk/guidance/ng180/chapter/Recommendations",
+      "stepsZh": [
+        "核對病人、適應症與個別照護計畫。",
+        "依開立頻率執行指定評估或照護。",
+        "記錄評估結果、耐受情形及需通報的條件。"
+      ],
+      "aliases": [
+        "體重",
+        "秤重"
+      ]
+    },
+    {
+      "code": "DB",
+      "department": "Respiratory",
+      "name": "Deep breathing and effective coughing",
+      "zh": "深呼吸有效咳嗽",
+      "steps": [
+        "Verify the patient, indication and individualized care plan.",
+        "Perform the specified assessment or care at the prescribed interval.",
+        "Document findings, tolerance and escalation criteria."
+      ],
+      "required": [],
+      "indications": [],
+      "source": "https://www.nice.org.uk/guidance/ng180/chapter/Recommendations",
+      "stepsZh": [
+        "核對病人、適應症與個別照護計畫。",
+        "依開立頻率執行指定評估或照護。",
+        "記錄評估結果、耐受情形及需通報的條件。"
+      ],
+      "aliases": [
+        "深呼吸",
+        "有效咳嗽",
+        "咳痰",
+        "排痰"
+      ],
+      "specialties": [
+        "Medicine",
+        "Pediatrics",
+        "Pediatrics / Neonatal",
+        "Surgery",
+        "Rehabilitation"
+      ]
+    },
+    {
+      "code": "CHEST",
+      "department": "Respiratory",
+      "name": "Chest percussion and postural drainage - individualized plan",
+      "zh": "拍痰／胸部叩擊與姿位引流",
+      "steps": [
+        "Assess secretion retention, cough effectiveness and the individual need for airway clearance.",
+        "Confirm patient-specific suitability, sites, positioning and planned duration before treatment.",
+        "Monitor tolerance and respiratory status; stop and escalate if clinical deterioration occurs."
+      ],
+      "required": [
+        "chestIndication",
+        "chestSafety",
+        "chestSite",
+        "careInstruction"
+      ],
+      "indications": [],
+      "source": "https://pubmed.ncbi.nlm.nih.gov/24222709/",
+      "stepsZh": [
+        "評估分泌物滯留、咳嗽能力及個別呼吸道清除需求。",
+        "執行前確認適合性、叩擊部位、姿勢與預定時間；不可直接套用固定姿位。",
+        "觀察呼吸與耐受情形；不適或病況惡化時停止並通報。"
+      ],
+      "aliases": [
+        "拍痰",
+        "拍背",
+        "叩擊",
+        "扣擊",
+        "姿位引流",
+        "胸腔物理治療",
+        "CPT",
+        "percussion",
+        "postural drainage"
+      ],
+      "specialties": [
+        "Medicine",
+        "Pediatrics",
+        "Pediatrics / Neonatal",
+        "Surgery",
+        "Rehabilitation"
+      ],
+      "sources": [
+        "https://pubmed.ncbi.nlm.nih.gov/24222709/",
+        "https://www.cmuh.cmu.edu.tw/HealthEdus/Detail?no=4773"
+      ],
+      "notes": "適用情況須個別評估；不因單純肺炎診斷而例行開立。先核對出血、胸部損傷、疼痛及姿勢耐受等風險；時間、部位、姿勢與頻率由醫師指定。呼吸困難、發紺、明顯疼痛等不適時停止並通報。"
+    },
+    {
+      "code": "SUCTION",
+      "department": "Respiratory",
+      "name": "Airway suction care",
+      "zh": "抽痰",
+      "steps": [
+        "Verify the patient, indication and individualized care plan.",
+        "Perform the specified assessment or care at the prescribed interval.",
+        "Document findings, tolerance and escalation criteria."
+      ],
+      "required": [
+        "careInstruction"
+      ],
+      "indications": [],
+      "source": "https://www.nice.org.uk/guidance/ng180/chapter/Recommendations",
+      "stepsZh": [
+        "核對病人、適應症與個別照護計畫。",
+        "依開立頻率執行指定評估或照護。",
+        "記錄評估結果、耐受情形及需通報的條件。"
+      ],
+      "aliases": [
+        "吸痰",
+        "抽痰",
+        "呼吸道抽吸"
+      ],
+      "specialties": [
+        "Medicine",
+        "Pediatrics",
+        "Pediatrics / Neonatal",
+        "Surgery",
+        "Rehabilitation"
+      ]
+    },
+    {
+      "code": "TURN",
+      "department": "General",
+      "name": "Position change and pressure injury prevention",
+      "zh": "翻身壓傷預防",
+      "steps": [
+        "Verify the patient, indication and individualized care plan.",
+        "Perform the specified assessment or care at the prescribed interval.",
+        "Document findings, tolerance and escalation criteria."
+      ],
+      "required": [],
+      "indications": [],
+      "source": "https://www.nice.org.uk/guidance/ng180/chapter/Recommendations",
+      "stepsZh": [
+        "核對病人、適應症與個別照護計畫。",
+        "依開立頻率執行指定評估或照護。",
+        "記錄評估結果、耐受情形及需通報的條件。"
+      ],
+      "aliases": [
+        "翻身",
+        "擺位",
+        "壓傷",
+        "褥瘡"
+      ]
+    },
+    {
+      "code": "WOUND",
+      "department": "Surgery",
+      "name": "Wound assessment and dressing care",
+      "zh": "傷口換藥",
+      "steps": [
+        "Verify the patient, indication and individualized care plan.",
+        "Perform the specified assessment or care at the prescribed interval.",
+        "Document findings, tolerance and escalation criteria."
+      ],
+      "required": [
+        "careInstruction"
+      ],
+      "indications": [],
+      "source": "https://www.nice.org.uk/guidance/ng180/chapter/Recommendations",
+      "stepsZh": [
+        "核對病人、適應症與個別照護計畫。",
+        "依開立頻率執行指定評估或照護。",
+        "記錄評估結果、耐受情形及需通報的條件。"
+      ],
+      "aliases": [
+        "傷口",
+        "換藥",
+        "敷料"
+      ]
+    },
+    {
+      "code": "NG",
+      "department": "General",
+      "name": "Nasogastric tube care",
+      "zh": "鼻胃管照護",
+      "steps": [
+        "Verify the patient, indication and individualized care plan.",
+        "Perform the specified assessment or care at the prescribed interval.",
+        "Document findings, tolerance and escalation criteria."
+      ],
+      "required": [
+        "careInstruction"
+      ],
+      "indications": [],
+      "source": "https://www.nice.org.uk/guidance/ng180/chapter/Recommendations",
+      "stepsZh": [
+        "核對病人、適應症與個別照護計畫。",
+        "依開立頻率執行指定評估或照護。",
+        "記錄評估結果、耐受情形及需通報的條件。"
+      ],
+      "aliases": [
+        "NG tube",
+        "鼻胃管",
+        "管灌"
+      ]
+    },
+    {
+      "code": "FOLEY",
+      "department": "General",
+      "name": "Urinary catheter care",
+      "zh": "導尿管照護",
+      "steps": [
+        "Verify the patient, indication and individualized care plan.",
+        "Perform the specified assessment or care at the prescribed interval.",
+        "Document findings, tolerance and escalation criteria."
+      ],
+      "required": [
+        "careInstruction"
+      ],
+      "indications": [],
+      "source": "https://www.nice.org.uk/guidance/ng180/chapter/Recommendations",
+      "stepsZh": [
+        "核對病人、適應症與個別照護計畫。",
+        "依開立頻率執行指定評估或照護。",
+        "記錄評估結果、耐受情形及需通報的條件。"
+      ],
+      "aliases": [
+        "Foley",
+        "導尿",
+        "尿管"
+      ]
+    },
+    {
+      "code": "ORAL",
+      "department": "General",
+      "name": "Oral care",
+      "zh": "口腔照護",
+      "steps": [
+        "Verify the patient, indication and individualized care plan.",
+        "Perform the specified assessment or care at the prescribed interval.",
+        "Document findings, tolerance and escalation criteria."
+      ],
+      "required": [],
+      "indications": [],
+      "source": "https://www.nice.org.uk/guidance/ng180/chapter/Recommendations",
+      "stepsZh": [
+        "核對病人、適應症與個別照護計畫。",
+        "依開立頻率執行指定評估或照護。",
+        "記錄評估結果、耐受情形及需通報的條件。"
+      ],
+      "aliases": [
+        "口腔",
+        "口腔清潔"
+      ]
+    },
+    {
+      "code": "O2",
+      "department": "Respiratory",
+      "name": "Oxygen therapy",
+      "zh": "給氧",
+      "steps": [
+        "Use the prescribed device, flow and target saturation.",
+        "Monitor response and document escalation criteria."
+      ],
+      "required": [
+        "oxygenDevice",
+        "oxygenFlow",
+        "targetLow",
+        "targetHigh"
+      ],
+      "indications": [],
+      "source": "https://www.femh.org.tw/NRPUnload/202015124954.pdf",
+      "stepsZh": [
+        "使用指定裝置、流量及目標血氧飽和度。",
+        "監測反應，記錄需升級處理的條件。"
+      ],
+      "aliases": [
+        "氧氣",
+        "給氧",
+        "oxygen"
+      ],
+      "specialties": [
+        "Medicine",
+        "Pediatrics",
+        "Pediatrics / Neonatal",
+        "Surgery",
+        "Rehabilitation"
+      ]
+    },
+    {
+      "code": "DIET",
+      "department": "General",
+      "name": "Diet order",
+      "zh": "飲食",
+      "steps": [
+        "Specify diet type, restrictions and route.",
+        "Verify swallowing safety and tolerance when oral intake is intended."
+      ],
+      "required": [
+        "careOption",
+        "careInstruction"
+      ],
+      "indications": [],
+      "source": "https://www.nice.org.uk/guidance/ng180/chapter/Recommendations",
+      "stepsZh": [
+        "指定飲食種類、限制及進食途徑。",
+        "口服進食前確認吞嚥安全與耐受情形。"
+      ],
+      "aliases": [
+        "飲食",
+        "禁食",
+        "NPO"
+      ]
+    },
+    {
+      "code": "ACTIVITY",
+      "department": "General",
+      "name": "Activity order",
+      "zh": "活動",
+      "steps": [
+        "Specify permitted activity, assistance and restrictions.",
+        "Review tolerance and safety before mobilization."
+      ],
+      "required": [
+        "careOption",
+        "careInstruction"
+      ],
+      "indications": [],
+      "source": "https://www.nice.org.uk/guidance/ng180/chapter/Recommendations",
+      "stepsZh": [
+        "指定允許活動、協助方式及限制。",
+        "下床前評估耐受情形與安全。"
+      ],
+      "aliases": [
+        "活動",
+        "臥床"
+      ]
+    },
+    {
+      "code": "SERVICE",
+      "department": "Admission",
+      "name": "On service of V.S.",
+      "zh": "收治主治",
+      "steps": [
+        "Assign the attending service when the order is approved."
+      ],
+      "required": [
+        "serviceDoctor"
+      ],
+      "indications": [],
+      "source": "https://www.nice.org.uk/guidance/ng180/chapter/Recommendations",
+      "stepsZh": [
+        "醫囑核准後，指派收治主治醫師。"
+      ],
+      "aliases": [
+        "on service",
+        "VS",
+        "收治",
+        "主治"
+      ]
+    },
+    {
+      "code": "FEVER",
+      "department": "Medicine",
+      "name": "Fever routine - assessment and monitoring for age 16 and over",
+      "zh": "16歲以上發燒評估與監測",
+      "steps": [
+        "Measure temperature, pulse, respiratory rate, blood pressure, oxygen saturation and level of consciousness.",
+        "Assess hydration, urine output and red flags; hydration only if swallowing is safe and no fluid restriction applies.",
+        "Escalate for deterioration; antipyretic drug orders require a separate prescription and pharmacist review."
+      ],
+      "required": [
+        "careInstruction"
+      ],
+      "indications": [],
+      "source": "https://www.nice.org.uk/guidance/ng253/resources/suspected-sepsis-in-people-aged-16-or-over-recognition-assessment-and-early-management-pdf-66144015386053",
+      "assessmentChecklist": [
+        "age",
+        "current observations",
+        "hydration status",
+        "swallowing status",
+        "fluid restriction"
+      ],
+      "notes": "成人套組。檢查感染來源與病況惡化徵象；懷疑感染／敗血症時依個別風險進一步處理，不以發燒或退燒反應單獨判定。孕產病人須另採適當專科評估；不自動開立抗生素、培養或補液。",
+      "stepsZh": [
+        "記錄體溫、心跳、呼吸、血壓、血氧飽和度與意識狀態。",
+        "評估水分、尿量及危險徵象；補充飲水須確認吞嚥安全且無限水要求。",
+        "病況惡化應通報；退燒藥須另開處方並由藥師審核。"
+      ],
+      "aliases": [
+        "發燒",
+        "fever routine",
+        "成人發燒"
+      ]
+    },
+    {
+      "code": "FEVER_U5",
+      "department": "Pediatrics",
+      "name": "Fever assessment and observation in children under 5",
+      "zh": "未滿5歲幼兒發燒評估",
+      "steps": [
+        "Measure and record temperature, heart rate, respiratory rate and clinical appearance.",
+        "Assess hydration, urine output and red flags; hydration only if swallowing is safe and no fluid restriction applies.",
+        "Escalate for deterioration; antipyretic drug orders require a separate prescription and pharmacist review.",
+        "Assess appearance, responsiveness, breathing, circulation and hydration; arrange prompt clinical assessment for warning signs."
+      ],
+      "required": [
+        "careInstruction"
+      ],
+      "indications": [],
+      "source": "https://www.nice.org.uk/guidance/NG143/chapter/recommendations",
+      "assessmentChecklist": [
+        "age",
+        "current observations",
+        "hydration status",
+        "swallowing status",
+        "fluid restriction"
+      ],
+      "notes": "未滿3個月且體溫≥38°C屬嚴重疾病高風險；3至6個月且≥39°C至少為中度風險。需依年齡及病況即時評估，不得只等待常規測量。此套組不自動開藥、抽血或輸液。",
+      "stepsZh": [
+        "測量並記錄體溫、心跳、呼吸及整體臨床表現。",
+        "評估水分、尿量及危險徵象；補充飲水須確認吞嚥安全且無限水要求。",
+        "病況惡化應通報；退燒藥須另開處方並由藥師審核。",
+        "評估膚色、活動與反應、呼吸、循環及水分；有危險徵象須即時醫療評估。"
+      ],
+      "aliases": [
+        "發燒",
+        "幼兒發燒"
+      ]
+    },
+    {
+      "code": "STROKE",
+      "department": "Medicine / Neurology",
+      "name": "Stroke swallowing and neurological care",
+      "zh": "中風吞嚥及神經照護",
+      "steps": [
+        "Neurological observation and escalation plan.",
+        "Swallow screen by a trained professional before oral food, fluids or medication.",
+        "Review hydration/nutrition route and oral care."
+      ],
+      "required": [
+        "careInstruction",
+        "swallow"
+      ],
+      "indications": [
+        "stroke",
+        "cerebrovascular",
+        "I6[0-9]"
+      ],
+      "source": "https://www.nice.org.uk/guidance/NG128/chapter/recommendations",
+      "assessmentChecklist": [
+        "acute stroke status",
+        "swallow screen result",
+        "consciousness",
+        "nutrition plan"
+      ],
+      "notes": "",
+      "stepsZh": [
+        "訂定神經學觀察與異常通報計畫。",
+        "口服食物、液體或藥物前，由受訓人員完成吞嚥篩檢。",
+        "評估水分與營養途徑，並進行口腔照護。"
+      ],
+      "aliases": []
+    },
+    {
+      "code": "PERIOP",
+      "department": "Surgery",
+      "name": "Perioperative assessment and safety",
+      "zh": "手術前後安全照護",
+      "steps": [
+        "Review procedure, consent and surgical safety checklist.",
+        "Document individualized fasting, fluid and nutrition plan.",
+        "Assess VTE risk and postoperative recovery setting.",
+        "Assess pain and functional recovery; medication orders remain separate."
+      ],
+      "required": [
+        "careInstruction"
+      ],
+      "indications": [],
+      "source": "https://www.nice.org.uk/guidance/ng180/chapter/Recommendations",
+      "assessmentChecklist": [
+        "procedure",
+        "surgery time",
+        "fasting plan",
+        "bleeding/VTE risk",
+        "comorbidity",
+        "allergy"
+      ],
+      "notes": "",
+      "stepsZh": [
+        "核對手術／處置、同意書及手術安全清單。",
+        "記錄個別禁食、輸液與營養計畫。",
+        "評估靜脈血栓風險及術後恢復照護環境。",
+        "評估疼痛與功能恢復；藥品須另外開立。"
+      ],
+      "aliases": []
+    },
+    {
+      "code": "POSTPARTUM",
+      "department": "Obstetrics",
+      "name": "Postpartum assessment",
+      "zh": "產後評估",
+      "steps": [
+        "Assess vaginal bleeding, uterine tone/fundal height and vital signs.",
+        "Document voiding, pain, wound/perineal recovery and feeding support.",
+        "Escalate for heavy bleeding, suspected infection or other deterioration."
+      ],
+      "required": [
+        "careInstruction",
+        "pregnancy",
+        "careInstruction"
+      ],
+      "indications": [
+        "postpartum",
+        "puerper",
+        "O[89]",
+        "delivery"
+      ],
+      "source": "https://www.ncbi.nlm.nih.gov/books/NBK579650/",
+      "assessmentChecklist": [
+        "postpartum status",
+        "delivery time",
+        "delivery mode",
+        "current observations",
+        "bleeding"
+      ],
+      "notes": "",
+      "stepsZh": [
+        "評估陰道出血、子宮張力／宮底高度及生命徵象。",
+        "記錄排尿、疼痛、傷口／會陰恢復及哺餵支持。",
+        "大量出血、疑似感染或其他惡化情形應通報。"
+      ],
+      "aliases": []
+    },
+    {
+      "code": "NEWBORN",
+      "department": "Pediatrics / Neonatal",
+      "name": "Newborn danger-sign observation",
+      "zh": "新生兒警訊評估",
+      "steps": [
+        "Assess feeding, activity, breathing, temperature, jaundice and history of convulsion.",
+        "Escalate for danger signs; do not substitute a generic adult routine."
+      ],
+      "required": [
+        "careInstruction",
+        "weightKg",
+        "careInstruction"
+      ],
+      "indications": [
+        "newborn",
+        "neonat",
+        "P[0-9]",
+        "Z38"
+      ],
+      "source": "https://www.ncbi.nlm.nih.gov/books/NBK579650/",
+      "assessmentChecklist": [
+        "age in days",
+        "gestation",
+        "weight",
+        "current observations",
+        "feeding"
+      ],
+      "notes": "",
+      "stepsZh": [
+        "評估進食、活動、呼吸、體溫、黃疸及抽搐病史。",
+        "出現危險徵象應通報；不可直接套用成人常規。"
+      ],
+      "aliases": []
+    },
+    {
+      "code": "PEDS_GI",
+      "department": "Pediatrics",
+      "name": "Pediatric gastroenteritis and hydration assessment",
+      "zh": "兒童腸胃炎與水分評估",
+      "steps": [
+        "Assess dehydration and shock signs, urine output, intake and vomiting/stool history.",
+        "Use an individualized rehydration plan with recorded weight; no automatic adult volume.",
+        "Reassess response and escalate for shock, deterioration or inability to tolerate planned fluids."
+      ],
+      "required": [
+        "careInstruction",
+        "weightKg",
+        "swallow"
+      ],
+      "indications": [
+        "gastroenter",
+        "diarrh",
+        "A09",
+        "K52"
+      ],
+      "source": "https://www.nice.org.uk/guidance/cg84/chapter/Recommendations",
+      "assessmentChecklist": [
+        "age",
+        "weight",
+        "dehydration assessment",
+        "urine output",
+        "fluid tolerance"
+      ],
+      "notes": "",
+      "stepsZh": [
+        "評估脫水及休克徵象、尿量、攝入量與嘔吐／排便病史。",
+        "依已記錄體重訂定個別補液計畫，不自動套用成人容量。",
+        "重新評估反應；休克、病況惡化或無法耐受預定補液時應通報。"
+      ],
+      "aliases": []
+    },
+    {
+      "code": "PSYCH_SAFETY",
+      "department": "Psychiatry",
+      "name": "Mental-health safety and observation plan",
+      "zh": "精神科安全與觀察計畫",
+      "steps": [
+        "Assess current distress and immediate physical/mental healthcare needs.",
+        "Request age-appropriate mental-health assessment.",
+        "Individualize observation level, responsible staff and review time with the patient/team.",
+        "Document consent or appropriate framework; observation is not an automatic restraint order."
+      ],
+      "required": [
+        "careInstruction",
+        "careInstruction"
+      ],
+      "indications": [
+        "F[0-9]",
+        "depress",
+        "schizo",
+        "bipolar",
+        "suicid",
+        "self.harm"
+      ],
+      "source": "https://www.nice.org.uk/guidance/ng225/chapter/recommendations",
+      "assessmentChecklist": [
+        "current assessment",
+        "observation level",
+        "review time",
+        "responsible team",
+        "consent/capacity context"
+      ],
+      "notes": "",
+      "stepsZh": [
+        "評估目前痛苦及身心醫療的立即需求。",
+        "安排符合年齡的精神健康評估。",
+        "與病人及團隊訂定觀察程度、負責人員及重新評估時間。",
+        "記錄同意或適當依據；觀察計畫不等於約束醫囑。"
+      ],
+      "aliases": []
+    },
+    {
+      "code": "NEURO",
+      "department": "Medicine",
+      "name": "Neurological observations",
+      "zh": "神經學觀察",
+      "steps": [
+        "Confirm the indication and document the individualized assessment.",
+        "Record patient-specific findings, planned observations and escalation criteria.",
+        "Review the plan with the responsible specialty team; treatments or medications require separate orders."
+      ],
+      "required": [
+        "careInstruction"
+      ],
+      "indications": [
+        "stroke",
+        "neurolog",
+        "I6",
+        "G[0-9]"
+      ],
+      "source": "https://www.nice.org.uk/guidance/NG128/chapter/recommendations",
+      "scope": "Common assessment/care template; not a complete hospital SOP",
+      "stepsZh": [
+        "確認適應症並記錄個別評估。",
+        "記錄病人個別結果、觀察計畫及需通報的條件。",
+        "與負責專科團隊檢視計畫；治療或藥物需另外開立。"
+      ],
+      "aliases": [
+        "GCS",
+        "瞳孔",
+        "神經評估"
+      ]
+    },
+    {
+      "code": "DYSPHAGIA",
+      "department": "Medicine",
+      "name": "Swallowing assessment",
+      "zh": "吞嚥評估",
+      "steps": [
+        "Confirm the indication and document the individualized assessment.",
+        "Record patient-specific findings, planned observations and escalation criteria.",
+        "Review the plan with the responsible specialty team; treatments or medications require separate orders."
+      ],
+      "required": [],
+      "indications": [
+        "stroke",
+        "dysphag",
+        "I6",
+        "R13"
+      ],
+      "source": "https://www.nice.org.uk/guidance/NG128/chapter/recommendations",
+      "scope": "Common assessment/care template; not a complete hospital SOP",
+      "stepsZh": [
+        "確認適應症並記錄個別評估。",
+        "記錄病人個別結果、觀察計畫及需通報的條件。",
+        "與負責專科團隊檢視計畫；治療或藥物需另外開立。"
+      ],
+      "aliases": [
+        "吞嚥",
+        "嗆咳"
+      ]
+    },
+    {
+      "code": "FALL",
+      "department": "General",
+      "name": "Fall risk assessment and prevention",
+      "zh": "跌倒風險評估",
+      "steps": [
+        "Confirm the indication and document the individualized assessment.",
+        "Record patient-specific findings, planned observations and escalation criteria.",
+        "Review the plan with the responsible specialty team; treatments or medications require separate orders."
+      ],
+      "required": [],
+      "indications": [],
+      "source": "https://www.nice.org.uk/guidance/ng180/chapter/Recommendations",
+      "scope": "Common assessment/care template; not a complete hospital SOP",
+      "stepsZh": [
+        "確認適應症並記錄個別評估。",
+        "記錄病人個別結果、觀察計畫及需通報的條件。",
+        "與負責專科團隊檢視計畫；治療或藥物需另外開立。"
+      ],
+      "aliases": [
+        "防跌",
+        "跌倒"
+      ]
+    },
+    {
+      "code": "PAIN",
+      "department": "General",
+      "name": "Pain assessment and reassessment",
+      "zh": "疼痛評估",
+      "steps": [
+        "Confirm the indication and document the individualized assessment.",
+        "Record patient-specific findings, planned observations and escalation criteria.",
+        "Review the plan with the responsible specialty team; treatments or medications require separate orders."
+      ],
+      "required": [],
+      "indications": [],
+      "source": "https://www.nice.org.uk/guidance/ng180/chapter/Recommendations",
+      "scope": "Common assessment/care template; not a complete hospital SOP",
+      "stepsZh": [
+        "確認適應症並記錄個別評估。",
+        "記錄病人個別結果、觀察計畫及需通報的條件。",
+        "與負責專科團隊檢視計畫；治療或藥物需另外開立。"
+      ],
+      "aliases": [
+        "疼痛",
+        "痛分"
+      ]
+    },
+    {
+      "code": "NUTRITION",
+      "department": "General",
+      "name": "Nutrition screening and dietitian review",
+      "zh": "營養評估",
+      "steps": [
+        "Confirm the indication and document the individualized assessment.",
+        "Record patient-specific findings, planned observations and escalation criteria.",
+        "Review the plan with the responsible specialty team; treatments or medications require separate orders."
+      ],
+      "required": [],
+      "indications": [],
+      "source": "https://www.nice.org.uk/guidance/ng180/chapter/Recommendations",
+      "scope": "Common assessment/care template; not a complete hospital SOP",
+      "stepsZh": [
+        "確認適應症並記錄個別評估。",
+        "記錄病人個別結果、觀察計畫及需通報的條件。",
+        "與負責專科團隊檢視計畫；治療或藥物需另外開立。"
+      ],
+      "aliases": []
+    },
+    {
+      "code": "MOBILITY",
+      "department": "Rehabilitation",
+      "name": "Mobility and rehabilitation assessment",
+      "zh": "活動復健評估",
+      "steps": [
+        "Confirm the indication and document the individualized assessment.",
+        "Record patient-specific findings, planned observations and escalation criteria.",
+        "Review the plan with the responsible specialty team; treatments or medications require separate orders."
+      ],
+      "required": [
+        "mobility"
+      ],
+      "indications": [],
+      "source": "https://www.nice.org.uk/guidance/ng180/chapter/Recommendations",
+      "scope": "Common assessment/care template; not a complete hospital SOP",
+      "stepsZh": [
+        "確認適應症並記錄個別評估。",
+        "記錄病人個別結果、觀察計畫及需通報的條件。",
+        "與負責專科團隊檢視計畫；治療或藥物需另外開立。"
+      ],
+      "aliases": []
+    },
+    {
+      "code": "FLUID",
+      "department": "Medicine",
+      "name": "Individualized fluid balance assessment",
+      "zh": "體液平衡評估",
+      "steps": [
+        "Confirm the indication and document the individualized assessment.",
+        "Record patient-specific findings, planned observations and escalation criteria.",
+        "Review the plan with the responsible specialty team; treatments or medications require separate orders."
+      ],
+      "required": [
+        "weightKg",
+        "renal",
+        "careInstruction"
+      ],
+      "indications": [],
+      "source": "https://www.nice.org.uk/guidance/ng180/chapter/Recommendations",
+      "scope": "Common assessment/care template; not a complete hospital SOP",
+      "stepsZh": [
+        "確認適應症並記錄個別評估。",
+        "記錄病人個別結果、觀察計畫及需通報的條件。",
+        "與負責專科團隊檢視計畫；治療或藥物需另外開立。"
+      ],
+      "aliases": []
+    },
+    {
+      "code": "SEPSIS",
+      "department": "Medicine",
+      "name": "Suspected infection escalation assessment",
+      "zh": "疑似感染惡化評估",
+      "steps": [
+        "Confirm the indication and document the individualized assessment.",
+        "Record patient-specific findings, planned observations and escalation criteria.",
+        "Review the plan with the responsible specialty team; treatments or medications require separate orders."
+      ],
+      "required": [
+        "careInstruction"
+      ],
+      "indications": [
+        "infection",
+        "sepsis",
+        "pneumonia",
+        "A4[01]",
+        "J18"
+      ],
+      "source": "https://www.nice.org.uk/guidance/ng180/chapter/Recommendations",
+      "scope": "Common assessment/care template; not a complete hospital SOP",
+      "stepsZh": [
+        "確認適應症並記錄個別評估。",
+        "記錄病人個別結果、觀察計畫及需通報的條件。",
+        "與負責專科團隊檢視計畫；治療或藥物需另外開立。"
+      ],
+      "aliases": []
+    },
+    {
+      "code": "HF",
+      "department": "Medicine",
+      "name": "Heart failure fluid status observation",
+      "zh": "心衰竭體液觀察",
+      "steps": [
+        "Confirm the indication and document the individualized assessment.",
+        "Record patient-specific findings, planned observations and escalation criteria.",
+        "Review the plan with the responsible specialty team; treatments or medications require separate orders."
+      ],
+      "required": [
+        "weightKg",
+        "careInstruction"
+      ],
+      "indications": [
+        "heart failure",
+        "I50"
+      ],
+      "source": "https://www.nice.org.uk/guidance/ng180/chapter/Recommendations",
+      "scope": "Common assessment/care template; not a complete hospital SOP",
+      "stepsZh": [
+        "確認適應症並記錄個別評估。",
+        "記錄病人個別結果、觀察計畫及需通報的條件。",
+        "與負責專科團隊檢視計畫；治療或藥物需另外開立。"
+      ],
+      "aliases": []
+    },
+    {
+      "code": "DIABETES",
+      "department": "Medicine",
+      "name": "Diabetes glucose and nutrition review",
+      "zh": "糖尿病血糖飲食評估",
+      "steps": [
+        "Confirm the indication and document the individualized assessment.",
+        "Record patient-specific findings, planned observations and escalation criteria.",
+        "Review the plan with the responsible specialty team; treatments or medications require separate orders."
+      ],
+      "required": [
+        "careInstruction"
+      ],
+      "indications": [
+        "diabet",
+        "E1[0-4]"
+      ],
+      "source": "https://www.nice.org.uk/guidance/ng180/chapter/Recommendations",
+      "scope": "Common assessment/care template; not a complete hospital SOP",
+      "stepsZh": [
+        "確認適應症並記錄個別評估。",
+        "記錄病人個別結果、觀察計畫及需通報的條件。",
+        "與負責專科團隊檢視計畫；治療或藥物需另外開立。"
+      ],
+      "aliases": []
+    },
+    {
+      "code": "ASTHMA",
+      "department": "Respiratory",
+      "name": "Asthma respiratory assessment",
+      "zh": "氣喘呼吸評估",
+      "steps": [
+        "Confirm the indication and document the individualized assessment.",
+        "Record patient-specific findings, planned observations and escalation criteria.",
+        "Review the plan with the responsible specialty team; treatments or medications require separate orders."
+      ],
+      "required": [
+        "careInstruction"
+      ],
+      "indications": [
+        "asthma",
+        "J45"
+      ],
+      "source": "https://www.nice.org.uk/guidance/ng180/chapter/Recommendations",
+      "scope": "Common assessment/care template; not a complete hospital SOP",
+      "stepsZh": [
+        "確認適應症並記錄個別評估。",
+        "記錄病人個別結果、觀察計畫及需通報的條件。",
+        "與負責專科團隊檢視計畫；治療或藥物需另外開立。"
+      ],
+      "aliases": [],
+      "specialties": [
+        "Medicine",
+        "Pediatrics",
+        "Pediatrics / Neonatal",
+        "Surgery",
+        "Rehabilitation"
+      ]
+    },
+    {
+      "code": "COPD",
+      "department": "Respiratory",
+      "name": "COPD respiratory assessment",
+      "zh": "肺阻塞呼吸評估",
+      "steps": [
+        "Confirm the indication and document the individualized assessment.",
+        "Record patient-specific findings, planned observations and escalation criteria.",
+        "Review the plan with the responsible specialty team; treatments or medications require separate orders."
+      ],
+      "required": [
+        "careInstruction"
+      ],
+      "indications": [
+        "COPD",
+        "obstructive pulmonary",
+        "J44"
+      ],
+      "source": "https://www.nice.org.uk/guidance/ng180/chapter/Recommendations",
+      "scope": "Common assessment/care template; not a complete hospital SOP",
+      "stepsZh": [
+        "確認適應症並記錄個別評估。",
+        "記錄病人個別結果、觀察計畫及需通報的條件。",
+        "與負責專科團隊檢視計畫；治療或藥物需另外開立。"
+      ],
+      "aliases": [],
+      "specialties": [
+        "Medicine",
+        "Pediatrics",
+        "Pediatrics / Neonatal",
+        "Surgery",
+        "Rehabilitation"
+      ]
+    },
+    {
+      "code": "PREOP",
+      "department": "Surgery",
+      "name": "Preoperative checklist review",
+      "zh": "術前核對",
+      "steps": [
+        "Confirm the indication and document the individualized assessment.",
+        "Record patient-specific findings, planned observations and escalation criteria.",
+        "Review the plan with the responsible specialty team; treatments or medications require separate orders."
+      ],
+      "required": [
+        "careInstruction"
+      ],
+      "indications": [],
+      "source": "https://www.nice.org.uk/guidance/ng180/chapter/Recommendations",
+      "scope": "Common assessment/care template; not a complete hospital SOP",
+      "stepsZh": [
+        "確認適應症並記錄個別評估。",
+        "記錄病人個別結果、觀察計畫及需通報的條件。",
+        "與負責專科團隊檢視計畫；治療或藥物需另外開立。"
+      ],
+      "aliases": []
+    },
+    {
+      "code": "POSTOP",
+      "department": "Surgery",
+      "name": "Postoperative recovery observations",
+      "zh": "術後觀察",
+      "steps": [
+        "Confirm the indication and document the individualized assessment.",
+        "Record patient-specific findings, planned observations and escalation criteria.",
+        "Review the plan with the responsible specialty team; treatments or medications require separate orders."
+      ],
+      "required": [
+        "careInstruction"
+      ],
+      "indications": [],
+      "source": "https://www.nice.org.uk/guidance/ng180/chapter/Recommendations",
+      "scope": "Common assessment/care template; not a complete hospital SOP",
+      "stepsZh": [
+        "確認適應症並記錄個別評估。",
+        "記錄病人個別結果、觀察計畫及需通報的條件。",
+        "與負責專科團隊檢視計畫；治療或藥物需另外開立。"
+      ],
+      "aliases": []
+    },
+    {
+      "code": "NPO",
+      "department": "Surgery",
+      "name": "Individualized fasting plan",
+      "zh": "個別禁食計畫",
+      "steps": [
+        "Confirm the indication and document the individualized assessment.",
+        "Record patient-specific findings, planned observations and escalation criteria.",
+        "Review the plan with the responsible specialty team; treatments or medications require separate orders."
+      ],
+      "required": [
+        "careInstruction"
+      ],
+      "indications": [],
+      "source": "https://www.nice.org.uk/guidance/ng180/chapter/Recommendations",
+      "scope": "Common assessment/care template; not a complete hospital SOP",
+      "stepsZh": [
+        "確認適應症並記錄個別評估。",
+        "記錄病人個別結果、觀察計畫及需通報的條件。",
+        "與負責專科團隊檢視計畫；治療或藥物需另外開立。"
+      ],
+      "aliases": []
+    },
+    {
+      "code": "DRAIN",
+      "department": "Surgery",
+      "name": "Surgical drain assessment and output record",
+      "zh": "引流管觀察",
+      "steps": [
+        "Confirm the indication and document the individualized assessment.",
+        "Record patient-specific findings, planned observations and escalation criteria.",
+        "Review the plan with the responsible specialty team; treatments or medications require separate orders."
+      ],
+      "required": [
+        "careInstruction"
+      ],
+      "indications": [],
+      "source": "https://www.nice.org.uk/guidance/ng180/chapter/Recommendations",
+      "scope": "Common assessment/care template; not a complete hospital SOP",
+      "stepsZh": [
+        "確認適應症並記錄個別評估。",
+        "記錄病人個別結果、觀察計畫及需通報的條件。",
+        "與負責專科團隊檢視計畫；治療或藥物需另外開立。"
+      ],
+      "aliases": []
+    },
+    {
+      "code": "STOMA",
+      "department": "Surgery",
+      "name": "Stoma assessment and care",
+      "zh": "造口照護",
+      "steps": [
+        "Confirm the indication and document the individualized assessment.",
+        "Record patient-specific findings, planned observations and escalation criteria.",
+        "Review the plan with the responsible specialty team; treatments or medications require separate orders."
+      ],
+      "required": [
+        "careInstruction"
+      ],
+      "indications": [],
+      "source": "https://www.nice.org.uk/guidance/ng180/chapter/Recommendations",
+      "scope": "Common assessment/care template; not a complete hospital SOP",
+      "stepsZh": [
+        "確認適應症並記錄個別評估。",
+        "記錄病人個別結果、觀察計畫及需通報的條件。",
+        "與負責專科團隊檢視計畫；治療或藥物需另外開立。"
+      ],
+      "aliases": []
+    },
+    {
+      "code": "VTE",
+      "department": "Surgery",
+      "name": "Venous thromboembolism risk assessment",
+      "zh": "血栓風險評估",
+      "steps": [
+        "Confirm the indication and document the individualized assessment.",
+        "Record patient-specific findings, planned observations and escalation criteria.",
+        "Review the plan with the responsible specialty team; treatments or medications require separate orders."
+      ],
+      "required": [
+        "careInstruction"
+      ],
+      "indications": [],
+      "source": "https://www.nice.org.uk/guidance/ng180/chapter/Recommendations",
+      "scope": "Common assessment/care template; not a complete hospital SOP",
+      "stepsZh": [
+        "確認適應症並記錄個別評估。",
+        "記錄病人個別結果、觀察計畫及需通報的條件。",
+        "與負責專科團隊檢視計畫；治療或藥物需另外開立。"
+      ],
+      "aliases": []
+    },
+    {
+      "code": "NEUROVASC",
+      "department": "Surgery",
+      "name": "Limb neurovascular observations",
+      "zh": "肢體神經血循觀察",
+      "steps": [
+        "Confirm the indication and document the individualized assessment.",
+        "Record patient-specific findings, planned observations and escalation criteria.",
+        "Review the plan with the responsible specialty team; treatments or medications require separate orders."
+      ],
+      "required": [
+        "careInstruction"
+      ],
+      "indications": [
+        "fracture",
+        "injury",
+        "S[0-9]",
+        "vascular"
+      ],
+      "source": "https://www.nice.org.uk/guidance/ng180/chapter/Recommendations",
+      "scope": "Common assessment/care template; not a complete hospital SOP",
+      "stepsZh": [
+        "確認適應症並記錄個別評估。",
+        "記錄病人個別結果、觀察計畫及需通報的條件。",
+        "與負責專科團隊檢視計畫；治療或藥物需另外開立。"
+      ],
+      "aliases": []
+    },
+    {
+      "code": "OB_NST",
+      "department": "Obstetrics",
+      "name": "Fetal monitoring assessment",
+      "zh": "胎兒監測評估",
+      "steps": [
+        "Confirm the indication and document the individualized assessment.",
+        "Record patient-specific findings, planned observations and escalation criteria.",
+        "Review the plan with the responsible specialty team; treatments or medications require separate orders."
+      ],
+      "required": [
+        "pregnancy",
+        "gestationWeeks",
+        "careInstruction"
+      ],
+      "indications": [
+        "pregnan",
+        "O[0-9]",
+        "Z3"
+      ],
+      "source": "https://www.ncbi.nlm.nih.gov/books/NBK579650/",
+      "scope": "Common assessment/care template; not a complete hospital SOP",
+      "stepsZh": [
+        "確認適應症並記錄個別評估。",
+        "記錄病人個別結果、觀察計畫及需通報的條件。",
+        "與負責專科團隊檢視計畫；治療或藥物需另外開立。"
+      ],
+      "aliases": []
+    },
+    {
+      "code": "OB_BP",
+      "department": "Obstetrics",
+      "name": "Hypertensive pregnancy observations",
+      "zh": "妊娠高血壓觀察",
+      "steps": [
+        "Confirm the indication and document the individualized assessment.",
+        "Record patient-specific findings, planned observations and escalation criteria.",
+        "Review the plan with the responsible specialty team; treatments or medications require separate orders."
+      ],
+      "required": [
+        "pregnancy",
+        "careInstruction"
+      ],
+      "indications": [
+        "preeclamp",
+        "gestational hypertension",
+        "O1[0-6]"
+      ],
+      "source": "https://www.ncbi.nlm.nih.gov/books/NBK579650/",
+      "scope": "Common assessment/care template; not a complete hospital SOP",
+      "stepsZh": [
+        "確認適應症並記錄個別評估。",
+        "記錄病人個別結果、觀察計畫及需通報的條件。",
+        "與負責專科團隊檢視計畫；治療或藥物需另外開立。"
+      ],
+      "aliases": []
+    },
+    {
+      "code": "OB_BLEED",
+      "department": "Obstetrics",
+      "name": "Obstetric bleeding assessment",
+      "zh": "產科出血評估",
+      "steps": [
+        "Confirm the indication and document the individualized assessment.",
+        "Record patient-specific findings, planned observations and escalation criteria.",
+        "Review the plan with the responsible specialty team; treatments or medications require separate orders."
+      ],
+      "required": [
+        "pregnancy",
+        "careInstruction"
+      ],
+      "indications": [
+        "pregnan",
+        "delivery",
+        "postpartum",
+        "O[0-9]"
+      ],
+      "source": "https://www.ncbi.nlm.nih.gov/books/NBK579650/",
+      "scope": "Common assessment/care template; not a complete hospital SOP",
+      "stepsZh": [
+        "確認適應症並記錄個別評估。",
+        "記錄病人個別結果、觀察計畫及需通報的條件。",
+        "與負責專科團隊檢視計畫；治療或藥物需另外開立。"
+      ],
+      "aliases": []
+    },
+    {
+      "code": "OB_CONTRACTION",
+      "department": "Obstetrics",
+      "name": "Uterine contraction and labor assessment",
+      "zh": "宮縮與產程評估",
+      "steps": [
+        "Confirm the indication and document the individualized assessment.",
+        "Record patient-specific findings, planned observations and escalation criteria.",
+        "Review the plan with the responsible specialty team; treatments or medications require separate orders."
+      ],
+      "required": [
+        "pregnancy",
+        "gestationWeeks",
+        "careInstruction"
+      ],
+      "indications": [
+        "labor",
+        "pregnan",
+        "O[0-9]"
+      ],
+      "source": "https://www.ncbi.nlm.nih.gov/books/NBK579650/",
+      "scope": "Common assessment/care template; not a complete hospital SOP",
+      "stepsZh": [
+        "確認適應症並記錄個別評估。",
+        "記錄病人個別結果、觀察計畫及需通報的條件。",
+        "與負責專科團隊檢視計畫；治療或藥物需另外開立。"
+      ],
+      "aliases": []
+    },
+    {
+      "code": "LACTATION",
+      "department": "Obstetrics",
+      "name": "Breastfeeding support assessment",
+      "zh": "母乳哺餵支持",
+      "steps": [
+        "Confirm the indication and document the individualized assessment.",
+        "Record patient-specific findings, planned observations and escalation criteria.",
+        "Review the plan with the responsible specialty team; treatments or medications require separate orders."
+      ],
+      "required": [
+        "careInstruction"
+      ],
+      "indications": [
+        "postpartum",
+        "lactat",
+        "O9",
+        "Z39"
+      ],
+      "source": "https://www.ncbi.nlm.nih.gov/books/NBK579650/",
+      "scope": "Common assessment/care template; not a complete hospital SOP",
+      "stepsZh": [
+        "確認適應症並記錄個別評估。",
+        "記錄病人個別結果、觀察計畫及需通報的條件。",
+        "與負責專科團隊檢視計畫；治療或藥物需另外開立。"
+      ],
+      "aliases": []
+    },
+    {
+      "code": "PERINEAL",
+      "department": "Obstetrics",
+      "name": "Perineal and cesarean wound assessment",
+      "zh": "會陰及剖腹傷口評估",
+      "steps": [
+        "Confirm the indication and document the individualized assessment.",
+        "Record patient-specific findings, planned observations and escalation criteria.",
+        "Review the plan with the responsible specialty team; treatments or medications require separate orders."
+      ],
+      "required": [
+        "careInstruction"
+      ],
+      "indications": [
+        "postpartum",
+        "cesarean",
+        "O[89]"
+      ],
+      "source": "https://www.ncbi.nlm.nih.gov/books/NBK579650/",
+      "scope": "Common assessment/care template; not a complete hospital SOP",
+      "stepsZh": [
+        "確認適應症並記錄個別評估。",
+        "記錄病人個別結果、觀察計畫及需通報的條件。",
+        "與負責專科團隊檢視計畫；治療或藥物需另外開立。"
+      ],
+      "aliases": []
+    },
+    {
+      "code": "PEDS_RESP",
+      "department": "Pediatrics",
+      "name": "Pediatric respiratory observations",
+      "zh": "兒童呼吸觀察",
+      "steps": [
+        "Confirm the indication and document the individualized assessment.",
+        "Record patient-specific findings, planned observations and escalation criteria.",
+        "Review the plan with the responsible specialty team; treatments or medications require separate orders."
+      ],
+      "required": [
+        "weightKg",
+        "careInstruction"
+      ],
+      "indications": [
+        "bronchiol",
+        "asthma",
+        "pneumonia",
+        "J[0-9]"
+      ],
+      "source": "https://www.nice.org.uk/guidance/cg84/chapter/Recommendations",
+      "scope": "Common assessment/care template; not a complete hospital SOP",
+      "stepsZh": [
+        "確認適應症並記錄個別評估。",
+        "記錄病人個別結果、觀察計畫及需通報的條件。",
+        "與負責專科團隊檢視計畫；治療或藥物需另外開立。"
+      ],
+      "aliases": []
+    },
+    {
+      "code": "PEDS_WEIGHT",
+      "department": "Pediatrics",
+      "name": "Pediatric weight and hydration review",
+      "zh": "兒童體重水分評估",
+      "steps": [
+        "Confirm the indication and document the individualized assessment.",
+        "Record patient-specific findings, planned observations and escalation criteria.",
+        "Review the plan with the responsible specialty team; treatments or medications require separate orders."
+      ],
+      "required": [
+        "weightKg",
+        "careInstruction"
+      ],
+      "indications": [],
+      "source": "https://www.nice.org.uk/guidance/cg84/chapter/Recommendations",
+      "scope": "Common assessment/care template; not a complete hospital SOP",
+      "stepsZh": [
+        "確認適應症並記錄個別評估。",
+        "記錄病人個別結果、觀察計畫及需通報的條件。",
+        "與負責專科團隊檢視計畫；治療或藥物需另外開立。"
+      ],
+      "aliases": []
+    },
+    {
+      "code": "PEDS_FEED",
+      "department": "Pediatrics",
+      "name": "Pediatric feeding assessment",
+      "zh": "兒童進食評估",
+      "steps": [
+        "Confirm the indication and document the individualized assessment.",
+        "Record patient-specific findings, planned observations and escalation criteria.",
+        "Review the plan with the responsible specialty team; treatments or medications require separate orders."
+      ],
+      "required": [
+        "weightKg",
+        "swallow",
+        "careInstruction"
+      ],
+      "indications": [],
+      "source": "https://www.nice.org.uk/guidance/cg84/chapter/Recommendations",
+      "scope": "Common assessment/care template; not a complete hospital SOP",
+      "stepsZh": [
+        "確認適應症並記錄個別評估。",
+        "記錄病人個別結果、觀察計畫及需通報的條件。",
+        "與負責專科團隊檢視計畫；治療或藥物需另外開立。"
+      ],
+      "aliases": []
+    },
+    {
+      "code": "JAUNDICE",
+      "department": "Pediatrics",
+      "name": "Neonatal jaundice assessment",
+      "zh": "新生兒黃疸評估",
+      "steps": [
+        "Confirm the indication and document the individualized assessment.",
+        "Record patient-specific findings, planned observations and escalation criteria.",
+        "Review the plan with the responsible specialty team; treatments or medications require separate orders."
+      ],
+      "required": [
+        "weightKg",
+        "careInstruction"
+      ],
+      "indications": [
+        "jaundice",
+        "P5[0-9]"
+      ],
+      "source": "https://www.nice.org.uk/guidance/cg84/chapter/Recommendations",
+      "scope": "Common assessment/care template; not a complete hospital SOP",
+      "stepsZh": [
+        "確認適應症並記錄個別評估。",
+        "記錄病人個別結果、觀察計畫及需通報的條件。",
+        "與負責專科團隊檢視計畫；治療或藥物需另外開立。"
+      ],
+      "aliases": []
+    },
+    {
+      "code": "DEVELOPMENT",
+      "department": "Pediatrics",
+      "name": "Age-appropriate developmental assessment",
+      "zh": "兒童發展評估",
+      "steps": [
+        "Confirm the indication and document the individualized assessment.",
+        "Record patient-specific findings, planned observations and escalation criteria.",
+        "Review the plan with the responsible specialty team; treatments or medications require separate orders."
+      ],
+      "required": [
+        "careInstruction"
+      ],
+      "indications": [],
+      "source": "https://www.nice.org.uk/guidance/cg84/chapter/Recommendations",
+      "scope": "Common assessment/care template; not a complete hospital SOP",
+      "stepsZh": [
+        "確認適應症並記錄個別評估。",
+        "記錄病人個別結果、觀察計畫及需通報的條件。",
+        "與負責專科團隊檢視計畫；治療或藥物需另外開立。"
+      ],
+      "aliases": []
+    },
+    {
+      "code": "PSYCH_MSE",
+      "department": "Psychiatry",
+      "name": "Mental status assessment",
+      "zh": "精神狀態評估",
+      "steps": [
+        "Confirm the indication and document the individualized assessment.",
+        "Record patient-specific findings, planned observations and escalation criteria.",
+        "Review the plan with the responsible specialty team; treatments or medications require separate orders."
+      ],
+      "required": [
+        "careInstruction"
+      ],
+      "indications": [
+        "F[0-9]",
+        "depress",
+        "schizo",
+        "bipolar"
+      ],
+      "source": "https://www.nice.org.uk/guidance/ng225/chapter/recommendations",
+      "scope": "Common assessment/care template; not a complete hospital SOP",
+      "stepsZh": [
+        "確認適應症並記錄個別評估。",
+        "記錄病人個別結果、觀察計畫及需通報的條件。",
+        "與負責專科團隊檢視計畫；治療或藥物需另外開立。"
+      ],
+      "aliases": []
+    },
+    {
+      "code": "PSYCH_RISK",
+      "department": "Psychiatry",
+      "name": "Self-harm and suicide risk assessment",
+      "zh": "自傷自殺風險評估",
+      "steps": [
+        "Confirm the indication and document the individualized assessment.",
+        "Record patient-specific findings, planned observations and escalation criteria.",
+        "Review the plan with the responsible specialty team; treatments or medications require separate orders."
+      ],
+      "required": [
+        "careInstruction"
+      ],
+      "indications": [
+        "F[0-9]",
+        "self.harm",
+        "suicid"
+      ],
+      "source": "https://www.nice.org.uk/guidance/ng225/chapter/recommendations",
+      "scope": "Common assessment/care template; not a complete hospital SOP",
+      "stepsZh": [
+        "確認適應症並記錄個別評估。",
+        "記錄病人個別結果、觀察計畫及需通報的條件。",
+        "與負責專科團隊檢視計畫；治療或藥物需另外開立。"
+      ],
+      "aliases": []
+    },
+    {
+      "code": "PSYCH_SLEEP",
+      "department": "Psychiatry",
+      "name": "Sleep and behavioral observations",
+      "zh": "睡眠行為觀察",
+      "steps": [
+        "Confirm the indication and document the individualized assessment.",
+        "Record patient-specific findings, planned observations and escalation criteria.",
+        "Review the plan with the responsible specialty team; treatments or medications require separate orders."
+      ],
+      "required": [
+        "careInstruction"
+      ],
+      "indications": [
+        "F[0-9]",
+        "insomnia",
+        "sleep"
+      ],
+      "source": "https://www.nice.org.uk/guidance/ng225/chapter/recommendations",
+      "scope": "Common assessment/care template; not a complete hospital SOP",
+      "stepsZh": [
+        "確認適應症並記錄個別評估。",
+        "記錄病人個別結果、觀察計畫及需通報的條件。",
+        "與負責專科團隊檢視計畫；治療或藥物需另外開立。"
+      ],
+      "aliases": []
+    },
+    {
+      "code": "PSYCH_DEESC",
+      "department": "Psychiatry",
+      "name": "De-escalation and supportive care plan",
+      "zh": "降階支持照護",
+      "steps": [
+        "Confirm the indication and document the individualized assessment.",
+        "Record patient-specific findings, planned observations and escalation criteria.",
+        "Review the plan with the responsible specialty team; treatments or medications require separate orders."
+      ],
+      "required": [
+        "careInstruction"
+      ],
+      "indications": [
+        "F[0-9]",
+        "agitat",
+        "distress"
+      ],
+      "source": "https://www.nice.org.uk/guidance/ng225/chapter/recommendations",
+      "scope": "Common assessment/care template; not a complete hospital SOP",
+      "stepsZh": [
+        "確認適應症並記錄個別評估。",
+        "記錄病人個別結果、觀察計畫及需通報的條件。",
+        "與負責專科團隊檢視計畫；治療或藥物需另外開立。"
+      ],
+      "aliases": []
+    },
+    {
+      "code": "PSYCH_MED",
+      "department": "Psychiatry",
+      "name": "Psychotropic medication adverse-effect observations",
+      "zh": "精神科藥物副作用觀察",
+      "steps": [
+        "Confirm the indication and document the individualized assessment.",
+        "Record patient-specific findings, planned observations and escalation criteria.",
+        "Review the plan with the responsible specialty team; treatments or medications require separate orders."
+      ],
+      "required": [
+        "careInstruction"
+      ],
+      "indications": [
+        "F[0-9]"
+      ],
+      "source": "https://www.nice.org.uk/guidance/ng225/chapter/recommendations",
+      "scope": "Common assessment/care template; not a complete hospital SOP",
+      "stepsZh": [
+        "確認適應症並記錄個別評估。",
+        "記錄病人個別結果、觀察計畫及需通報的條件。",
+        "與負責專科團隊檢視計畫；治療或藥物需另外開立。"
+      ],
+      "aliases": []
+    },
+    {
+      "code": "PSYCH_CAPACITY",
+      "department": "Psychiatry",
+      "name": "Decision-making capacity and consent review",
+      "zh": "同意能力評估",
+      "steps": [
+        "Confirm the indication and document the individualized assessment.",
+        "Record patient-specific findings, planned observations and escalation criteria.",
+        "Review the plan with the responsible specialty team; treatments or medications require separate orders."
+      ],
+      "required": [
+        "careInstruction"
+      ],
+      "indications": [],
+      "source": "https://www.nice.org.uk/guidance/ng225/chapter/recommendations",
+      "scope": "Common assessment/care template; not a complete hospital SOP",
+      "stepsZh": [
+        "確認適應症並記錄個別評估。",
+        "記錄病人個別結果、觀察計畫及需通報的條件。",
+        "與負責專科團隊檢視計畫；治療或藥物需另外開立。"
+      ],
+      "aliases": []
+    },
+    {
+      "code": "ECT_PRE",
+      "department": "Psychiatry",
+      "name": "ECT specialist and anesthesia assessment",
+      "zh": "電痙攣治療術前評估",
+      "steps": [
+        "Confirm the indication and document the individualized assessment.",
+        "Record patient-specific findings, planned observations and escalation criteria.",
+        "Review the plan with the responsible specialty team; treatments or medications require separate orders."
+      ],
+      "required": [
+        "careInstruction"
+      ],
+      "indications": [
+        "F[0-9]",
+        "depress",
+        "catatoni"
+      ],
+      "source": "https://www.nice.org.uk/guidance/ng225/chapter/recommendations",
+      "scope": "Common assessment/care template; not a complete hospital SOP",
+      "stepsZh": [
+        "確認適應症並記錄個別評估。",
+        "記錄病人個別結果、觀察計畫及需通報的條件。",
+        "與負責專科團隊檢視計畫；治療或藥物需另外開立。"
+      ],
+      "aliases": []
+    }
+  ]
+}

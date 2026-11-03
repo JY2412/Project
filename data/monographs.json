@@ -1,0 +1,122 @@
+{
+  "ATORVASTATIN": {
+    "mechanism": "抑制 HMG-CoA reductase，降低肝臟膽固醇合成並增加 LDL 清除。",
+    "effects": "肌肉疼痛、腸胃不適；少見肌病變、橫紋肌溶解及肝功能異常。",
+    "cautions": "大量葡萄柚汁可增加暴露量與肌病風險；有肌痛、無力或深色尿需評估。留意 CYP3A4 抑制劑等交互作用。",
+    "source": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=56826bb5-ae70-af65-e063-6294a90abf74",
+    "reviewedAt": "2026-11-02",
+    "contraindications": "急性肝衰竭、失代償性肝硬化，或對 atorvastatin／製劑成分過敏。妊娠需另依本品仿單與個別效益風險評估，不把舊版所有 statin 妊娠禁忌一律套用。",
+    "contraindicationSource": "https://www.dailymed.nlm.nih.gov/dailymed/fda/fdaDrugXsl.cfm?setid=1914264b-4c95-4066-91ca-b5c91d8b741e&type=display",
+    "contraindicationCaution": "肌病、肝功能異常與 CYP3A4 交互作用屬另項評估。"
+  },
+  "ACETAMINOPHEN": {
+    "mechanism": "具有中樞解熱鎮痛作用；完整作用機轉尚未完全確立。",
+    "effects": "可能有過敏及嚴重皮膚反應；過量可造成嚴重肝損傷。",
+    "cautions": "不可重複使用含相同成分的複方藥；避免併用酒精。有肝病或疑似過量需立即評估。",
+    "source": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=8481d9f3-d2a5-457f-b92c-99445d063c8f",
+    "reviewedAt": "2026-11-02",
+    "contraindications": "對 acetaminophen／本品成分過敏；此注射劑仿單亦列嚴重肝功能損害或嚴重活動性肝病。口服、注射等製劑應分別核對仿單，不直接視為完全相同。",
+    "contraindicationSource": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2023/206968Orig1s000lbl.pdf",
+    "contraindicationCaution": "一般肝病、酒精使用、營養不良、低血容量及嚴重腎功能損害需要審查；不可把一般肝病都當作已確定絕對禁忌。"
+  },
+  "CLOPIDOGREL": {
+    "mechanism": "前驅藥經代謝活化後，不可逆抑制血小板 P2Y12 ADP 受體，降低血小板聚集。",
+    "effects": "出血、瘀青及腸胃不適；少見血栓性血小板減少性紫斑症。",
+    "cautions": "避免與 omeprazole 或 esomeprazole 併用，以免降低抗血小板作用。侵入性處置及與抗凝血藥併用時需評估出血風險。",
+    "source": "https://dailymed.nlm.nih.gov/dailymed/fda/fdaDrugXsl.cfm?setid=25ed3120-7960-4e87-8422-de5c2026062c",
+    "reviewedAt": "2026-11-02",
+    "contraindications": "活動性病理性出血（例如消化性潰瘍出血或顱內出血），或對 clopidogrel／製劑成分過敏。",
+    "contraindicationSource": "https://www.dailymed.nlm.nih.gov/dailymed/fda/fdaDrugXsl.cfm?setid=9c0263c5-97bd-4fcc-8b0c-c825dbefa4c1",
+    "contraindicationCaution": "Omeprazole／esomeprazole 屬應避免併用的交互作用；不要把單純潰瘍病史等同活動性出血。"
+  },
+  "OMEPRAZOLE": {
+    "mechanism": "抑制胃壁細胞 H+/K+-ATPase，降低胃酸分泌。",
+    "effects": "頭痛、腹痛、噁心、腹瀉；長期使用需留意低血鎂等風險。",
+    "cautions": "避免與 clopidogrel 併用。腸溶劑型不可任意磨碎；不同製劑服用方式以仿單為準。",
+    "source": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=c311c1b9-8ec2-4ac0-baa2-a5063fba2d80",
+    "reviewedAt": "2026-11-02",
+    "contraindications": "對本品或 substituted benzimidazole 類成分過敏；與含 rilpivirine 製劑併用禁忌。",
+    "contraindicationSource": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=63b3982a-b541-4b0d-99d4-93a673e57d46",
+    "contraindicationCaution": "Clopidogrel 併用應避免；腎炎、低血鎂等風險另列注意事項。"
+  },
+  "METOPROLOL": {
+    "mechanism": "主要阻斷 β1 腎上腺素受體，降低竇房結速率及房室結傳導；選擇性非絕對，高濃度亦可能阻斷 β2 受體。",
+    "effects": "心搏過慢、低血壓、疲倦、頭暈；可能加重支氣管痙攣。",
+    "cautions": "不可突然停藥；需監測心率、血壓與心衰竭狀態。可能掩蓋低血糖警訊。速放與緩釋製劑不可直接視為相同用法。",
+    "source": "https://www.dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=809c6386-0039-42ff-a03e-e42733e229b8",
+    "reviewedAt": "2026-11-02",
+    "contraindications": "嚴重心搏過慢、二或三度房室傳導阻滯、心因性休克、失代償性心衰竭、無永久節律器的病竇症候群，或本品成分過敏；須依所選製劑及適應症核對。心肌梗塞情境的心率／血壓限制不可一律套到所有適應症。",
+    "contraindicationSource": "https://www.dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=809c6386-0039-42ff-a03e-e42733e229b8",
+    "contraindicationCaution": "不能把所有 beta blocker／所有劑型共用同一禁忌或以任意單次脈搏值替代完整判斷。"
+  },
+  "LEVOFLOXACIN": {
+    "mechanism": "抑制細菌 DNA gyrase 與 topoisomerase IV，干擾細菌 DNA 複製。",
+    "effects": "噁心、腹瀉、頭痛；嚴重風險包括肌腱炎／斷裂、周邊神經病變及中樞神經反應。",
+    "cautions": "需考慮腎功能、QT 延長及重症肌無力。口服錠與鎂／鋁制酸劑、sucralfate、鐵或含鋅製劑前後至少錯開 2 小時；不同製劑依本品仿單。",
+    "source": "https://www.dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=b9dc8bf3-97d9-4d1c-9a68-3ae553acdada",
+    "reviewedAt": "2026-11-02",
+    "contraindications": "已知對 levofloxacin 或其他 quinolone 抗菌藥過敏。",
+    "contraindicationSource": "https://www.dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=b9dc8bf3-97d9-4d1c-9a68-3ae553acdada",
+    "contraindicationCaution": "重症肌無力、QT 延長、低血鉀、肌腱／神經病變風險及腎功能調整另屬重要警語，不應漏掉或混稱全部為禁忌章節。"
+  },
+  "NIMODIPINE": {
+    "mechanism": "二氫吡啶類鈣離子通道阻斷劑，作用於血管平滑肌；其改善蜘蛛膜下腔出血後神經結果的完整機轉未完全確定。",
+    "effects": "低血壓、頭痛、噁心及心率變化。",
+    "cautions": "避免葡萄柚／葡萄柚汁及強效 CYP3A4 抑制劑。口服製劑不可用於靜脈注射；不同劑型須依各自仿單使用。",
+    "source": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=a323ebd8-ef1b-439b-93d1-ba73a5b0127d",
+    "reviewedAt": "2026-11-02",
+    "contraindications": "此口服膠囊禁與強效 CYP3A4 抑制劑併用；不得把膠囊內容物以靜脈或其他注射途徑給藥。",
+    "contraindicationSource": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=a323ebd8-ef1b-439b-93d1-ba73a5b0127d",
+    "contraindicationCaution": "低血壓、肝硬化及中弱效 CYP3A4 交互作用需個別調整。不得把口服製劑的注射禁令誤套到其他國家核准的專用注射製劑。"
+  },
+  "MANNITOL": {
+    "mechanism": "靜脈用 mannitol 為滲透性利尿劑，提高血漿與腎小管液滲透壓。",
+    "effects": "體液／電解質異常、腎功能損傷、肺水腫及輸注部位反應。",
+    "cautions": "需監測腎功能、體液、電解質與心肺狀態；無尿或嚴重肺鬱血等情況須依仿單評估禁忌。吸入製劑用途與靜脈製劑不同。",
+    "source": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=8ad3145e-00e7-4412-b9a5-06f00f264f30",
+    "reviewedAt": "2026-11-02",
+    "contraindications": "此靜脈製劑列對 mannitol 過敏、無尿、嚴重低血容量、既存嚴重肺血管鬱血或肺水腫，以及除開顱術中外的活動性顱內出血。",
+    "contraindicationSource": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=8ad3145e-00e7-4412-b9a5-06f00f264f30",
+    "contraindicationCaution": "靜脈、吸入或灌洗製劑用途與禁忌不同；先確認製劑。"
+  },
+  "NITROGLYCERIN": {
+    "mechanism": "經生物轉化釋出一氧化氮，增加 cGMP，使血管平滑肌鬆弛。",
+    "effects": "頭痛、潮紅、頭暈、低血壓及暈厥。",
+    "cautions": "不可與 PDE5 抑制劑或可溶性鳥苷酸環化酶刺激劑併用。使用前需評估血壓；舌下、噴劑、貼片及注射劑型不可互換用法。",
+    "source": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=d19b5f51-ca85-48d6-9ccd-8ae26249cdc3",
+    "reviewedAt": "2026-11-02",
+    "contraindications": "此舌下噴劑禁與 PDE5 抑制劑或 sGC 刺激劑併用；嚴重貧血、可能顱內壓升高、對 nitrates／nitrites 或本品成分過敏、急性循環衰竭或休克亦列禁忌。",
+    "contraindicationSource": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=d19b5f51-ca85-48d6-9ccd-8ae26249cdc3",
+    "contraindicationCaution": "未提供 PDE5 最近使用時間時不可自行假設安全；不同藥物的間隔不相同。"
+  },
+  "ACETYLCYSTEINE": {
+    "mechanism": "游離巰基可打開黏液蛋白二硫鍵而降低黏稠度；作為 acetaminophen 解毒劑時與補充 glutathione 有關，實際用途依製劑。",
+    "effects": "噁心、嘔吐；吸入製劑可能引起支氣管痙攣。",
+    "cautions": "不同口服、吸入及注射製劑不可混用。吸入後若有支氣管痙攣需評估；不可把標示不可注射的溶液用於注射。",
+    "source": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=d50c8ab6-26f8-4669-89d1-c4d26698159a",
+    "reviewedAt": "2026-11-02",
+    "contraindications": "製劑與用途須分開：吸入黏液溶解用途對本品敏感者禁用；同一仿單對 acetaminophen 過量的口服解毒用途記載無禁忌，仍須個別權衡反應風險。不可把口服／吸入溶液拿去注射。",
+    "contraindicationSource": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=d50c8ab6-26f8-4669-89d1-c4d26698159a",
+    "contraindicationCaution": "氣喘、分泌物增多或支氣管痙攣需監測；中毒解毒流程須專科處理。"
+  },
+  "COMBIVENT": {
+    "mechanism": "Ipratropium 為抗膽鹼成分；albuterol／salbutamol 為 β2 致效劑，合併產生支氣管擴張作用。",
+    "effects": "咳嗽、頭痛、呼吸困難；可能有心悸、低血鉀、眼壓升高或反常性支氣管痙攣。",
+    "cautions": "避免噴入眼睛；狹角型青光眼、排尿困難及心血管疾病需留意。僅對應 ipratropium 與 salbutamol／albuterol 複方。",
+    "source": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=9832312e-0310-4ab6-8501-afa976fc7eb2",
+    "reviewedAt": "2026-11-02",
+    "contraindications": "目前 Respimat 仿單列對本品成分、atropine 或其衍生物過敏。UDV 仿單可另列肥厚阻塞性心肌病或心搏過速性心律不整；須依選定製劑，不能跨劑型套用。",
+    "contraindicationSource": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=9832312e-0310-4ab6-8501-afa976fc7eb2",
+    "contraindicationCaution": "舊 CFC aerosol 的大豆／花生過敏敘述不可直接套到現在 Respimat。青光眼、尿滯留等另列注意事項。"
+  },
+  "ASPIRIN": {
+    "mechanism": "不可逆乙醯化並抑制 cyclooxygenase；降低血栓素生成，抑制血小板聚集。解熱鎮痛與抑制前列腺素生成有關。",
+    "effects": "胃部不適、潰瘍及出血；可能有過敏與支氣管痙攣。",
+    "cautions": "與其他抗凝血、抗血小板或 NSAID 藥品併用需評估出血。兒童／青少年病毒感染時須留意雷氏症候群相關警語。",
+    "source": "https://www.fda.gov/drugs/safe-use-aspirin/aspirin-questions-and-answers",
+    "reviewedAt": "2026-11-02",
+    "contraindications": "對 aspirin／NSAID 過敏，或具 aspirin 相關氣喘、鼻炎、鼻息肉症候群者須依本品仿單禁用；出血風險與兒少病毒感染相關雷氏症候群警語另外核對。",
+    "contraindicationSource": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2023/011483s035lbl.pdf",
+    "contraindicationCaution": "此來源為含 aspirin 複方仿單的 aspirin 相關禁忌，不可照搬其他成分禁忌；不能說懷孕一律不能用 aspirin，產科有低劑量適應症。"
+  }
+}

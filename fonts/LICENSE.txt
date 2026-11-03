@@ -1,0 +1,7 @@
+教育部標準楷書 5.1
+著作人：中華民國教育部
+CC BY-ND 3.0 Taiwan；完整字型原樣散布，未轉檔或修改。
+https://language.moe.gov.tw/material/info?m=9fe3fe82-8bbf-44c0-961d-873ea079e284
+https://creativecommons.org/licenses/by-nd/3.0/tw/
+Archive: https://raw.githubusercontent.com/Jiehong/TW-fonts/master/edukai-5.1_20251208.ttf
+SHA256 e2b6b1bd1d6303672a68d5057a1f1e4b5361e3d8842373ff3bd1c71fb9ea9b98

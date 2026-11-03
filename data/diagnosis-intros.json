@@ -1,0 +1,182 @@
+[
+  {
+    "prefix": "E10",
+    "name_en": "Type 1 diabetes mellitus",
+    "name_zh": "第1型糖尿病",
+    "introduction": "主要因免疫系統破壞胰臟製造胰島素的細胞，導致胰島素不足與血糖升高。",
+    "source": "https://www.niddk.nih.gov/health-information/diabetes/overview/what-is-diabetes",
+    "reviewedAt": "2026-11-02",
+    "scope": "疾病類別簡介；不等同細碼診斷條件、診斷確認或處置建議"
+  },
+  {
+    "prefix": "E11",
+    "name_en": "Type 2 diabetes mellitus",
+    "name_zh": "第2型糖尿病",
+    "introduction": "身體對胰島素作用反應不足，且可能無法產生足夠胰島素，使血糖長期偏高。",
+    "source": "https://www.niddk.nih.gov/health-information/diabetes/overview/what-is-diabetes",
+    "reviewedAt": "2026-11-02",
+    "scope": "疾病類別簡介；不等同細碼診斷條件、診斷確認或處置建議"
+  },
+  {
+    "prefix": "I10",
+    "name_en": "Essential hypertension",
+    "name_zh": "原發性高血壓",
+    "introduction": "血壓持續偏高的慢性狀態；此分類指原發性高血壓，不等同單次血壓測量升高。",
+    "source": "https://www.nccih.nih.gov/health/hypertension-high-blood-pressure",
+    "reviewedAt": "2026-11-02",
+    "scope": "疾病類別簡介；不等同細碼診斷條件、診斷確認或處置建議"
+  },
+  {
+    "prefix": "J18",
+    "name_en": "Pneumonia, organism unspecified",
+    "name_zh": "未明示病原體之肺炎",
+    "introduction": "肺部感染造成發炎；此分類尚未明示引起肺炎的病原體。",
+    "source": "https://health.nih.gov/health-topics-a-z/pneumonia",
+    "reviewedAt": "2026-11-02",
+    "scope": "疾病類別簡介；不等同細碼診斷條件、診斷確認或處置建議"
+  },
+  {
+    "prefix": "J44",
+    "name_en": "Chronic obstructive pulmonary disease",
+    "name_zh": "慢性阻塞性肺病",
+    "introduction": "氣道與肺部結構受損造成持續氣流受限，可出現慢性咳嗽、痰與呼吸困難。",
+    "source": "https://health.nih.gov/health-topics-a-z/copd",
+    "reviewedAt": "2026-11-02",
+    "scope": "疾病類別簡介；不等同細碼診斷條件、診斷確認或處置建議"
+  },
+  {
+    "prefix": "J45",
+    "name_en": "Asthma",
+    "name_zh": "氣喘",
+    "introduction": "慢性氣道疾病，發炎與氣道暫時變窄可造成喘鳴、咳嗽及呼吸困難。",
+    "source": "https://www.nhlbi.nih.gov/health/asthma",
+    "reviewedAt": "2026-11-02",
+    "scope": "疾病類別簡介；不等同細碼診斷條件、診斷確認或處置建議"
+  },
+  {
+    "prefix": "I50",
+    "name_en": "Heart failure",
+    "name_zh": "心臟衰竭",
+    "introduction": "心臟充盈或泵血能力無法充分滿足身體需求，可能伴隨呼吸困難與體液蓄積。",
+    "source": "https://www.nhlbi.nih.gov/health/heart-failure",
+    "reviewedAt": "2026-11-02",
+    "scope": "疾病類別簡介；不等同細碼診斷條件、診斷確認或處置建議"
+  },
+  {
+    "prefix": "I63",
+    "name_en": "Cerebral infarction",
+    "name_zh": "腦梗塞",
+    "introduction": "腦部血流阻塞所致的缺血性腦組織傷害，屬缺血性中風。",
+    "source": "https://www.nhlbi.nih.gov/health/stroke",
+    "reviewedAt": "2026-11-02",
+    "scope": "疾病類別簡介；不等同細碼診斷條件、診斷確認或處置建議"
+  },
+  {
+    "prefix": "I61",
+    "name_en": "Nontraumatic intracerebral hemorrhage",
+    "name_zh": "非創傷性腦內出血",
+    "introduction": "非外傷造成的腦組織內出血，屬出血性中風的一種。",
+    "source": "https://www.nhlbi.nih.gov/health/stroke",
+    "reviewedAt": "2026-11-02",
+    "scope": "疾病類別簡介；不等同細碼診斷條件、診斷確認或處置建議"
+  },
+  {
+    "prefix": "K35",
+    "name_en": "Acute appendicitis",
+    "name_zh": "急性闌尾炎",
+    "introduction": "闌尾急性發炎，可形成腹痛並可能進展為穿孔或腹腔感染。",
+    "source": "https://www.niddk.nih.gov/health-information/digestive-diseases/appendicitis",
+    "reviewedAt": "2026-11-02",
+    "scope": "疾病類別簡介；不等同細碼診斷條件、診斷確認或處置建議"
+  },
+  {
+    "prefix": "A08",
+    "name_en": "Viral and other specified intestinal infections",
+    "name_zh": "病毒性及其他明示腸道感染",
+    "introduction": "此類腸道感染可造成腹瀉、腹痛或嘔吐；病毒性腸胃炎並不是流感。",
+    "source": "https://www.niddk.nih.gov/health-information/digestive-diseases/viral-gastroenteritis/definition-facts",
+    "reviewedAt": "2026-11-02",
+    "scope": "疾病類別簡介；不等同細碼診斷條件、診斷確認或處置建議"
+  },
+  {
+    "prefix": "E86",
+    "name_en": "Volume depletion",
+    "name_zh": "體液容積不足",
+    "introduction": "身體流失的水分與電解質未能充分補回，可能影響正常生理功能。",
+    "source": "https://www.niddk.nih.gov/health-information/digestive-diseases/viral-gastroenteritis/definition-facts",
+    "reviewedAt": "2026-11-02",
+    "scope": "疾病類別簡介；不等同細碼診斷條件、診斷確認或處置建議"
+  },
+  {
+    "prefix": "N18",
+    "name_en": "Chronic kidney disease",
+    "name_zh": "慢性腎臟病",
+    "introduction": "腎臟長期受損或結構異常，使血液過濾功能下降；各期別需另依檢查資料判定。",
+    "source": "https://www.niddk.nih.gov/health-information/kidney-disease/chronic-kidney-disease-ckd",
+    "reviewedAt": "2026-11-02",
+    "scope": "疾病類別簡介；不等同細碼診斷條件、診斷確認或處置建議"
+  },
+  {
+    "prefix": "N30",
+    "name_en": "Cystitis",
+    "name_zh": "膀胱炎",
+    "introduction": "膀胱發炎可與感染相關；感染性膀胱炎屬下泌尿道感染，並非所有膀胱症狀都代表感染。",
+    "source": "https://www.cdc.gov/uti/hcp/clinical-overview/",
+    "reviewedAt": "2026-11-02",
+    "scope": "疾病類別簡介；不等同細碼診斷條件、診斷確認或處置建議"
+  },
+  {
+    "prefix": "S52",
+    "name_en": "Fracture of forearm",
+    "name_zh": "前臂骨折",
+    "introduction": "前臂骨骼發生斷裂；細碼另區分受傷骨骼、側別、傷口及就醫階段。",
+    "source": "https://www.niams.nih.gov/health-topics/preventing-another-broken-bone",
+    "reviewedAt": "2026-11-02",
+    "scope": "疾病類別簡介；不等同細碼診斷條件、診斷確認或處置建議"
+  },
+  {
+    "prefix": "O14",
+    "name_en": "Pre-eclampsia",
+    "name_zh": "子癲前症",
+    "introduction": "與懷孕相關的高血壓疾病，可伴隨其他器官異常，亦可能在產後出現。",
+    "source": "https://www.nichd.nih.gov/health/topics/preeclampsia/conditioninfo",
+    "reviewedAt": "2026-11-02",
+    "scope": "疾病類別簡介；不等同細碼診斷條件、診斷確認或處置建議"
+  },
+  {
+    "prefix": "O244",
+    "name_en": "Gestational diabetes mellitus",
+    "name_zh": "妊娠糖尿病",
+    "introduction": "在懷孕期間發展的糖尿病；懷孕前已存在的糖尿病需使用不同分類。",
+    "source": "https://www.niddk.nih.gov/health-information/diabetes/overview/what-is-diabetes",
+    "reviewedAt": "2026-11-02",
+    "scope": "疾病類別簡介；不等同細碼診斷條件、診斷確認或處置建議"
+  },
+  {
+    "prefix": "O72",
+    "name_en": "Postpartum hemorrhage",
+    "name_zh": "產後出血",
+    "introduction": "分娩後出現的異常出血，可影響母體循環狀態；原因與嚴重度須另行評估。",
+    "source": "https://www.ncbi.nlm.nih.gov/books/NBK579650/",
+    "reviewedAt": "2026-11-02",
+    "scope": "疾病類別簡介；不等同細碼診斷條件、診斷確認或處置建議"
+  },
+  {
+    "prefix": "J21",
+    "name_en": "Acute bronchiolitis",
+    "name_zh": "急性細支氣管炎",
+    "introduction": "常見於嬰幼兒的小氣道感染，可造成呼吸加快、喘鳴及餵食困難。",
+    "source": "https://www.nhs.uk/conditions/bronchiolitis/",
+    "reviewedAt": "2026-11-02",
+    "scope": "疾病類別簡介；不等同細碼診斷條件、診斷確認或處置建議"
+  },
+  {
+    "prefix": "P59",
+    "name_en": "Neonatal jaundice from other and unspecified causes",
+    "name_zh": "其他或未明示原因之新生兒黃疸",
+    "introduction": "新生兒血中膽紅素累積可使皮膚與眼白泛黃；原因及需要處理的程度須依評估判定。",
+    "source": "https://www.nhs.uk/conditions/jaundice-in-babies/",
+    "reviewedAt": "2026-11-02",
+    "scope": "疾病類別簡介；不等同細碼診斷條件、診斷確認或處置建議"
+  }
+]

@@ -1,0 +1,56 @@
+{
+  "reviewedAt": "2026-11-02",
+  "referenceSystem": "DSM-5-TR",
+  "systemNote": "DSM-5-TR 為精神疾病診斷分類參考；診斷及申報代碼仍須對應適用之 ICD-10-CM。此處不重製 DSM 診斷準則，也不以簡介自動診斷。",
+  "systemSource": "https://www.psychiatry.org/psychiatrists/practice/dsm/frequently-asked-questions",
+  "items": [
+    {
+      "key": "MDD",
+      "zh": "重度憂鬱症",
+      "en": "Major depressive disorder",
+      "category": "Depressive disorders",
+      "intro": "持續的憂鬱或興趣減退可能影響思考、睡眠、飲食與工作等功能；須評估症狀、病程與其他原因。",
+      "source": "https://www.nimh.nih.gov/health/topics/depression"
+    },
+    {
+      "key": "BIPOLAR",
+      "zh": "雙相情緒障礙症",
+      "en": "Bipolar disorder",
+      "category": "Bipolar and related disorders",
+      "intro": "情緒、精力與活動可能出現明顯變化，包括躁期或輕躁期及鬱期；須依完整病程區分型別。",
+      "source": "https://www.nimh.nih.gov/health/topics/bipolar-disorder"
+    },
+    {
+      "key": "SCHIZOPHRENIA",
+      "zh": "思覺失調症",
+      "en": "Schizophrenia",
+      "category": "Schizophrenia spectrum and other psychotic disorders",
+      "intro": "可影響思考、感受與行為，可能出現精神病性症狀及功能下降；需排除物質與其他醫療原因。",
+      "source": "https://www.nimh.nih.gov/health/topics/schizophrenia"
+    },
+    {
+      "key": "ANXIETY",
+      "zh": "焦慮症",
+      "en": "Anxiety disorder",
+      "category": "Anxiety disorders",
+      "intro": "過度或持續的焦慮、恐懼可能干擾日常活動；需區分廣泛性焦慮、恐慌、社交焦慮及其他型別。",
+      "source": "https://www.nimh.nih.gov/health/topics/anxiety-disorders"
+    },
+    {
+      "key": "PTSD",
+      "zh": "創傷後壓力症",
+      "en": "Post-traumatic stress disorder",
+      "category": "Trauma- and stressor-related disorders",
+      "intro": "經歷創傷後若相關反應持續並影響生活，需作進一步評估；並非所有創傷後壓力反應都構成本症。",
+      "source": "https://www.nimh.nih.gov/health/topics/post-traumatic-stress-disorder-ptsd"
+    },
+    {
+      "key": "OCD",
+      "zh": "強迫症",
+      "en": "Obsessive-compulsive disorder",
+      "category": "Obsessive-compulsive and related disorders",
+      "intro": "可能有反覆難控制的強迫思考、重複行為，或兩者兼有，造成困擾或功能影響。",
+      "source": "https://www.nimh.nih.gov/health/topics/obsessive-compulsive-disorder-ocd"
+    }
+  ]
+}
