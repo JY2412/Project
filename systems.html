@@ -1,1 +1,131 @@
-<!doctype html><html lang="zh-Hant"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>11G 院內系統入口</title><style>*{box-sizing:border-box}body{margin:0;background:linear-gradient(#e5edf4,#f8f6f2);min-height:100vh;color:#233849;font:16px system-ui}main{width:min(760px,92vw);margin:auto;padding:8vh 0;text-align:center}small{letter-spacing:.25em}h1{font-size:clamp(28px,5vw,44px);margin:10px 0 32px}nav{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}a{display:grid;place-content:center;justify-items:center;gap:10px;min-height:140px;background:white;border:1px solid #d5dfe6;border-radius:20px;color:inherit;text-decoration:none;font-weight:bold;box-shadow:0 6px 20px #23384912}b{display:grid;place-items:center;background:#526c84;color:white;border-radius:14px;width:54px;height:54px;font-size:28px}a:nth-child(2) b{background:#417566}a:nth-child(3) b{background:#42658e}a:nth-child(4) b{background:#735e86}a:nth-child(5) b{background:#83674d}a:nth-child(6) b{background:#476f79}a:hover,a:focus-visible{outline:2px solid #526c84}@media(max-width:540px){nav{grid-template-columns:repeat(2,1fr)}a{min-height:115px}}</style><main><small>11G · HOSPITAL WORKSPACE</small><h1>院內系統入口</h1><nav aria-label="院內系統"><a href="his.html"><b>▤</b>HIS</a><a href="nis.html"><b>✚</b>NIS</a><a href="index.html"><b>⚕</b>醫師系統</a><a href="nursing.html"><b>▯</b>護理手機</a><a href="whiteboard.html"><b>▦</b>電子白板</a><a href="bedside.html"><b>▣</b>床頭卡</a></nav></main></html>
+<!doctype html><html lang="zh-Hant"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>院內系統入口｜設計預覽</title><style>
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:#f7f5ee;color:#213a33;font:16px system-ui,"Microsoft JhengHei",sans-serif}header{background:#fffdf8;padding:18px max(5vw,20px);display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid #d8c69e}header img{width:168px;max-width:57%;height:auto;display:block}.tag{color:#52645d;font-size:12px;letter-spacing:.09em}main{width:min(800px,90%);margin:auto;padding:clamp(30px,6vw,65px) 0 30px}.intro{margin-bottom:22px}.eyebrow{font-size:11px;font-weight:750;letter-spacing:.22em;color:#5a7061}h1{font-size:clamp(28px,5vw,45px);margin:8px 0;letter-spacing:.05em}nav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0}.group-title{grid-column:1/-1;font-size:12px;font-weight:700;letter-spacing:.15em;padding:12px 0;border-bottom:1px solid #c8d1c5;color:#506559}.tile{min-height:148px;display:grid;justify-items:center;align-content:center;gap:5px;text-align:center;text-decoration:none;color:inherit;border-radius:16px;touch-action:manipulation}.tile:hover,.tile:focus-visible{background:#e8ede2}.tile:focus-visible{outline:2px solid #315b4c;outline-offset:-2px}.icon{display:grid;place-items:center;width:62px;height:62px;border-radius:19px;color:white;background:var(--tone);box-shadow:inset 0 1px 0 #ffffff55,0 4px 9px #253d3224;margin-bottom:4px}.icon svg{width:43px;height:43px;fill:none;stroke:currentColor;stroke-width:2.7;stroke-linecap:round;stroke-linejoin:round}small{color:#51665b;font-size:13px}.demo{display:none}.demo:target{position:fixed;inset:0;display:grid;place-items:center;background:#173a34aa;padding:20px}.demo>div{width:min(360px,100%);background:#fffdf8;border-radius:18px;padding:24px}.demo a{display:inline-block;padding:11px 14px;background:#234d40;color:white;border-radius:8px;text-decoration:none}
+@media(max-width:540px){main{padding-top:25px}.intro{margin-bottom:12px}nav{grid-template-columns:repeat(2,minmax(0,1fr));border-top:1px solid #c8d1c5}.group-title{display:none}.tile{min-height:128px}.icon{width:56px;height:56px}.icon svg{width:39px;height:39px}}
+
+body{background:#f7f5f0;color:#202e3b}
+header{width:min(1040px,calc(100% - 40px));margin:auto;background:transparent;padding:20px 0;border-color:#d8cbb4}
+.tag{color:#62635f}
+main{width:min(760px,calc(100% - 36px));padding-top:clamp(32px,7vh,66px)}
+.intro{text-align:center;margin-bottom:28px}
+.eyebrow{color:#796953;letter-spacing:.25em}
+h1{font-family:"Songti TC","Noto Serif TC",serif;font-weight:700;letter-spacing:.08em}
+.group-title{color:#665e51;border-color:#ded6c8}
+nav{column-gap:8px}
+.tile:hover,.tile:focus-visible{background:#efebe2}
+.icon{background:linear-gradient(145deg,#ffffff14,transparent),#33495b;border:1px solid #263b4b;border-radius:18px;box-shadow:inset 0 1px 0 #ffffff24,0 4px 9px #2435441c;color:#fbf9f3}
+small{color:#595f63}
+@media(max-width:540px){header{padding:15px 0}.intro{margin-bottom:20px}nav{border-color:#ded6c8}.tile{min-height:121px}}
+
+@media(max-width:540px){
+body{background:#f6f3ed;color:#233342}
+header{width:calc(100% - 40px);min-height:64px;padding:12px 0}
+header img{width:139px}
+.tag{font-size:10px;letter-spacing:.04em}
+main{width:calc(100% - 40px);padding:25px 0 24px}
+.intro{text-align:left;margin:0 0 17px}
+.eyebrow{display:none}
+h1{font-family:inherit;font-size:29px;letter-spacing:.025em;margin:0;font-weight:750}
+nav{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;border:0}
+.tile{min-height:115px;justify-items:start;align-content:center;text-align:left;padding:11px 12px;border-radius:15px;background:#fffdf8;border:1px solid #e5ded1;box-shadow:0 2px 4px #3b332805;gap:3px}
+.icon{width:36px;height:36px;border:0;border-radius:10px;background:#eceae3;color:var(--tone);box-shadow:none;margin-bottom:3px}
+.icon svg{width:28px;height:28px;stroke-width:3}
+.tile strong{font-size:16px;line-height:1.25}
+.tile small{font-size:12px;line-height:1.25;color:#4b5964}
+.tile:active{background:#ece6da}
+}
+
+@media(max-width:540px){
+body{background:#f7f5ef}
+header{border-color:#dad2c4}
+main{padding-top:28px}
+.intro{margin-bottom:22px}
+h1{font-family:"Songti TC",serif;font-size:31px;letter-spacing:.06em}
+nav{gap:0;border-block:1px solid #dad2c4}
+.tile{min-height:122px;border:0;border-radius:0;box-shadow:none;background:transparent;padding:13px 12px 13px 10px;gap:5px}
+.tile:nth-of-type(even){border-left:1px solid #dad2c4;padding-left:16px}
+.tile:nth-of-type(n+3){border-top:1px solid #dad2c4}
+.tile .icon{width:43px;height:43px;border-radius:13px;background:var(--tone);color:#fff}
+.tile .icon svg{width:32px;height:32px;stroke-width:2.8}
+.tile small{font-size:13px;color:#51616a}
+.tile:active,.tile:focus-visible{background:#eee9de}
+}
+
+body{background:#f8f5fc;color:#243744}
+header{justify-content:flex-start;border-color:#d8d2c7}
+.wordmark{font-size:17px;letter-spacing:.12em;font-weight:750;line-height:1.4}
+.wordmark span{display:block;font-size:9px;letter-spacing:.13em;font-weight:650;color:#5c675f;margin-top:3px}
+@media(max-width:540px){
+header,main{width:calc(100% - 44px)}
+header{padding:19px 0;min-height:0}
+main{padding-top:25px}
+.intro{margin-bottom:21px}
+h1{font-size:clamp(25px,7vw,33px);letter-spacing:.04em;line-height:1.25}
+nav{border-color:#d8d2c7}
+.tile,.tile:nth-of-type(even){min-height:120px;padding:12px 5px;text-align:center;justify-items:center}
+.tile:nth-of-type(even),.tile:nth-of-type(n+3){border-color:#d8d2c7}
+.tile .icon{margin:0 0 4px;background:linear-gradient(145deg,#ffffff19,transparent),var(--tone);border-radius:12px}
+.tile strong{font-size:16px}
+.tile small{font-size:12px}
+}
+
+@media(max-width:540px){
+header,main{width:calc(100% - 36px)}
+header{padding:17px 0 14px}
+.wordmark,h1{font-family:"Songti TC","PMingLiU",serif;font-weight:700}
+.wordmark{font-size:19px;letter-spacing:.08em}
+.wordmark span{font-family:system-ui,sans-serif;font-size:9px;font-weight:550;letter-spacing:.13em}
+main{padding:22px 0 18px}
+.intro{margin-bottom:17px}
+h1{font-size:clamp(28px,8vw,36px)}
+.tile,.tile:nth-of-type(even){min-height:clamp(132px,calc((100svh - 171px)/3),190px);gap:5px}
+.tile .icon{width:54px;height:54px;border-radius:15px;margin-bottom:5px}
+.tile .icon svg{width:38px;height:38px}
+.tile strong{font-size:18px;font-weight:680}
+.tile small{font-size:13px;font-weight:400}
+}
+
+.tile .icon{background:linear-gradient(145deg,#ffffff19,transparent),var(--tone);color:#fff}
+.tile[data-system="whiteboard"] .icon{color:#f4eee4}
+
+@media (min-width: 541px){
+  header{width:min(1100px,calc(100% - 80px));padding:23px 0 18px}
+  main{width:min(1040px,calc(100% - 80px));padding:30px 0 40px}
+  .intro{text-align:left;margin:0 0 22px}
+  h1{font-size:clamp(30px,4vw,44px);letter-spacing:.04em;margin:0}
+  nav{width:100%;max-width:none;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;border:0}
+  nav .group-title{grid-column:1/-1;margin:7px 0 0;padding:5px 0;border:0;font-size:13px}
+  nav .tile:nth-of-type(n){display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:14px;row-gap:4px;align-content:center;justify-items:start;text-align:left;padding:16px;min-height:92px;background:#ffffffb8;border:1px solid #e2dce9;border-radius:14px;box-shadow:0 2px 6px #35224a08}
+  nav .tile:nth-of-type(n):hover{background:#fff;border-color:#bdb0cf}
+  nav .tile .icon{grid-row:1/3;align-self:center;margin:0}
+  nav .tile strong,nav .tile small{grid-column:2}
+  nav .tile strong{font-size:16px;font-weight:680}
+  nav .tile small{font-size:12px}
+}
+@media (min-width: 541px) and (max-width: 760px){
+  header,main{width:calc(100% - 40px)}
+  nav .tile:nth-of-type(n){column-gap:8px;padding:10px}
+}
+
+nav .tile .icon{border:0;box-shadow:0 3px 8px #24354416}
+h1,nav,.demo{font-family:"Microsoft JhengHei","PingFang TC","Noto Sans TC",system-ui,sans-serif}
+h1{font-weight:720;letter-spacing:.03em}
+
+@media (min-width: 541px){
+  .intro{text-align:center}
+  nav .tile:nth-of-type(n){
+    grid-template-rows:1fr auto auto 1fr;
+    row-gap:0
+  }
+  nav .tile .icon{grid-row:1/-1}
+  nav .tile strong{grid-row:2;line-height:1.25}
+  nav .tile small{grid-row:3;line-height:1.25;margin-top:2px}
+}
+
+.tile-copy{display:contents}
+@media (min-width: 541px){
+  nav .tile:nth-of-type(n){grid-template-rows:auto;align-items:center}
+  nav .tile .icon{grid-row:1}
+  nav .tile .tile-copy{display:flex;flex-direction:column;gap:2px;min-width:0}
+  nav .tile .tile-copy strong,nav .tile .tile-copy small{margin:0;line-height:1.2}
+}
+</style><body data-layout="split" data-theme="green"><header><div class="wordmark">亞東紀念醫院<span>FAR EASTERN MEMORIAL HOSPITAL</span></div></header><main id="entrance"><section class="intro"><h1>院內系統入口</h1></section><nav aria-label="六個院內系統"><span class="group-title">臨床工作站</span><a class="tile" href="./his.html" style="--tone:#566c7c"><span class="icon"><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="9" y="13" width="46" height="34" rx="6"/><path d="M9 23h46M23 54h18m-9-7v7M18 34h10m-5-5v10m13-8h11m-11 7h8"/><circle cx="16" cy="18" r="1" fill="currentColor" stroke="none"/></svg></span><span class="tile-copy"><strong>HIS</strong><small>醫院資訊系統</small></span></a><a class="tile" href="./nis.html" style="--tone:#406b61"><span class="icon"><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="16" y="16" width="33" height="39" rx="6"/><rect x="25" y="11" width="15" height="10" rx="4"/><path d="M21 36h7l4-8 5 14 4-6h4m-24 11h12"/></svg></span><span class="tile-copy"><strong>NIS</strong><small>護理資訊系統</small></span></a><a class="tile" href="./index.html" style="--tone:#426387"><span class="icon"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M16 15v13a12 12 0 0 0 24 0V15M16 15h5m14 0h5M28 40v6a10 10 0 0 0 20 0v-7"/><circle cx="48" cy="34" r="5"/></svg></span><span class="tile-copy"><strong>醫師系統</strong><small>住院醫療工作站</small></span></a><span class="group-title">病房照護與顯示</span><a class="tile" href="./nursing.html" style="--tone:#665c78"><span class="icon"><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="15" y="12" width="27" height="42" rx="7"/><path d="M24 47h9m-8-16h8m-4-4v8m18-11q7 9 0 18m6-22q11 13 0 26"/></svg></span><span class="tile-copy"><strong>護理手機</strong><small>床邊照護作業</small></span></a><a class="tile" href="./whiteboard.html" data-system="whiteboard" style="--tone:#817362"><span class="icon"><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="10" y="14" width="44" height="34" rx="6"/><path d="M23 55h18m-9-7v7M18 24h11m6 0h11m-28 8h11m6 0h11m-28 8h11m6 0h11"/></svg></span><span class="tile-copy"><strong>電子白板</strong><small>病房動態總覽</small></span></a><a class="tile" href="./bedside.html" data-system="bedside" style="--tone:#918b74"><span class="icon"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M11 48V27m0 16h44v9m-44-9v9m15-9V32h23a6 6 0 0 1 6 6v5"/><circle cx="19" cy="35" r="3"/><rect x="38" y="12" width="17" height="13" rx="3"/><path d="M43 18h7"/></svg></span><span class="tile-copy"><strong>床頭卡</strong><small>單床照護資訊</small></span></a></nav></main></body></html>
